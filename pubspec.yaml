@@ -1,0 +1,81 @@
+name: production_automation_testing
+description: A new Flutter project.
+
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.5 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+
+  cupertino_icons: ^1.0.2
+  esptouch_flutter: ^1.0.0
+  network_info_plus: ^2.1.3
+  permission_handler: ^10.0.0
+  regexed_validator: ^2.0.0+1
+  dio: ^4.0.6
+  flutter_geocoder: ^0.2.2-nullsafety
+  flutter_bloc: ^7.2.0
+  equatable: ^2.0.3
+  json_annotation: ^4.5.0
+  firebase_core: ^1.21.0
+  firebase_messaging: ^12.0.3
+  overlay_support: ^2.0.1
+  flutter_barcode_scanner: ^2.0.0
+  flutter_staggered_grid_view: ^0.6.1
+  shimmer: ^2.0.0
+  location: ^4.4.0
+  environment_sensors: ^0.2.0
+  toggle_switch: ^2.0.1
+  path: ^1.8.0
+  sqflite: ^2.0.0+4
+  tcp_socket_connection: ^0.3.1
+  flutter_vector_icons: ^2.0.0
+  percent_indicator: ^4.2.2
+  syncfusion_flutter_charts: ^20.3.61
+  flutter_rating_bar: ^4.0.1
+  file_picker: ^5.2.4
+  image_picker: ^0.8.6
+
+
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+  flutter_lints: ^2.0.0
+  flutter_riverpod: ^1.0.3
+  google_fonts: ^2.3.1
+  intl: ^0.17.0
+  shared_preferences: ^2.0.13
+  progress_dialog_null_safe: ^1.0.4
+  build_runner: ^2.1.11
+  json_serializable: ^6.2.0
+  lottie: ^1.4.2
+  geocoding: ^2.0.2
+  geolocator: ^8.2.0
+  flutter_barcode_scanner: ^2.0.0
+  curved_navigation_bar: ^1.0.3
+  dotted_border: ^2.0.0+3
+
+
+
+flutter:
+
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+  #   - assets/images/
