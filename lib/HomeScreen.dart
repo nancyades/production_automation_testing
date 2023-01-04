@@ -36,7 +36,8 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
       body: Row(
         children: [
           Navigationbar(),
-          Expanded(child: Column(
+          Expanded(
+              child: Column(
             children: [
               Consumer(builder: (context, ref, child) {
                 final currentIndex = ref.watch(navNotifier);

@@ -6,21 +6,34 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:production_automation_testing/Database/Curd_operation/HiveModel/usermanagement.dart';
+import 'package:production_automation_testing/Database/Curd_operation/database.dart';
 import 'package:production_automation_testing/Helper/AppClass.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:production_automation_testing/noofpages/Users/user.dart';
+import '../../Database/Curd_operation/HiveModel/usermodel.dart';
+import '../../Database/Curd_operation/boxes.dart';
 import '../../Provider/general_provider.dart';
 
 
 
+
+
+
+
 class AddUsers extends StatefulWidget {
-  const AddUsers({Key? key}) : super(key: key);
+   AddUsers({Key , key});
 
   @override
   State<AddUsers> createState() => _AddUsersState();
 }
 
 class _AddUsersState extends State<AddUsers> {
+
+
+
   var selectProduct = "PSBE";
   List<String> products = ['PSBE', '16 Zone', 'PSBE-E', '32 Zone'];
 
@@ -34,7 +47,6 @@ class _AddUsersState extends State<AddUsers> {
   ];
 
   bool isSelected = false;
-
   Uint8List? selectedImageInByte;
   String? selectedImage;
   String defaultImageUrl =
@@ -43,6 +55,13 @@ class _AddUsersState extends State<AddUsers> {
   XFile? file;
 
   bool isPasswordVisible = false;
+
+  int? index;
+
+
+
+
+
 
   _selectFile(bool imageFrom) async {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
@@ -67,10 +86,60 @@ class _AddUsersState extends State<AddUsers> {
   TextEditingController controllerEmail = TextEditingController();
   TextEditingController controllerJigAddress = TextEditingController();
 
+  late Box<UserManagementmodel> dataBox;
+
+
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    dataBox = Hive.box<UserManagementmodel>('pat');
+
+  }
+
+
+
+
+
+  void clearText() {
+    controllerUsername.clear();
+    controllerPassword.clear();
+    controllerEmpId.clear();
+    controllerContactNo.clear();
+    controllerEmail.clear();
+  }
   @override
   Widget build(BuildContext context) {
+
+
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
+    if(Allvalues.name != null && Allvalues.emp_id != null && Allvalues.phoneno != null && Allvalues.email != null && Allvalues.password != null && Allvalues.key != null && Allvalues.isActive != null ){
+      controllerEmpId.text      = Allvalues.emp_id!;
+      controllerUsername.text   = Allvalues.name!;
+      controllerEmail.text      = Allvalues.email!;
+      controllerContactNo.text  = Allvalues.phoneno!;
+      controllerPassword.text  = Allvalues.password!;
+      isSelected = Allvalues.isActive!;
+      key =  Allvalues.key!;
+    }
+
+
+     // if(datamodels != null && index != null ){
+     //   controllerEmpId.text = datamodels![index!].emp_id!;
+     //   controllerUsername.text =  datamodels![index!].name!;
+     //   controllerEmail.text = datamodels![index!].email!;
+     //   controllerContactNo.text = datamodels![index!].phoneno!;
+     // }
+
+
+    print("print isSelected ==============> $isSelected");
+
+
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -541,7 +610,13 @@ class _AddUsersState extends State<AddUsers> {
                                     value: isSelected,
                                     onChanged: (val) {
                                       setState(() {
-                                        this.isSelected = val!;
+                                       /* this.isSelected = val!;
+                                        if(isSelected == true ? false : true){
+
+                                        }*/
+                                        isSelected = !isSelected;
+                                        Allvalues.isActive = isSelected;
+
                                       });
                                     },
                                   )),
@@ -583,7 +658,19 @@ class _AddUsersState extends State<AddUsers> {
                             )
                         ),
                         onPressed: () {
+
                          if(validateFields()){
+
+                           DataBase().addUsers(
+                               controllerEmpId.text,
+                               controllerUsername.text,
+                               controllerPassword.text,
+                               controllerEmail.text,
+                               controllerContactNo.text,
+                               isSelected
+                           );
+
+                           clearText();
 
                          }
                         }
@@ -606,7 +693,74 @@ class _AddUsersState extends State<AddUsers> {
                                 )
                             )
                         ),
-                        onPressed: () {
+                        onPressed: ()async {
+
+                         setState(() {
+
+                         /*  Usermodel mData = Usermodel(
+                             emp_id: controllerEmpId.text,
+                             name: controllerUsername.text,
+                             email: controllerEmail.text,
+                             phoneno: controllerContactNo.text,
+
+                           );
+                           dataBox.put(key, mData);
+
+                           Usermodel user = Usermodel();
+                           controllerEmpId = user.emp_id.toString() as TextEditingController;
+                           controllerUsername = user.name.toString() as TextEditingController;
+                           controllerEmail = user.email.toString() as TextEditingController;
+                           controllerContactNo = user.phoneno.toString() as TextEditingController;
+
+                         });
+
+                         controllerEmpId.clear();
+                         controllerUsername.clear();
+                         controllerEmail.clear();
+                         controllerContactNo.clear();*/
+
+                           UserManagementmodel mData = UserManagementmodel(
+                             emp_id: controllerEmpId.text,
+                             name: controllerUsername.text,
+                             password: controllerPassword.text,
+                             email: controllerEmail.text,
+                             phoneno: controllerContactNo.text,
+                             isActive: isSelected
+
+                           );
+                           dataBox.put(key, mData);
+
+
+                         });
+                         UserManagementmodel user = UserManagementmodel();
+                         controllerEmpId = user.emp_id.toString() as TextEditingController;
+                         controllerUsername = user.name.toString() as TextEditingController;
+                         controllerPassword = user.password.toString() as TextEditingController;
+                         controllerEmail = user.email.toString() as TextEditingController;
+                         controllerContactNo = user.phoneno.toString() as TextEditingController;
+                         isSelected = user.isActive!;
+
+                         clearText();
+
+
+
+
+
+                          /*    Usermodel  obj =  Usermodel(
+                           emp_id:  controllerEmpId.text,
+                         email: controllerEmail.text,
+                         name: controllerUsername.text,
+                         phoneno:controllerContactNo.text,isActive: isSelected ==true ? true : false );
+
+
+                          PatDataBase().editUser(
+                              obj,
+                              controllerEmpId.text,
+                              controllerUsername.text,
+                              controllerEmail.text,
+                              controllerContactNo.text,
+                              isSelected ==true ? true : false);*/
+
 
                         }
                     ),
