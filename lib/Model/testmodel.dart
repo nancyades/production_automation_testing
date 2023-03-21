@@ -33,3 +33,30 @@ class TestModel {
     return data;
   }
 }
+
+
+/*class Test {
+  String? testTitle;
+  bool? isSelected = false;
+
+  Test({this.testTitle,  this.isSelected});
+
+  selectTest(bool val) {
+    isSelected = val;
+  }
+
+}*/
+class radTest {
+  String? testid;
+  String? testname;
+  String? radiotype;
+  String? result;
+
+  radTest({this.testid,this.testname,this.radiotype,this.result});
+
+  selectTest1(String val1) {
+    radiotype= val1;
+  }
+
+
+}

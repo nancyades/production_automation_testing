@@ -1,7 +1,14 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:excel/excel.dart';
+import 'package:production_automation_testing/Provider/tcpprovider/tcp_provider_send_data.dart';
+import 'package:production_automation_testing/service/apiservice.dart';
+
+import '../Model/excelModel.dart';
 import '../Model/testmodel.dart';
+
 
 
 class TestState {
@@ -12,7 +19,7 @@ class TestState {
 }
 
 // get Tests from excel
-final getTestListProvider =
+/*final getTestListProvider =
 StateNotifierProvider<GetTestNotifier, List<TestModel>>((ref) {
   return GetTestNotifier(ref);
 });
@@ -23,7 +30,7 @@ class GetTestNotifier extends StateNotifier<List<TestModel>> {
 
   GetTestNotifier(this.ref) : super([]);
 
- /* getAllTestList(String? productID, {String? fileName}) async {
+  getAllTestList(String? productID, {String? fileName}) async {
     var filePath;
     if(productID != null) {
       filePath = await ref.read(apiProvider).getDownloadUrl(productID);
@@ -37,9 +44,7 @@ class GetTestNotifier extends StateNotifier<List<TestModel>> {
         final String downloadPath = (await getApplicationSupportDirectory()).path;
         String storagePath = downloadPath + '/Templates/' + filePath;
         await dio.download(
-          ApiConstants.baseUrl +
-              filePath,
-          storagePath,
+          ApiConstants.baseUrl + filePath, storagePath,
           onReceiveProgress: (_c, _t) async {
             print(_c / _t * 100);
             var file = downloadPath + '/Templates/' + filePath;
@@ -68,7 +73,7 @@ class GetTestNotifier extends StateNotifier<List<TestModel>> {
         print(e);
       }
     }
-  }*/
+  }
 
   changeStatus(List<TestModel> data) {
     state = [];
@@ -83,10 +88,11 @@ class GetTestNotifier extends StateNotifier<List<TestModel>> {
     state = [];
     state = tempList;
   }
-}
+}*/
 
-/*
-// assaign test
+
+
+/*// assaign test
 final assaignTestProvider =
 StateNotifierProvider<assaignTestNotifier, List<String>>((ref) {
   return assaignTestNotifier(ref);
@@ -101,7 +107,7 @@ class assaignTestNotifier extends StateNotifier<List<String>> {
     var mList = await ref.read(apiProvider).assaignTestToUser(mModel);
     return mList;
   }
-}
+}*/
 
 // for test
 final selectWorkOrderProvider = StateProvider<TestModel?>((ref) => null);
@@ -124,7 +130,7 @@ class SelectedTestNotifier extends StateNotifier<List<TestModel>> {
 }
 
 // get Tests from excel
-final extractExcelNotifierProvider =
+/*final extractExcelNotifierProvider =
 StateNotifierProvider<ExtractExelNotifier, ExtractExcelState>((ref) {
   return ExtractExelNotifier(ref);
 });
@@ -158,15 +164,7 @@ class ExtractExelNotifier extends StateNotifier<ExtractExcelState> {
     }
     if (mMap.isNotEmpty) {
       ExtractExcelEntity? entity;
-      if(currentUser!.role != 3) {
         entity = await ref.read(apiProvider).getTestDetails();
-      } else {
-        entity = ExtractExcelEntity(
-            taskId: '-',
-            workOrderName: '-',
-            serialNo: '-',
-            productName: '--');
-      }
       entity!.setExcelData(mMap);
       try {
         entity.settestIdentifyType(int.parse(testType!));
@@ -195,11 +193,8 @@ class ExtractExelNotifier extends StateNotifier<ExtractExcelState> {
     var productID = ref.read(selectWorkOrderProvider.notifier).state!.productId;
     Map<String, ExcelModel> testList = {};
     var filePath;
-    if (currentUser!.role == 3) {
+
       filePath = ref.read(selectWorkOrderProvider)!.filePath;
-    } else {
-      filePath = await ref.read(apiProvider).getDownloadUrl(productID!);
-    }
 
     final String downloadPath = (await getApplicationSupportDirectory()).path;
     if (filePath != null && filePath.toString().isNotEmpty) {
@@ -272,7 +267,7 @@ class ExtractExelNotifier extends StateNotifier<ExtractExcelState> {
     return ExtractExcelState(false, state.data, 'Something went wrong !');
   }
 
-}
+}*/
 
 class ExtractExcelState {
   bool? isLoading;
@@ -327,6 +322,7 @@ class ExtractExcelEntity {
 final currentStepProvider = StateProvider<int>((ref) => 0);
 
 // save test result
+/*
 final saveTestResultNotifierProvider =
 StateNotifierProvider<SaveTestResultNotifier, TestResultState>((ref) {
   return SaveTestResultNotifier(ref);
@@ -358,7 +354,8 @@ class SaveTestResultNotifier extends StateNotifier<TestResultState> {
 
   }
 
-  abortTest(ExtractExcelEntity entity, int currentStep, String timeSpent) async {
+ */
+/* abortTest(ExtractExcelEntity entity, int currentStep, String timeSpent) async {
     List<ExcelModel> testData = entity.excelData![currentStep];
 
     state = loadingState();
@@ -375,7 +372,9 @@ class SaveTestResultNotifier extends StateNotifier<TestResultState> {
     }
 
 
-  }
+  }*/
+/*
+
 
   loadingState() {
     return TestResultState(TestResultStatus.loading, '');
@@ -385,6 +384,7 @@ class SaveTestResultNotifier extends StateNotifier<TestResultState> {
     return TestResultState(TestResultStatus.failure, '');
   }
 }
+*/
 
 // TestResultState
 enum TestResultStatus { initial, loading, success, failure }
@@ -399,6 +399,8 @@ class TestResultState {
 class OnlineTestModel {
   String? packet;
   String? taskNo;
+
+
 
   OnlineTestModel(this.packet, this.taskNo);
 
@@ -442,4 +444,4 @@ class OnlineTestNotifier extends StateNotifier<TestResultState> {
 
 
 // PDF_Provider
-final testPdfProvider = StateProvider<List<ExcelModel>>((ref) => []);*/
+final testPdfProvider = StateProvider<List<ExcelModel>>((ref) => []);

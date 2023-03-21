@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:production_automation_testing/HomeScreen.dart';
-import 'package:production_automation_testing/screens/homescreen.dart';
+import 'package:production_automation_testing/LoginPage/loginscreen.dart';
+
 
 
 import 'appColors.dart';
@@ -28,7 +29,7 @@ class AppTheme extends StatelessWidget {
           )),
       initialRoute: AppId.initialRoute,
       routes: <String, WidgetBuilder>{
-        AppId.HomeScreen: (context) => const HomeScreen(),
+        AppId.LoginScreen: (context) => const LoginScreen(),
         AppId.HomeScreenPage: (context) => const HomeScreenPage(),
        // AppId.ConfigurationList: (context) =>  ConfigurationList(),
        // AppId.SmartConfigID: (context) => const SmartConfig(),

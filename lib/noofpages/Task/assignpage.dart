@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../Model/testmodel.dart';
-import '../../Provider/test_provider.dart';
+import '../../Provider/testProvider.dart';
+
 
 class AssignTask extends ConsumerStatefulWidget {
   const AssignTask({Key? key}) : super(key: key);
@@ -28,9 +29,7 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
 
   @override
   Widget build(BuildContext context) {
-    var data = ref.watch(getTestListProvider);
-    List<TestModel> mModel = [];
-    mModel = data;
+
 
     return Align(
       alignment: Alignment.centerRight,

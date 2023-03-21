@@ -1,9 +1,7 @@
-
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -12,28 +10,25 @@ import 'package:production_automation_testing/Database/Curd_operation/HiveModel/
 import 'package:production_automation_testing/Database/Curd_operation/database.dart';
 import 'package:production_automation_testing/Helper/AppClass.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:production_automation_testing/Helper/helper.dart';
 import 'package:production_automation_testing/noofpages/Users/user.dart';
 import '../../Database/Curd_operation/HiveModel/usermodel.dart';
-import '../../Database/Curd_operation/boxes.dart';
+import '../../Model/APIModel/usermodel.dart';
+import '../../Provider/excelprovider.dart';
 import '../../Provider/general_provider.dart';
+import '../../Provider/post_provider/user_provider.dart';
 
+class AddUsers extends ConsumerStatefulWidget {
 
+  Users user;
 
-
-
-
-
-class AddUsers extends StatefulWidget {
-   AddUsers({Key , key});
+  AddUsers({Key, key,required this.user});
 
   @override
-  State<AddUsers> createState() => _AddUsersState();
+  ConsumerState<AddUsers> createState() => _AddUsersState();
 }
 
-class _AddUsersState extends State<AddUsers> {
-
-
-
+class _AddUsersState extends ConsumerState<AddUsers> {
   var selectProduct = "PSBE";
   List<String> products = ['PSBE', '16 Zone', 'PSBE-E', '32 Zone'];
 
@@ -47,6 +42,7 @@ class _AddUsersState extends State<AddUsers> {
   ];
 
   bool isSelected = false;
+  int? active = 0;
   Uint8List? selectedImageInByte;
   String? selectedImage;
   String defaultImageUrl =
@@ -58,9 +54,7 @@ class _AddUsersState extends State<AddUsers> {
 
   int? index;
 
-
-
-
+  int? userid;
 
 
   _selectFile(bool imageFrom) async {
@@ -72,7 +66,7 @@ class _AddUsersState extends State<AddUsers> {
         selctFile = fileResult.files.first.name;
         print("${fileResult.files.first.name}");
         selectedImageInByte = fileResult.files.first.bytes;
-        selectedImage=fileResult.paths.first;
+        selectedImage = fileResult.paths.first;
         print("selected images=======> ${fileResult.paths.first}");
       });
     }
@@ -88,20 +82,11 @@ class _AddUsersState extends State<AddUsers> {
 
   late Box<UserManagementmodel> dataBox;
 
-
-
-
   @override
   void initState() {
     super.initState();
-
-    dataBox = Hive.box<UserManagementmodel>('pat');
-
+    dataBox = Hive.box<UserManagementmodel>('users');
   }
-
-
-
-
 
   void clearText() {
     controllerUsername.clear();
@@ -110,34 +95,40 @@ class _AddUsersState extends State<AddUsers> {
     controllerContactNo.clear();
     controllerEmail.clear();
   }
+
   @override
   Widget build(BuildContext context) {
-
-
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    if(Allvalues.name != null && Allvalues.emp_id != null && Allvalues.phoneno != null && Allvalues.email != null && Allvalues.password != null && Allvalues.key != null && Allvalues.isActive != null ){
-      controllerEmpId.text      = Allvalues.emp_id!;
-      controllerUsername.text   = Allvalues.name!;
-      controllerEmail.text      = Allvalues.email!;
-      controllerContactNo.text  = Allvalues.phoneno!;
-      controllerPassword.text  = Allvalues.password!;
+/*    if (Allvalues.name != null &&
+        Allvalues.emp_id != null &&
+        Allvalues.phoneno != null &&
+        Allvalues.email != null &&
+        Allvalues.password != null &&
+        Allvalues.key != null &&
+        Allvalues.isActive != null &&
+        Allvalues.user_id != null) {
+      controllerEmpId.text = Allvalues.emp_id!;
+      controllerUsername.text = Allvalues.name!;
+      controllerEmail.text = Allvalues.email!;
+      controllerContactNo.text = Allvalues.phoneno!;
+      controllerPassword.text = Allvalues.password!;
       isSelected = Allvalues.isActive!;
-      key =  Allvalues.key!;
+      key = Allvalues.key!;
+
+    }*/
+
+    if(widget.user != null ){
+      print("userid  ${widget.user.userId}");
+      userid = widget.user.userId;
+      controllerEmpId.text = widget.user.empId!;
+      controllerUsername.text = widget.user.name!;
+      controllerEmail.text = widget.user.emailid!;
+      controllerContactNo.text = widget.user.phoneno!;
+      controllerPassword.text = widget.user.password!;
+      isSelected  =  widget.user.flg == 0 ? false : true;
     }
-
-
-     // if(datamodels != null && index != null ){
-     //   controllerEmpId.text = datamodels![index!].emp_id!;
-     //   controllerUsername.text =  datamodels![index!].name!;
-     //   controllerEmail.text = datamodels![index!].email!;
-     //   controllerContactNo.text = datamodels![index!].phoneno!;
-     // }
-
-
-    print("print isSelected ==============> $isSelected");
-
 
 
     return Container(
@@ -158,624 +149,589 @@ class _AddUsersState extends State<AddUsers> {
         ],
       ),
       //color: Color(0xffa4cfed),
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width * 0.65,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Text(
-              "ADD USERS",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width * 0.65,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                "ADD USERS",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
+              ),
             ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(top: 25.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                          height: 100,
-                          width: 100,
-                          //color: Colors.purple,
-                          child: selctFile.isEmpty
-                              ? Stack(
-                            children: [
-                              const CircleAvatar(
-                                radius: 220,
-                                backgroundImage: AssetImage(
-                                    'assets/images/profile.jpg'),
-                              ),
-
-                              Positioned(
-                                  top: 70.0,
-                                  left: 67.0,
-                                  child: Container(
-                                    height: 20.0,
-                                    width: 20.0,
-                                    decoration: BoxDecoration(
-                                      /*    image: DecorationImage(
-                                                               image:  NetworkImage('https://unsplash.com/photos/80JjLrCUo64'),),*/
-
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.circular(
-                                            20.0),
-                                        border: Border.all(
-                                            color: Colors.white
-                                        )
-
-                                    ),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        _selectFile(true);
-                                      },
-                                      child: Icon(
-                                        Icons.add,
-                                        size: 15.0,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ))
-                            ],
-                          )
-
-                              : () {
-                            //return Image.network('https://googleflutter.com/sample_image.jpg');
-                            if (selectedImage != null) {
-                              return  Container(
-                                  height: 100,
-                                  width: 100,
-                                  //color: Colors.purple,
-                                  child:
-                                  Stack(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 220,
-                                        backgroundImage:NetworkImage(
-                                          "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 25.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                              height: 100,
+                              width: 100,
+                              //color: Colors.purple,
+                              child: selctFile.isEmpty
+                                  ? Stack(
+                                      children: [
+                                        const CircleAvatar(
+                                          radius: 220,
+                                          backgroundImage: AssetImage(
+                                              'assets/images/profile.jpg'),
                                         ),
-                                      ),
+                                        Positioned(
+                                            top: 70.0,
+                                            left: 67.0,
+                                            child: Container(
+                                              height: 20.0,
+                                              width: 20.0,
+                                              decoration: BoxDecoration(
+                                                  /*    image: DecorationImage(
+                                                                   image:  NetworkImage('https://unsplash.com/photos/80JjLrCUo64'),),*/
 
-                                      /* CircleAvatar(
-                                       radius: 220,
-                                       backgroundImage: FileImage(File(selectedImage!)),
-                                     ),*/
-
-                                      // Image.file(File(selectedImage!)),
-                                      Positioned(
-                                          top: 70.0,
-                                          left: 67.0,
-                                          child: Container(
-                                            height: 30.0,
-                                            width: 30.0,
-                                            decoration: BoxDecoration(
-                                                color: Colors.black,
-                                                borderRadius: BorderRadius.circular(
-                                                    20.0),
-                                                border: Border.all(
-                                                    color: Colors.white
-                                                )
-
-                                            ),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                _selectFile(true);
-                                              },
-                                              child: Icon(
-                                                Icons.add,
-                                                size: 15.0,
-                                                color: Colors.white,
+                                                  color: Colors.black,
+                                                  borderRadius:
+                                                      BorderRadius.circular(20.0),
+                                                  border: Border.all(
+                                                      color: Colors.white)),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  _selectFile(true);
+                                                },
+                                                child: Icon(
+                                                  Icons.add,
+                                                  size: 15.0,
+                                                  color: Colors.white,
+                                                ),
                                               ),
-                                            ),
-                                          ))
-                                    ],
-                                  )
-                              );
+                                            ))
+                                      ],
+                                    )
+                                  : () {
+                                      //return Image.network('https://googleflutter.com/sample_image.jpg');
+                                      if (selectedImage != null) {
+                                        return Container(
+                                            height: 100,
+                                            width: 100,
+                                            //color: Colors.purple,
+                                            child: Stack(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 220,
+                                                  backgroundImage: NetworkImage(
+                                                    "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                                                  ),
+                                                ),
 
+                                                /* CircleAvatar(
+                                           radius: 220,
+                                           backgroundImage: FileImage(File(selectedImage!)),
+                                         ),*/
 
+                                                // Image.file(File(selectedImage!)),
+                                                Positioned(
+                                                    top: 70.0,
+                                                    left: 67.0,
+                                                    child: Container(
+                                                      height: 30.0,
+                                                      width: 30.0,
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.black,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(20.0),
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.white)),
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          _selectFile(true);
+                                                        },
+                                                        child: Icon(
+                                                          Icons.add,
+                                                          size: 15.0,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ))
+                                              ],
+                                            ));
 
-                              //Image.file('C:\Users\NANCY\Pictures\Screenshots\Screenshot (7).png!\');
-                              //return Image.memory(selectedImageInByte!);
-                            }else{
-                              return Text('data');
-                            }
-                          }()
-
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
-                            child: Row(
-                              children: [
-                                Text("Employee ID", style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 11.0,
-                                    color: Colors.blueAccent)),
-                                Text('*', style: TextStyle(color: Colors.red)),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 15.0, right: 22.0,),
-                            child: SizedBox(
-                              height: 55,
-                              child: TextField(
-                                maxLength: 7,
-                                controller: controllerEmpId,
-                                decoration: InputDecoration(
-                                    filled: true,
-                                    hintStyle: TextStyle(
-                                        color: Colors.grey[800],
-                                        fontSize: 13),
-                                    //hintText: "Workorder Code",
-                                    fillColor: Colors.white70),
-                                style: TextStyle(fontWeight: FontWeight.w400,
-                                    fontSize: 13.0,
-                                    color: Colors.black),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
-                            child: Row(
-                              children: [
-                                Text("Name", style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 11.0,
-                                    color: Colors.blueAccent)),
-                                Text('*', style: TextStyle(color: Colors.red)),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 15.0, right: 22.0),
-                            child: SizedBox(
-                              height: 55,
-                              child: TextField(
-                                maxLength: 20,
-                                controller: controllerUsername,
-                                decoration: InputDecoration(
-                                    filled: true,
-                                    hintStyle: TextStyle(
-                                        color: Colors.grey[800],
-                                        fontSize: 13),
-                                    //hintText: "Quantity",
-                                    fillColor: Colors.white70),
-                                style: TextStyle(fontWeight: FontWeight.w400,
-                                    fontSize: 13.0,
-                                    color: Colors.black),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
-                            child: Row(
-                              children: [
-                                Text("Password", style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 11.0,
-                                    color: Colors.blueAccent)),
-                                Text('*', style: TextStyle(color: Colors.red)),
-                              ],
-                            ),
-                          ),
-                         Consumer(
-                            builder: (context, ref, child) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 15.0, right: 22.0),
-                                child: SizedBox(
-                                  height: 55,
-                                  child: TextField(
-                                    maxLength: 10,
-                                    controller: controllerPassword,
-                                    obscureText: !isPasswordVisible,
-                                    enableSuggestions: false,
-                                    autocorrect: false,
-
-                                    decoration: InputDecoration(
-                                        filled: true,
-                                        suffix: InkWell(
-                                          onTap: () {
-                                            ref.read(loginPasswordToggle.notifier).state =
-                                            !ref.watch(loginPasswordToggle);
-                                            isPasswordVisible =
-                                                ref.watch(loginPasswordToggle);
-                                          },
-                                         child: Padding(
-                                              padding: const EdgeInsets.only(right: 15.0),
-                                              child: isPasswordVisible
-                                                  ? Icon(Icons.visibility,
-                                                  size: height * 0.03)
-                                                  : Icon(Icons.visibility_off,
-                                                  size:
-                                                  height * 0.03)),
-
-                                        ),
-                                        hintStyle: TextStyle(
-                                            color: Colors.grey[800],
-                                            fontSize: 13),
-                                        fillColor: Colors.white70),
-                                    style: TextStyle(fontWeight: FontWeight.w400,
-                                        fontSize: 13.0,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                              );
-                            }
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
-                            child: Row(
-                              children: [
-                                Text("Email Id", style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 11.0,
-                                    color: Colors.blueAccent)),
-                                Text('*', style: TextStyle(color: Colors.red)),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 15.0, right: 22.0),
-                            child: SizedBox(
-                              height: 55,
-                              child: TextField(
-                                maxLength: 35,
-                                controller: controllerEmail,
-                                decoration: InputDecoration(
-                                    filled: true,
-                                    hintStyle: TextStyle(
-                                        color: Colors.grey[800],
-                                        fontSize: 13),
-                                    //hintText: "End Serial No",
-                                    fillColor: Colors.white70),
-                                style: TextStyle(fontWeight: FontWeight.w400,
-                                    fontSize: 13.0,
-                                    color: Colors.black),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
-                            child: Row(
-                              children: [
-                                Text("Phone No", style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 11.0,
-                                    color: Colors.blueAccent)),
-                                Text('*', style: TextStyle(color: Colors.red)),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 15.0, right: 22.0),
-                            child: SizedBox(
-                              height: 55,
-                              child: TextField(
-                                keyboardType: TextInputType.number,
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.digitsOnly
-                                ],
-                                maxLength: 10,
-                                controller: controllerContactNo,
-                                decoration: InputDecoration(
-                                    filled: true,
-                                    hintStyle: TextStyle(
-                                        color: Colors.grey[800],
-                                        fontSize: 13),
-                                    //hintText: "End Serial No",
-                                    fillColor: Colors.white70),
-                                style: TextStyle(fontWeight: FontWeight.w400,
-                                    fontSize: 13.0,
-                                    color: Colors.black),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 18.0),
-                                child: Text("Role", style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 11.0,
-                                    color: Colors.blueAccent)),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20.0),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 15.0),
-                                  child: DropdownButton(
-                                    icon: Padding(
-                                      padding: const EdgeInsets.only(left: 25.0),
-                                      child: Icon(Icons.keyboard_arrow_down),
-                                    ),
-                                    items: roles
-                                        .map<DropdownMenuItem<String>>((
-                                        String setlist) {
-                                      return DropdownMenuItem<String>(
-                                        value: setlist,
-                                        child: Text(setlist.toString()),
-                                      );
-                                    }).toList(),
-                                    value: selectRole,
-                                    onChanged: (item) {
-                                      setState(() {
-                                        selectRole = item.toString();
-                                        print("Index==>" + selectRole);
-                                        //List<FirstClass> emptylist = [];
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                                        //Image.file('C:\Users\NANCY\Pictures\Screenshots\Screenshot (7).png!\');
+                                        //return Image.memory(selectedImageInByte!);
+                                      } else {
+                                        return Text('data');
+                                      }
+                                    }()),
                         ],
                       ),
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 30.0, right: 30.0),
-                          child: Row(
+                        Expanded(
+                          child: Column(
                             children: [
-                              Center(
-                                  child: Text("Is Active",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15.0,
-                                          color: Colors.black))),
-                              Center(
-                                  child: Checkbox(
-                                    value: isSelected,
-                                    onChanged: (val) {
-                                      setState(() {
-                                       /* this.isSelected = val!;
-                                        if(isSelected == true ? false : true){
-
-                                        }*/
-                                        isSelected = !isSelected;
-                                        Allvalues.isActive = isSelected;
-
-                                      });
-                                    },
-                                  )),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 18.0),
+                                child: Row(
+                                  children: [
+                                    Text("Employee ID",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11.0,
+                                            color: Colors.blueAccent)),
+                                    Text('*',
+                                        style: TextStyle(color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 15.0,
+                                  right: 22.0,
+                                ),
+                                child: SizedBox(
+                                  height: 55,
+                                  child: TextField(
+                                    maxLength: 7,
+                                    controller: controllerEmpId,
+                                    decoration: InputDecoration(
+                                        filled: true,
+                                        hintStyle: TextStyle(
+                                            color: Colors.grey[800],
+                                            fontSize: 13),
+                                        //hintText: "Workorder Code",
+                                        fillColor: Colors.white70),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 13.0,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-
-              ],
-            ),
-          ),
-
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                              "ADD USERS ".toUpperCase(),
-                              style: TextStyle(fontSize: 14)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 18.0),
+                                child: Row(
+                                  children: [
+                                    Text("Name",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11.0,
+                                            color: Colors.blueAccent)),
+                                    Text('*',
+                                        style: TextStyle(color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 15.0, right: 22.0),
+                                child: SizedBox(
+                                  height: 55,
+                                  child: TextField(
+                                    maxLength: 20,
+                                    controller: controllerUsername,
+                                    decoration: InputDecoration(
+                                        filled: true,
+                                        hintStyle: TextStyle(
+                                            color: Colors.grey[800],
+                                            fontSize: 13),
+                                        //hintText: "Quantity",
+                                        fillColor: Colors.white70),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 13.0,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        style: ButtonStyle(
-                            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                            backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    side: BorderSide(color: Colors.red)
-                                )
-                            )
-                        ),
-                        onPressed: () {
-
-                         if(validateFields()){
-
-                           DataBase().addUsers(
-                               controllerEmpId.text,
-                               controllerUsername.text,
-                               controllerPassword.text,
-                               controllerEmail.text,
-                               controllerContactNo.text,
-                               isSelected
-                           );
-
-                           clearText();
-
-                         }
-                        }
+                      ],
                     ),
-                    ElevatedButton(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                              "EDIT USERS".toUpperCase(),
-                              style: TextStyle(fontSize: 14)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 18.0),
+                                child: Row(
+                                  children: [
+                                    Text("Password",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11.0,
+                                            color: Colors.blueAccent)),
+                                    Text('*',
+                                        style: TextStyle(color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                              Consumer(builder: (context, ref, child) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 15.0, right: 22.0),
+                                  child: SizedBox(
+                                    height: 55,
+                                    child: TextField(
+                                      maxLength: 10,
+                                      controller: controllerPassword,
+                                      obscureText: !isPasswordVisible,
+                                      enableSuggestions: false,
+                                      autocorrect: false,
+                                      decoration: InputDecoration(
+                                          filled: true,
+                                          suffix: InkWell(
+                                            onTap: () {
+                                              ref
+                                                      .read(loginPasswordToggle
+                                                          .notifier)
+                                                      .state =
+                                                  !ref.watch(loginPasswordToggle);
+                                              isPasswordVisible =
+                                                  ref.watch(loginPasswordToggle);
+                                            },
+                                            child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 15.0),
+                                                child: isPasswordVisible
+                                                    ? Icon(Icons.visibility,
+                                                        size: height * 0.03)
+                                                    : Icon(Icons.visibility_off,
+                                                        size: height * 0.03)),
+                                          ),
+                                          hintStyle: TextStyle(
+                                              color: Colors.grey[800],
+                                              fontSize: 13),
+                                          fillColor: Colors.white70),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 13.0,
+                                          color: Colors.black),
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ],
                           ),
                         ),
-                        style: ButtonStyle(
-                            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                            backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    side: BorderSide(color: Colors.red)
-                                )
-                            )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 18.0),
+                                child: Row(
+                                  children: [
+                                    Text("Email Id",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11.0,
+                                            color: Colors.blueAccent)),
+                                    Text('*',
+                                        style: TextStyle(color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 15.0, right: 22.0),
+                                child: SizedBox(
+                                  height: 55,
+                                  child: TextField(
+                                    maxLength: 35,
+                                    controller: controllerEmail,
+                                    decoration: InputDecoration(
+                                        filled: true,
+                                        hintStyle: TextStyle(
+                                            color: Colors.grey[800],
+                                            fontSize: 13),
+                                        //hintText: "End Serial No",
+                                        fillColor: Colors.white70),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 13.0,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        onPressed: ()async {
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 18.0),
+                                child: Row(
+                                  children: [
+                                    Text("Phone No",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11.0,
+                                            color: Colors.blueAccent)),
+                                    Text('*',
+                                        style: TextStyle(color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 15.0, right: 22.0),
+                                child: SizedBox(
+                                  height: 55,
+                                  child: TextField(
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.digitsOnly
+                                    ],
+                                    maxLength: 10,
+                                    controller: controllerContactNo,
+                                    decoration: InputDecoration(
+                                        filled: true,
+                                        hintStyle: TextStyle(
+                                            color: Colors.grey[800],
+                                            fontSize: 13),
+                                        //hintText: "End Serial No",
+                                        fillColor: Colors.white70),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 13.0,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 18.0),
+                                    child: Text("Role",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11.0,
+                                            color: Colors.blueAccent)),
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 15.0),
+                                      child: DropdownButton(
+                                        icon: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 25.0),
+                                          child: Icon(Icons.keyboard_arrow_down),
+                                        ),
+                                        items: roles
+                                            .map<DropdownMenuItem<String>>(
+                                                (String setlist) {
+                                          return DropdownMenuItem<String>(
+                                            value: setlist,
+                                            child: Text(setlist.toString()),
+                                          );
+                                        }).toList(),
+                                        value: selectRole,
+                                        onChanged: (item) {
+                                          setState(() {
+                                            selectRole = item.toString();
+                                            print("Index==>" + selectRole);
+                                            //List<FirstClass> emptylist = [];
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 30.0, right: 30.0),
+                              child: Row(
+                                children: [
+                                  Center(
+                                      child: Text("Is Active",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15.0,
+                                              color: Colors.black))),
+                                  Center(
+                                      child: Checkbox(
+                                    value: isSelected,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        /* this.isSelected = val!;
+                                            if(isSelected == true ? false : true){
 
-                         setState(() {
+                                            }*/
+                                        isSelected = !isSelected;
+                                        widget.user.flg = isSelected == false ? 0 : 1;
 
-                         /*  Usermodel mData = Usermodel(
-                             emp_id: controllerEmpId.text,
-                             name: controllerUsername.text,
-                             email: controllerEmail.text,
-                             phoneno: controllerContactNo.text,
-
-                           );
-                           dataBox.put(key, mData);
-
-                           Usermodel user = Usermodel();
-                           controllerEmpId = user.emp_id.toString() as TextEditingController;
-                           controllerUsername = user.name.toString() as TextEditingController;
-                           controllerEmail = user.email.toString() as TextEditingController;
-                           controllerContactNo = user.phoneno.toString() as TextEditingController;
-
-                         });
-
-                         controllerEmpId.clear();
-                         controllerUsername.clear();
-                         controllerEmail.clear();
-                         controllerContactNo.clear();*/
-
-                           UserManagementmodel mData = UserManagementmodel(
-                             emp_id: controllerEmpId.text,
-                             name: controllerUsername.text,
-                             password: controllerPassword.text,
-                             email: controllerEmail.text,
-                             phoneno: controllerContactNo.text,
-                             isActive: isSelected
-
-                           );
-                           dataBox.put(key, mData);
-
-
-                         });
-                         UserManagementmodel user = UserManagementmodel();
-                         controllerEmpId = user.emp_id.toString() as TextEditingController;
-                         controllerUsername = user.name.toString() as TextEditingController;
-                         controllerPassword = user.password.toString() as TextEditingController;
-                         controllerEmail = user.email.toString() as TextEditingController;
-                         controllerContactNo = user.phoneno.toString() as TextEditingController;
-                         isSelected = user.isActive!;
-
-                         clearText();
-
-
-
-
-
-                          /*    Usermodel  obj =  Usermodel(
-                           emp_id:  controllerEmpId.text,
-                         email: controllerEmail.text,
-                         name: controllerUsername.text,
-                         phoneno:controllerContactNo.text,isActive: isSelected ==true ? true : false );
-
-
-                          PatDataBase().editUser(
-                              obj,
-                              controllerEmpId.text,
-                              controllerUsername.text,
-                              controllerEmail.text,
-                              controllerContactNo.text,
-                              isSelected ==true ? true : false);*/
-
-
-                        }
+                                       // Allvalues.isActive = isSelected;
+                                      });
+                                    },
+                                  )),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
+            ),
+            SingleChildScrollView( 
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text("ADD USERS ".toUpperCase(),
+                                  style: TextStyle(fontSize: 14)),
+                            ),
+                            style: ButtonStyle(
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(Colors.white),
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(Colors.red),
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8.0),
+                                        side: BorderSide(color: Colors.red)))),
+                            onPressed: () {
+                              if (validateFields()) {
+                                ref.read(addUserNotifier.notifier).addUser({
+                                  "name": controllerUsername.text,
+                                  "password": controllerPassword.text,
+                                  "avatar_id": "",
+                                  "emailid": controllerEmail.text,
+                                  "phoneno": controllerContactNo.text,
+                                  "role": "",
+                                  "created_by": 0,
+                                  "updated_by": 0,
+                                  "created_date": null,
+                                  "updated_date": null,
+                                  "flg": isSelected ? 0 : 1,
+                                });
+
+                                /*User().addUsers(
+                                  "",
+                                  controllerEmpId.text,
+                                  controllerUsername.text,
+                                  controllerPassword.text,
+                                  "",
+                                  controllerEmail.text,
+                                  controllerContactNo.text,
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  isSelected,
+                                );*/
+                                clearText();
+                              }
+                              Helper.isadd = true;
+                            }),
+                        ElevatedButton(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text("EDIT USERS".toUpperCase(),
+                                  style: TextStyle(fontSize: 14)),
+                            ),
+                            style: ButtonStyle(
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(Colors.white),
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(Colors.red),
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8.0),
+                                        side: BorderSide(color: Colors.red)))),
+                            onPressed: () async {
+                              ref.read(updateUserNotifier.notifier).updatetUser({
+                                    "user_id": userid,
+                                    "emp_id": controllerEmpId.text,
+                                    "name": controllerUsername.text,
+                                    "password": controllerPassword.text,
+                                    "avatar_id": null,
+                                    "emailid": controllerEmail.text,
+                                    "phoneno": controllerContactNo.text,
+                                    "role": null,
+                                    "created_by": 0,
+                                    "updated_by": 0,
+                                    "created_date": null,
+                                    "updated_date": null,
+                                    "flg": widget.user.flg
+                                  });
+                              clearText();
 
 
-            ],
-          ),
-
-        ],
+                            }),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 /* Future<void> _pickImage() async{
     if(!kIsWeb){
       final ImagePicker _picker = ImagePicker();
@@ -803,7 +759,6 @@ class _AddUsersState extends State<AddUsers> {
     }
   }*/
 
-
   bool validateFields() {
     if (controllerEmpId.text.isEmpty) {
       popDialog(
@@ -811,25 +766,25 @@ class _AddUsersState extends State<AddUsers> {
           msg: 'Employee Id should not be empty',
           context: context);
       return false;
-    }else if (controllerEmpId.text.length < 5) {
+    } else if (controllerEmpId.text.length < 5) {
       popDialog(
           title: 'Update Failed',
           msg: 'Please enter a valid employee code',
           context: context);
       return false;
-    }else if(controllerUsername.text.isEmpty) {
+    } else if (controllerUsername.text.isEmpty) {
       popDialog(
           title: 'Update Failed',
           msg: 'Username should not be empty',
           context: context);
       return false;
-    }else if(controllerUsername.text.length < 3) {
+    } else if (controllerUsername.text.length < 3) {
       popDialog(
           title: 'Update Failed',
           msg: 'Username is too short, Please enter the full name',
           context: context);
       return false;
-    }else if (controllerPassword.text.isEmpty) {
+    } else if (controllerPassword.text.isEmpty) {
       popDialog(
           title: 'Update Failed',
           msg: 'Password should not be empty',
@@ -841,15 +796,14 @@ class _AddUsersState extends State<AddUsers> {
           msg: 'Password must be greater than 6 characters',
           context: context);
       return false;
-    }
-    else if (controllerEmail.text.isEmpty) {
+    } else if (controllerEmail.text.isEmpty) {
       popDialog(
           title: 'Update Failed',
           msg: 'Email address should not be empty',
           context: context);
       return false;
-    }else if (!RegExp(
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+    } else if (!RegExp(
+            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
         .hasMatch(controllerEmail.text)) {
       popDialog(
           title: 'Update Failed',

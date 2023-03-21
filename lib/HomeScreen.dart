@@ -4,12 +4,13 @@ import 'package:production_automation_testing/noofpages/Task/taskpage.dart';
 import 'package:production_automation_testing/noofpages/WorkOrder/workorderscreenpage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:production_automation_testing/noofpages/Product/product.dart';
-import 'package:production_automation_testing/screens/homescreen.dart';
+import 'package:production_automation_testing/noofpages/setting/settingpage.dart';
+
 
 
 import 'NavigationBar/navigationbar.dart';
 import 'Provider/navigation_provider.dart';
-import 'noofpages/fivthPage.dart';
+import 'noofpages/Test/firsrtaskviewpage.dart';
 import 'noofpages/Users/user.dart';
 
 class HomeScreenPage extends StatefulWidget {
@@ -26,8 +27,8 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
     ProductPage(),
     TaskPage(),
     UserPage(),
-    FivthPage(),
-
+    TestPage(),
+    SettingPage()
 
   ];
   @override

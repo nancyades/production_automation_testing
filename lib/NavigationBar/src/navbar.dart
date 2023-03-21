@@ -11,10 +11,10 @@ class NavBar extends ConsumerStatefulWidget {
 }
 
 class _NavBarState extends ConsumerState<NavBar> {
-  List<bool> selected = [true, false, false, false, false, false];
+  List<bool> selected = [false, false, false, false, false, false, false];
 
   void select(int n) {
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 7; i++) {
       if (i != n) {
         selected[i] = false;
       } else {
@@ -26,7 +26,7 @@ class _NavBarState extends ConsumerState<NavBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 450.0,
+      height: 500.0,
       child: Column(
         children: [
           NavBarItem(
@@ -87,12 +87,23 @@ class _NavBarState extends ConsumerState<NavBar> {
           ),
           NavBarItem(
             active: selected[5],
-            icon: Icons.settings,
-            name: ' setting ',
+            icon: Icons.task_alt_outlined,
+            name: ' Test ',
             touched: () {
               ref.read(navNotifier.notifier).currentIndex(5);
               setState(() {
                 select(5);
+              });
+            },
+          ),
+          NavBarItem(
+            active: selected[6],
+            icon: Icons.settings,
+            name: ' setting ',
+            touched: () {
+              ref.read(navNotifier.notifier).currentIndex(6);
+              setState(() {
+                select(6);
               });
             },
           ),

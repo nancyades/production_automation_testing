@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:production_automation_testing/LoginPage/loginscreen.dart';
 import 'package:production_automation_testing/NavigationBar/src/company_name.dart';
 import 'package:production_automation_testing/NavigationBar/src/navbar.dart';
 
@@ -32,7 +33,7 @@ class _NavigationbarState extends State<Navigationbar> {
                   active: false,
                   touched: (){
                     setState(() {
-
+                      Navigator.of(context).pop();
                     });
                   },
                 )),

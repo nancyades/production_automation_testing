@@ -1,19 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+import '../../Database/Curd_operation/HiveModel/productmodel.dart';
+import '../../Database/Curd_operation/HiveModel/usermodel.dart';
+import '../../Database/Curd_operation/HiveModel/workordermodel.dart';
+import '../../Database/Curd_operation/boxes.dart';
+import '../../Database/Curd_operation/database.dart';
 import '../../Helper/AppClass.dart';
-//import 'package:progress_timeline/progress_timeline.dart';
+import '../../Model/APIModel/productmodel.dart';
+import '../../Model/APIModel/workordermodel.dart';
+import '../../Model/templatemodel.dart';
+import '../../Provider/excelprovider.dart';
+import '../../Provider/post_provider/workorder_provider.dart';
+import '../Users/user.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AddWorkOrder extends StatefulWidget {
-  const AddWorkOrder({Key? key}) : super(key: key);
+class AddWorkOrder extends ConsumerStatefulWidget {
+  WorkorderModel workorderModel;
+
+  AddWorkOrder({Key? key, required this.workorderModel}) : super(key: key);
 
   @override
-  State<AddWorkOrder> createState() => _AddWorkOrderState();
+  ConsumerState<AddWorkOrder> createState() => _AddWorkOrderState();
 }
 
-class _AddWorkOrderState extends State<AddWorkOrder> {
-  var selectedProduct = "PSBE";
-  List<String> products = ['PSBE', '16 Zone', 'PSBE-E', '32 Zone'];
+List<ProductModel>? datamodels;
+
+class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
+  //var selectedProduct = datamodels[0].Product_Name.toString();
+  List<String> products = [];
+
+  List productlist = [];
+
+  List<ProductList> listofproduct = [];
+
+
 
   TextEditingController controllerWorkorder = TextEditingController();
   TextEditingController controllerQuantity = TextEditingController();
@@ -24,8 +46,60 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
   TextEditingController controllerProductQuantity = TextEditingController();
   TextEditingController controllerProductStartserial = TextEditingController();
   TextEditingController controllerProductEndserial = TextEditingController();
+
+  bool isSelected = true;
+  bool isValue = true;
+  late Box<WorkOrderModel> dataBox;
+  int? index;
+  var selectedProduct;
+  int? workorder_id;
+
+  @override
+  void initState() {
+    super.initState();
+    dataBox = Hive.box<WorkOrderModel>('work_orders');
+  }
+
+  void clearText() {
+    controllerWorkorder.clear();
+    controllerQuantity.clear();
+    controllerStartserial.clear();
+    controllerEndserial.clear();
+    controllerStatus.clear();
+    controllerRemarks.clear();
+  }
+
+  void clearproductText() {
+    controllerProductQuantity.clear();
+    controllerProductStartserial.clear();
+    controllerProductEndserial.clear();
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    if (Allvalues.WorkOrder_Code != null &&
+        Allvalues.Quantity != null &&
+        Allvalues.Start_Serial_No != null &&
+        Allvalues.End_Serial_No != null &&
+        Allvalues.Status != null) {
+      controllerWorkorder.text = Allvalues.WorkOrder_Code!;
+      controllerQuantity.text = Allvalues.Quantity!;
+      controllerStartserial.text = Allvalues.Start_Serial_No!;
+      controllerEndserial.text = Allvalues.End_Serial_No!;
+      key = Allvalues.key!;
+      controllerStatus.text = Allvalues.Status!;
+    }
+
+    if (widget.workorderModel != null) {
+      workorder_id = widget.workorderModel.workorderId;
+      controllerWorkorder.text = widget.workorderModel.workorderCode!;
+      controllerQuantity.text = widget.workorderModel.quantity!.toString();
+      controllerStartserial.text = widget.workorderModel.startSerialNo!;
+      controllerEndserial.text = widget.workorderModel.endSerialNo!;
+      controllerStatus.text = widget.workorderModel.status!;
+      isSelected = widget.workorderModel.flg == 0 ? false : true;
+    }
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
@@ -46,8 +120,14 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
           ],
         ),
         //color: Color(0xffa4cfed),
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width * 0.65,
+        height: MediaQuery
+            .of(context)
+            .size
+            .height,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width * 0.65,
         child: Column(
           children: [
             Padding(
@@ -120,7 +200,8 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
                                             fontWeight: FontWeight.w600,
                                             fontSize: 11.0,
                                             color: Colors.blueAccent)),
-                                    Text('*', style: TextStyle(color: Colors.red)),
+                                    Text('*',
+                                        style: TextStyle(color: Colors.red)),
                                   ],
                                 ),
                               ),
@@ -171,7 +252,8 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
                                             fontWeight: FontWeight.w600,
                                             fontSize: 11.0,
                                             color: Colors.blueAccent)),
-                                    Text('*', style: TextStyle(color: Colors.red)),
+                                    Text('*',
+                                        style: TextStyle(color: Colors.red)),
                                   ],
                                 ),
                               ),
@@ -211,7 +293,8 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
                                             fontWeight: FontWeight.w600,
                                             fontSize: 11.0,
                                             color: Colors.blueAccent)),
-                                    Text('*', style: TextStyle(color: Colors.red)),
+                                    Text('*',
+                                        style: TextStyle(color: Colors.red)),
                                   ],
                                 ),
                               ),
@@ -258,7 +341,8 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
                                             fontWeight: FontWeight.w600,
                                             fontSize: 11.0,
                                             color: Colors.blueAccent)),
-                                    Text('*', style: TextStyle(color: Colors.red)),
+                                    Text('*',
+                                        style: TextStyle(color: Colors.red)),
                                   ],
                                 ),
                               ),
@@ -345,163 +429,264 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: DropdownButton(
-                        icon: Padding(
-                          padding: const EdgeInsets.only(left: 25.0),
-                          child: Icon(Icons.keyboard_arrow_down),
-                        ),
-                        items: products
-                            .map<DropdownMenuItem<String>>((String setlist) {
-                          return DropdownMenuItem<String>(
-                            value: setlist,
-                            child: Text(setlist.toString()),
-                          );
-                        }).toList(),
-                        value: selectedProduct,
-                        onChanged: (item) {
-                          setState(() {
-                            selectedProduct = item.toString();
-                            print("Index==>" + selectedProduct);
-                            //List<FirstClass> emptylist = [];
+                /* child: ValueListenableBuilder<Box<ProductModel>>(
+                    valueListenable: Products.getProducts().listenable(),
+                    builder: (context, Box<ProductModel> items, _) {
+                      List<int> keys;
+                      keys = items.keys.cast<int>().toList();
+                      datamodels = items.values.toList().cast<ProductModel>();
+                      if (isValue == true) {
+                        selectedProduct =
+                            datamodels![0].product_name.toString();
+                      }
+
+                      if (products.length == 0) {
+                        for (int i = 0; i < datamodels!.length; i++) {
+                          ProductModel val = ProductModel(
+                              product_name: datamodels![i].product_name);
+
+                          products.add(val.product_name.toString());
+
+                        // print("pproducts");
+                        // print("product length1====> ${products.length}");
+                        // print("product value1====> ${products}");
+                        }
+                      }*/
+
+                     // print(datamodels);
+                     // print("product length2====> ${products.length}");
+                     // print("product value2====> ${products}");
+                child:  Consumer(
+                        builder: (context, ref, child) {
+                         return  ref.watch(getProductNotifier).when(data: (data){
+                           if (isValue == true) {
+                             selectedProduct = data[0].productName.toString();
+                                // datamodels![0].product_name.toString();
+                           }
+
+
+                           if (products.length == 0 ) {
+                             for (int i = 0; i < data.length; i++) {
+                               Productmodel val = Productmodel(
+                                 productName:  data[i].productName,
+                                 quantity: data[i].quantity
+                               );
+
+                               products.add(val.productName.toString());
+
+
+                               // print("pproducts");
+                               // print("product length1====> ${products.length}");
+                              // print("product value1====> ${products}");
+                               //print("product value2====> ${quantity}");
+                             }
+                           }
+
+                           for(var i in data){
+                             var productMap = {
+                               'productName': i.productName,
+                               'quantity': i.quantity,
+                             };
+
+                             productlist.add(productMap);
+                           }
+
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: DropdownButton(
+                                      icon: Icon(Icons.keyboard_arrow_down),
+                                      items: products.map<DropdownMenuItem<String>>(
+                                              (String setlist) {
+                                            return DropdownMenuItem<String>(
+                                              value: setlist,
+                                              child: Text(setlist.toString()),
+                                            );
+                                          }).toList(),
+                                      value: selectedProduct,
+                                      onChanged: (item) {
+
+                                        print("Index==>" + selectedProduct);
+                                        setState(() {
+                                          if (isValue == true) {
+                                            isValue = false;
+                                          }
+                                          if (isValue == false) {
+                                            selectedProduct = item.toString();
+
+                                            for(int i=0;i<productlist.length; i++){
+                                              if(productlist[i]['productName'] == selectedProduct){
+                                                controllerProductQuantity.text = productlist[i]['quantity'].toString();
+                                              }
+                                            }
+
+
+
+                                          }
+                                          print("Index==>" + selectedProduct);
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 18.0),
+                                        child: Row(
+                                          children: [
+                                            Text("Quantity",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 11.0,
+                                                    color: Colors.blueAccent)),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 15.0, right: 22.0),
+                                        child: SizedBox(
+                                          height: 35,
+                                          child: TextField(
+                                            controller: controllerProductQuantity,
+                                            decoration: InputDecoration(
+                                              /* border: OutlineInputBorder(
+                                       borderRadius: BorderRadius.circular(8.0),
+                                     ),*/
+                                                filled: true,
+                                                hintStyle: TextStyle(
+                                                    color: Colors.grey[800],
+                                                    fontSize: 13),
+                                                //hintText: "Quantity",
+                                                fillColor: Colors.white70),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 13.0,
+                                                color: Colors.black),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 18.0),
+                                        child: Row(
+                                          children: [
+                                            Text("Start Serialno",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 11.0,
+                                                    color: Colors.blueAccent)),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 15.0, right: 22.0),
+                                        child: SizedBox(
+                                          height: 35,
+                                          child: TextField(
+                                            controller: controllerProductStartserial,
+                                            decoration: InputDecoration(
+                                                filled: true,
+                                                hintStyle: TextStyle(
+                                                    color: Colors.grey[800],
+                                                    fontSize: 13),
+                                                //hintText: "Quantity",
+                                                fillColor: Colors.white70),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 13.0,
+                                                color: Colors.black),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 18.0),
+                                        child: Row(
+                                          children: [
+                                            Text("End Serialno",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 11.0,
+                                                    color: Colors.blueAccent)),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 15.0, right: 22.0),
+                                        child: SizedBox(
+                                          height: 35,
+                                          child: TextField(
+                                            controller: controllerProductEndserial,
+                                            decoration: InputDecoration(
+                                                filled: true,
+                                                hintStyle: TextStyle(
+                                                    color: Colors.grey[800],
+                                                    fontSize: 13),
+                                                //hintText: "Quantity",
+                                                fillColor: Colors.white70),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 13.0,
+                                                color: Colors.black),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                MaterialButton(
+                                  shape: const CircleBorder(),
+                                  color: Colors.black,
+                                  padding: const EdgeInsets.all(10),
+                                  onPressed: () {
+                                    setState(() {
+                                      ProductList pro = ProductList(
+                                          productname: selectedProduct,
+                                          quantity: controllerProductQuantity.text,
+                                          startserial: controllerProductStartserial.text,
+                                          endserial: controllerProductEndserial.text
+                                      );
+                                      listofproduct.add(pro);
+
+                                      clearproductText();
+                                    });
+
+                                  },
+                                  child: const Icon(
+                                    Icons.add,
+                                    size: 15,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              ],
+                            );
+                          }, error: (e,s){
+                            return Text(e.toString());
+                          }, loading: (){
+                            return CircularProgressIndicator();
                           });
-                        },
+
+                        }
                       ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
-                            child: Row(
-                              children: [
-                                Text("Quantity",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 11.0,
-                                        color: Colors.blueAccent)),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 15.0, right: 22.0),
-                            child: SizedBox(
-                              height: 35,
-                              child: TextField(
-                                controller: controllerProductQuantity,
-                                decoration: InputDecoration(
-                                    /* border: OutlineInputBorder(
-                               borderRadius: BorderRadius.circular(8.0),
-                             ),*/
-                                    filled: true,
-                                    hintStyle: TextStyle(
-                                        color: Colors.grey[800], fontSize: 13),
-                                    //hintText: "Quantity",
-                                    fillColor: Colors.white70),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 13.0,
-                                    color: Colors.black),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
-                            child: Row(
-                              children: [
-                                Text("Start Serialno",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 11.0,
-                                        color: Colors.blueAccent)),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 15.0, right: 22.0),
-                            child: SizedBox(
-                              height: 35,
-                              child: TextField(
-                                controller: controllerProductStartserial,
-                                decoration: InputDecoration(
-                                    filled: true,
-                                    hintStyle: TextStyle(
-                                        color: Colors.grey[800], fontSize: 13),
-                                    //hintText: "Quantity",
-                                    fillColor: Colors.white70),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 13.0,
-                                    color: Colors.black),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
-                            child: Row(
-                              children: [
-                                Text("End Serialno",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 11.0,
-                                        color: Colors.blueAccent)),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 15.0, right: 22.0),
-                            child: SizedBox(
-                              height: 35,
-                              child: TextField(
-                                controller: controllerProductEndserial,
-                                decoration: InputDecoration(
-                                    filled: true,
-                                    hintStyle: TextStyle(
-                                        color: Colors.grey[800], fontSize: 13),
-                                    //hintText: "Quantity",
-                                    fillColor: Colors.white70),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 13.0,
-                                    color: Colors.black),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    MaterialButton(
-                      shape: const CircleBorder(),
-                      color: Colors.black,
-                      padding: const EdgeInsets.all(10),
-                      onPressed: () {},
-                      child: const Icon(
-                        Icons.add,
-                        size: 15,
-                        color: Colors.white,
-                      ),
-                    )
-                  ],
-                ),
+                  //  }),
               ),
             ),
             SizedBox(
@@ -572,22 +757,22 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
                         color: Color(0xffcbdff2),
                         elevation: 10,
                         child: ListView.builder(
-                            itemCount: 6,
+                            itemCount: listofproduct.length,
                             itemBuilder: (BuildContext ctxt, int index) {
                               return Card(
                                   child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment:
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Text("16 zone"),
-                                    Text("100"),
-                                    Text("001"),
-                                    Text("500"),
-                                  ],
-                                ),
-                              ));
+                                      children: [
+                                        Text(listofproduct[index].productname.toString()),
+                                        Text(listofproduct[index].quantity.toString()),
+                                        Text(listofproduct[index].startserial.toString()),
+                                        Text(listofproduct[index].endserial.toString()),
+                                      ],
+                                    ),
+                                  ));
                             }),
                       ),
                     ),
@@ -604,22 +789,51 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
                               ),
                               style: ButtonStyle(
                                   foregroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.white),
+                                  MaterialStateProperty.all<Color>(
+                                      Colors.white),
                                   backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.red),
+                                  MaterialStateProperty.all<Color>(
+                                      Colors.red),
                                   shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(8.0),
+                                          BorderRadius.circular(8.0),
                                           side:
-                                              BorderSide(color: Colors.red)))),
+                                          BorderSide(color: Colors.red)))),
                               onPressed: () {
-                                if(validateFields()){
+                                if (validateFields()) {
+                                  ref
+                                      .read(addWorkOrderNotifier.notifier)
+                                      .addWorkOrders({
+                                    "workorder_code": controllerWorkorder.text,
+                                    "quantity": int.parse(controllerQuantity.text),
+                                    "start_serial_no": controllerStartserial.text,
+                                    "end_serial_no": controllerEndserial.text,
+                                    "status": controllerStatus.text,
+                                    "created_by": 1,
+                                    "updated_by": 1,
+                                    "created_date": null,
+                                    "updated_date": null,
+                                    "flg": isSelected ? 0 : 1,
+                                    "remarks": controllerRemarks.text,
+                                  });
+                                  /* WorkOrder().addWorkorder(
+                                    "",
+                                    controllerWorkorder.text,
+                                    controllerQuantity.text,
+                                    controllerStartserial.text,
+                                    controllerEndserial.text,
+                                    controllerStatus.text,
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    isSelected,
+                                    controllerRemarks.text,
+                                  );*/
+                                  clearText();
                                 }
-
                               }),
                           ElevatedButton(
                               child: Padding(
@@ -629,19 +843,36 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
                               ),
                               style: ButtonStyle(
                                   foregroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.white),
+                                  MaterialStateProperty.all<Color>(
+                                      Colors.white),
                                   backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.red),
+                                  MaterialStateProperty.all<Color>(
+                                      Colors.red),
                                   shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(8.0),
+                                          BorderRadius.circular(8.0),
                                           side:
-                                              BorderSide(color: Colors.red)))),
-                              onPressed: () => null),
+                                          BorderSide(color: Colors.red)))),
+                              onPressed: () {
+                                ref.read(updateWorkorderNotifier.notifier)
+                                    .updatetWorkorder({
+                                      "workorder_id": workorder_id,
+                                      "workorder_code": controllerWorkorder.text,
+                                      "quantity": int.parse(controllerQuantity.text),
+                                      "start_serial_no": controllerStartserial.text,
+                                      "end_serial_no": controllerEndserial.text,
+                                      "status": controllerStatus.text,
+                                      "created_by": 1,
+                                      "updated_by": 1,
+                                      "created_date": null,
+                                      "updated_date": null,
+                                      "flg": isSelected ? 1 : 0,
+                                      "remarks": controllerRemarks.text
+                                    });
+                                clearText();
+                              }),
                         ],
                       ),
                     )
@@ -654,6 +885,7 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
       ),
     );
   }
+
   bool validateFields() {
     if (controllerWorkorder.text.isEmpty) {
       popDialog(
@@ -661,43 +893,43 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
           msg: 'workorder Code should not be empty',
           context: context);
       return false;
-    }else if(controllerQuantity.text.isEmpty) {
+    } else if (controllerQuantity.text.isEmpty) {
       popDialog(
           title: 'Update Failed',
           msg: 'Quantity should not be empty',
           context: context);
       return false;
-    }else if (controllerStartserial.text.isEmpty) {
+    } else if (controllerStartserial.text.isEmpty) {
       popDialog(
           title: 'Update Failed',
           msg: 'Start Serial No should not be empty',
           context: context);
       return false;
-    }else if (controllerEndserial.text.isEmpty) {
+    } else if (controllerEndserial.text.isEmpty) {
       popDialog(
           title: 'Update Failed',
           msg: 'End Serial No should not be empty',
           context: context);
       return false;
-    }else if (controllerStatus.text.isEmpty) {
+    } else if (controllerStatus.text.isEmpty) {
       popDialog(
           title: 'Update Failed',
           msg: 'Status should not be empty',
           context: context);
       return false;
-    }else if (controllerProductQuantity.text.isEmpty) {
+    } else if (controllerProductQuantity.text.isEmpty) {
       popDialog(
           title: 'Update Failed',
           msg: 'Product Quantity should not be empty',
           context: context);
       return false;
-    }else if (controllerProductStartserial.text.isEmpty) {
+    } else if (controllerProductStartserial.text.isEmpty) {
       popDialog(
           title: 'Update Failed',
           msg: 'Product Start serialno should not be empty',
           context: context);
       return false;
-    }else if (controllerProductEndserial.text.isEmpty) {
+    } else if (controllerProductEndserial.text.isEmpty) {
       popDialog(
           title: 'Update Failed',
           msg: 'Product End serialno should not be empty',
@@ -706,4 +938,6 @@ class _AddWorkOrderState extends State<AddWorkOrder> {
     }
     return true;
   }
+
+
 }
