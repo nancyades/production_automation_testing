@@ -172,142 +172,518 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                       ),
                       Consumer(
                           builder: (context, ref, child) {
-                           return ref.watch(getWorkorderCountNotifier).when(
-                                data: (count){
-                                  return Container(
-                                    margin: EdgeInsets.only(top: 5.0),
-                                    height: MediaQuery
-                                        .of(context)
-                                        .size
-                                        .height * 0.598,
-                                    width: MediaQuery
-                                        .of(context)
-                                        .size
-                                        .width * 1,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .spaceBetween,
-                                      //crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Expanded(
-                                          flex: 3,
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment
-                                                .spaceEvenly,
+                            return ref.watch(getWorkorderCountNotifier).when(data: (count){
+                              return Container(
+                                  margin: EdgeInsets.only(top: 5.0),
+                                  height: 218.0,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 3,
+                                        child:SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
                                             children: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment
-                                                    .spaceAround,
-                                                children: [
-                                                  WorkOrderCardView(
-                                                      color: Color(0xffFF4C60),
-                                                      projectName: 'Workorder count',
-                                                      percentComplete: '${count[0].wOCount}%',
-                                                      peopleCount: count[0].wOCount,
-                                                      progressIndicatorColor: Colors.redAccent[100],
-                                                      icon: Feather.briefcase
-                                                  ),
-                                                  WorkOrderCardView(
-                                                      color: Color(0xff6C6CE5),
-                                                      projectName: 'Created',
-                                                      percentComplete: '${count[0].created}%',
-                                                      peopleCount: count[0].created,
-                                                      progressIndicatorColor: Colors
-                                                          .blue[200],
-                                                      icon: Feather.book_open
-                                                  ),
-                                                  WorkOrderCardView(
-                                                      color: Color(0xffFAAA1E),
-                                                      projectName: 'Verified',
-                                                      percentComplete: '${count[0].verified}%',
-                                                      peopleCount: count[0].verified,
-                                                      progressIndicatorColor: Colors
-                                                          .amber[200],
-                                                      icon: Icons.verified
-                                                  ),
-                                                ],
+                                              SizedBox(
+                                                width: 30,
                                               ),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment
-                                                    .spaceAround,
-                                                children: [
-                                                  WorkOrderCardView(
-                                                      color: Color(0xff2d6666),
-                                                      projectName: 'Approved',
-                                                      percentComplete: '${count[0].approved}%',
-                                                      peopleCount: count[0].approved,
-                                                      progressIndicatorColor: Colors.tealAccent[200],
-                                                      icon: Icons.fmd_good_outlined
-                                                  ),
-                                                  WorkOrderCardView(
-                                                      color: Color(0xff455e29),
-                                                      projectName: 'Rejected',
-                                                      percentComplete: '${count[0].rejected}%',
-                                                      peopleCount: count[0].rejected,
-                                                      progressIndicatorColor: Colors.green[200],
-                                                      icon: Icons.fmd_bad
-                                                  ),
-                                                  /* ProjectCardView(
-                                                    color: Color(0xff6C6CE5),
-                                                    projectName: 'Delivery Club',
-                                                    percentComplete: '78%',
-                                                    progressIndicatorColor: Colors.blue[200],
-                                                    icon: Feather.truck
-                                                ),*/
+                                              Column(
+                                                  children:[Card(
+                                                    elevation:12,
+                                                    child: Container(
+                                                      width:200,
+                                                      height:100,
+                                                      decoration: BoxDecoration(
+                                                          boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                          border: Border.all(color: Colors.grey),
+                                                          backgroundBlendMode: BlendMode.darken,
+                                                          color: Colors.white,
+                                                          shape: BoxShape.rectangle
+                                                      ),
+                                                      child: Column(
+                                                        children: [
+                                                          Padding(
+                                                            padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                            child: Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  flex: 2,
+                                                                  child: Column(
+                                                                    children: [
+                                                                      Row(
+                                                                        children: [
+                                                                          Text("${count[0].wOCount}%",  style: TextStyle(
+                                                                              fontWeight: FontWeight.bold,
+                                                                              fontSize: 15.0,
+                                                                              color:  Colors.black
+                                                                          ))
+                                                                        ],
+                                                                      ),
+                                                                      Row(
+                                                                        children: [
+                                                                          Text("Workorder", style: TextStyle(
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 10.0,
+                                                                              color:  Colors.black
+                                                                          ))
+                                                                        ],
+                                                                      ),
+                                                                    ],
+                                                                  ),
 
-                                                ],
+                                                                ),
+                                                                Expanded(
+                                                                  child: Column(
+                                                                    children: [
+                                                                      Icon(Icons.bar_chart,size: 20,)
+                                                                    ],
+                                                                  ),
+
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+
+
+                                                          SizedBox(
+                                                            height: 14,
+                                                          ),
+                                                          Row(
+                                                            children: [
+                                                              Container(
+                                                                width:198,
+                                                                height:36,
+                                                                decoration: BoxDecoration(
+                                                                    color: Colors.deepOrange.shade300,
+                                                                    shape: BoxShape.rectangle
+                                                                ),
+                                                                child:  Padding(
+                                                                  padding: const EdgeInsets.all(8.0),
+                                                                  child: Row(
+                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                    children: [
+                                                                      Text('% change'),
+                                                                      Icon(Icons.call_made, size: 12,),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+
+                                                            ],
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                    Card(
+                                                      elevation:12,
+                                                      child: Container(
+                                                        width:200,
+                                                        height:100,
+                                                        decoration: BoxDecoration(
+                                                            boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                            border: Border.all(color: Colors.grey),
+                                                            backgroundBlendMode: BlendMode.darken,
+                                                            color: Colors.white,
+                                                            shape: BoxShape.rectangle
+                                                        ),
+                                                        child: Column(
+                                                          children: [
+                                                            Padding(
+                                                              padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    flex: 2,
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Text("${count[0].created}%",  style: TextStyle(
+                                                                                fontWeight: FontWeight.bold,
+                                                                                fontSize: 15.0,
+                                                                                color:  Colors.black
+                                                                            ))
+                                                                          ],
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Text("Created", style: TextStyle(
+                                                                                fontWeight: FontWeight.w600,
+                                                                                fontSize: 10.0,
+                                                                                color:  Colors.black
+                                                                            ))
+                                                                          ],
+                                                                        ),
+                                                                      ],
+                                                                    ),
+
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Icon(Icons.incomplete_circle, size: 20,)
+                                                                      ],
+                                                                    ),
+
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+
+
+                                                            SizedBox(
+                                                              height: 14,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Container(
+                                                                  width:198,
+                                                                  height:36,
+                                                                  decoration: BoxDecoration(
+                                                                      color: Colors.green.shade300,
+                                                                      shape: BoxShape.rectangle
+                                                                  ),
+                                                                  child:  Padding(
+                                                                    padding: const EdgeInsets.all(8.0),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        Text('% change'),
+                                                                        Icon(Icons.call_made, size: 12,),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+
+                                                              ],
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ]),
+                                              Padding(padding: EdgeInsets.only(left: 30)),
+                                              Column(
+                                                  children:[
+                                                    Card(
+                                                      elevation:12,
+                                                      child: Container(
+                                                        width:200,
+                                                        height:100,
+                                                        decoration: BoxDecoration(
+                                                            boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                            border: Border.all(color: Colors.grey),
+                                                            backgroundBlendMode: BlendMode.darken,
+                                                            color: Colors.white,
+                                                            shape: BoxShape.rectangle
+                                                        ),
+                                                        child: Column(
+                                                          children: [
+                                                            Padding(
+                                                              padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    flex: 2,
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Text("${count[0].verified}%",  style: TextStyle(
+                                                                                fontWeight: FontWeight.bold,
+                                                                                fontSize: 15.0,
+                                                                                color:  Colors.black
+                                                                            ))
+                                                                          ],
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Text("verified", style: TextStyle(
+                                                                                fontWeight: FontWeight.w600,
+                                                                                fontSize: 9.0,
+                                                                                color:  Colors.black
+                                                                            ))
+                                                                          ],
+                                                                        ),
+                                                                      ],
+                                                                    ),
+
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Icon(Icons.admin_panel_settings_outlined,size: 20,)
+                                                                      ],
+                                                                    ),
+
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+
+
+                                                            SizedBox(
+                                                              height: 16,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Container(
+                                                                  width:198,
+                                                                  height:36,
+                                                                  decoration: BoxDecoration(
+                                                                      color: Colors.amber.shade300,
+                                                                      shape: BoxShape.rectangle
+                                                                  ),
+                                                                  child:  Padding(
+                                                                    padding: const EdgeInsets.all(8.0),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        Text('% change'),
+                                                                        Icon(Icons.call_made, size: 12,),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+
+                                                              ],
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Card(
+                                                      elevation:12,
+                                                      child: Container(
+                                                        width:200,
+                                                        height:100,
+                                                        decoration: BoxDecoration(
+                                                            boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                            border: Border.all(color: Colors.grey),
+                                                            backgroundBlendMode: BlendMode.darken,
+                                                            color: Colors.white,
+                                                            shape: BoxShape.rectangle
+                                                        ),
+                                                        child: Column(
+                                                          children: [
+                                                            Padding(
+                                                              padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    flex: 2,
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Text("${count[0].approved}%",  style: TextStyle(
+                                                                                fontWeight: FontWeight.bold,
+                                                                                fontSize: 15.0,
+                                                                                color:  Colors.black
+                                                                            ))
+                                                                          ],
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Text("Approved", style: TextStyle(
+                                                                                fontWeight: FontWeight.w600,
+                                                                                fontSize: 10.0,
+                                                                                color:  Colors.black
+                                                                            ))
+                                                                          ],
+                                                                        ),
+                                                                      ],
+                                                                    ),
+
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Icon(Icons.task,size: 20,)
+                                                                      ],
+                                                                    ),
+
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+
+
+                                                            SizedBox(
+                                                              height: 14,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Container(
+                                                                  width:198,
+                                                                  height:36,
+                                                                  decoration: BoxDecoration(
+                                                                      color: Colors.blue,
+                                                                      shape: BoxShape.rectangle
+                                                                  ),
+                                                                  child:  Padding(
+                                                                    padding: const EdgeInsets.all(8.0),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        Text('% change'),
+                                                                        Icon(Icons.call_made, size: 12,),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+
+                                                              ],
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ]),
+                                              Card(
+                                                elevation:12,
+                                                child: Container(
+                                                  width:200,
+                                                  height:100,
+                                                  decoration: BoxDecoration(
+                                                      boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                      border: Border.all(color: Colors.grey),
+                                                      backgroundBlendMode: BlendMode.darken,
+                                                      color: Colors.white,
+                                                      shape: BoxShape.rectangle
+                                                  ),
+                                                  child: Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                        child: Row(
+                                                          children: [
+                                                            Expanded(
+                                                              flex: 2,
+                                                              child: Column(
+                                                                children: [
+                                                                  Row(
+                                                                    children: [
+                                                                      Text("${count[0].rejected}%",  style: TextStyle(
+                                                                          fontWeight: FontWeight.bold,
+                                                                          fontSize: 15.0,
+                                                                          color:  Colors.black
+                                                                      ))
+                                                                    ],
+                                                                  ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text("Rejected", style: TextStyle(
+                                                                          fontWeight: FontWeight.w600,
+                                                                          fontSize: 10.0,
+                                                                          color:  Colors.black
+                                                                      ))
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+
+                                                            ),
+                                                            Expanded(
+                                                              child: Column(
+                                                                children: [
+                                                                  Icon(Icons.account_circle_outlined,size: 20)
+                                                                ],
+                                                              ),
+
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+
+
+                                                      SizedBox(
+                                                        height: 14,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Container(
+                                                            width:198,
+                                                            height:36,
+                                                            decoration: BoxDecoration(
+                                                                color: Colors.red.shade300,
+                                                                shape: BoxShape.rectangle
+                                                            ),
+                                                            child:  Padding(
+                                                              padding: const EdgeInsets.all(8.0),
+                                                              child: Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                children: [
+                                                                  Text('% change'),
+                                                                  Icon(Icons.call_made, size: 12,),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
+
+
                                             ],
                                           ),
                                         ),
-
-
-                                        Visibility(
-                                          visible: chart,
-                                          child: Expanded(
-                                            flex: 2,
-                                            child: Container(
-                                              height: MediaQuery
-                                                  .of(context)
-                                                  .size
-                                                  .height * 0.5,
-                                              child: SfCartesianChart(
-                                                  series: <ChartSeries>[
-                                                    SplineAreaSeries<ChartData, int>(
-                                                        dataSource: chartData,
-                                                        xValueMapper: (ChartData data,
-                                                            _) => data.x,
-                                                        yValueMapper: (ChartData data,
-                                                            _) => data.y
-                                                    ),
-                                                    SplineAreaSeries<ChartData, int>(
-                                                        dataSource: chartData,
-                                                        xValueMapper: (ChartData data,
-                                                            _) => data.x,
-                                                        yValueMapper: (ChartData data,
-                                                            _) => data.y1
-                                                    ),
-                                                    SplineAreaSeries<ChartData, int>(
-                                                        dataSource: chartData,
-                                                        xValueMapper: (ChartData data,
-                                                            _) => data.x,
-                                                        yValueMapper: (ChartData data,
-                                                            _) => data.y2
-                                                    ),
-                                                  ]
-                                              ),
+                                      ),
+                                      Visibility(
+                                        visible: chart,
+                                        child: Expanded(
+                                          flex: 2,
+                                          child: Container(
+                                            height: MediaQuery
+                                                .of(context)
+                                                .size
+                                                .height * 0.5,
+                                            width: MediaQuery
+                                                .of(context)
+                                                .size
+                                                .height * 0.5,
+                                            child: SfCartesianChart(
+                                                series: <ChartSeries>[
+                                                  SplineAreaSeries<ChartData, int>(
+                                                      dataSource: chartData,
+                                                      xValueMapper: (ChartData data,
+                                                          _) => data.x,
+                                                      yValueMapper: (ChartData data,
+                                                          _) => data.y
+                                                  ),
+                                                  SplineAreaSeries<ChartData, int>(
+                                                      dataSource: chartData,
+                                                      xValueMapper: (ChartData data,
+                                                          _) => data.x,
+                                                      yValueMapper: (ChartData data,
+                                                          _) => data.y1
+                                                  ),
+                                                  SplineAreaSeries<ChartData, int>(
+                                                      dataSource: chartData,
+                                                      xValueMapper: (ChartData data,
+                                                          _) => data.x,
+                                                      yValueMapper: (ChartData data,
+                                                          _) => data.y2
+                                                  ),
+                                                ]
                                             ),
                                           ),
                                         ),
+                                      ),
+                                    ],
+                                  ),
+                                );
 
-
-                                      ],
-                                    ),
-                                  );
-                                }, error: (e,s){
-                                  return Text(e.toString());
+                            }, error: (e,s){
+                              return Text(e.toString());
                             }, loading: (){
-                                  return CircularProgressIndicator();
+                              return CircularProgressIndicator();
                             });
 
                           }
@@ -624,28 +1000,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                     ),*/
                                       Expanded(
                                           child: Text("")
-                                        /*TextField(
-                                          decoration: InputDecoration(
-                                            hintText: 'search',
-                                            hintStyle: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 18,
-                                            ),
-                                            border: InputBorder.none,
-                                          ),
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                          ),
-                                        onChanged:  (String query){
-                                          final suggestions = datamodels!.where((works) {
-                                            final workordercode = works.WorkOrder_Code!.toLowerCase();
-                                            final input = query.toLowerCase();
-                                            return workordercode.contains(input);
-                                          }).toList();
-                                          setState(() => datamodels = suggestions);
-                                        }
-                                       // SearchWorkorders,
-                                        ),*/
+
 
                                       ),
                                     ],
@@ -664,20 +1019,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                             children: [
                               SizedBox(
                                 height: 500,
-                                child: ValueListenableBuilder<
-                                    Box<WorkOrderModel>>(
-                                    valueListenable: WorkOrders.getWorkorders()
-                                        .listenable(),
-                                    builder: (context,
-                                        Box<WorkOrderModel> items, _) {
-                                      List<int> keys;
-                                      keys = items.keys.cast<int>().toList();
-                                      datamodels = items.values
-                                          .toList()
-                                          .cast<WorkOrderModel>();
-
-
-                                      return SingleChildScrollView(
+                                child:  SingleChildScrollView(
                                         child: Column(
                                           children: [
                                             SizedBox(
@@ -748,8 +1090,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                             ),
                                           ],
                                         ),
-                                      );
-                                    }),
+                                      )
                               )
                             ],
                           ),

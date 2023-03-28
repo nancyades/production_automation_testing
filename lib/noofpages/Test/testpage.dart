@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:production_automation_testing/Helper/application_class.dart';
@@ -31,7 +33,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class TestScreenPage extends ConsumerStatefulWidget {
   dynamic testtype;
-   TestScreenPage({Key? key, this.testtype}) : super(key: key);
+  TestScreenPage({Key? key, this.testtype}) : super(key: key);
 
   @override
   ConsumerState<TestScreenPage> createState() => _TestScreenPageState();
@@ -56,11 +58,15 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
   List<radTest> items = <radTest>[];
   int groupValue = 0;
 
+  String isPressed = "false";
+
 
 
   var stopWatchTimer;
   var sec = 00, min = 00, hour = 00;
   var fontSize, height;
+
+  bool isNow = true;
 
   TextEditingController macaddresscontroller = TextEditingController();
   TextEditingController producttitlecontroller = TextEditingController();
@@ -70,17 +76,23 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
   TextEditingController mac = TextEditingController();
 
 
-    String? choice;
+  String? choice;
 
-    bool isEast = false;
+  bool isEast = false;
+
+  bool isCommunicate = false;
 
   List<List<FirstTest>> test = [];
 
+
   int k=0;
- bool isOnlineTestStarted = false;
- Map<int, OnlineTestModel> onlineTestIds = {};
- List<OnlineTestModel> testList = [];
+  bool isOnlineTestStarted = false;
+  Map<int, OnlineTestModel> onlineTestIds = {};
+  List<OnlineTestModel> testList = [];
   int i = 0;
+
+
+  List<FirstTest> ? testlist = [];
 
 
   @override
@@ -104,12 +116,18 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
     super.initState();
   }
 
+  String ? receivedData;
+
 
   @override
   Widget build(BuildContext context) {
     fontSize = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height;
-     List<FirstTest>? alltest   = ref.watch(getallestNotifier).value;
+    List<FirstTest>? alltest   = ref.watch(getallestNotifier).value;
+
+    if(receivedData == null){
+      receivedData = Helper.tcpResponse;
+    }
 
 
     if(alltest  == null){
@@ -117,56 +135,147 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
     }
 
 
-      List<int> ind=[];
-      List<List<FirstTest>> ind2 =[];
-      List<List<FirstTest>> ind3 =[];
-      List<FirstTest> ss= <FirstTest>[];
-      int j=0;
+    List<int> ind=[];
+    List<List<FirstTest>> ind2 =[];
+    List<List<FirstTest>> ind3 =[];
+    List<FirstTest> ss= <FirstTest>[];
+    int j=0;
 
 
     print(widget.testtype[0].length);
+    for(int i=0; i<alltest.length;i++) {
+      if (widget.testtype[0].length > j) {
+        if (alltest[i].testtype != "" && alltest[i].testtype != "Title"
+        //&& widget.testtype[0][j].toString() == alltest![i].testtype.toString()
+        ) {
+          ind.add(i);
+          //j++;
 
-      for(int i=0; i<alltest.length;i++) {
-        if (widget.testtype[0].length > j) {
-          if (alltest[i].testtype != "" && alltest[i].testtype != "Title"
-              //&& widget.testtype[0][j].toString() == alltest![i].testtype.toString()
-          ) {
-            ind.add(i);
-            //j++;
-
-            if (ss.length != 0) {
-              ind2.add(ss);
-              ss = <FirstTest>[];
-            }
-            ss.add(alltest[i]);
+          if (ss.length != 0) {
+            ind2.add(ss);
+            ss = <FirstTest>[];
           }
-          else if(alltest[i].testtype != "Title"){
-            ss.add(alltest[i]);
-          }
+          ss.add(alltest[i]);
+        }
+        else if(alltest[i].testtype != "Title"){
+          ss.add(alltest[i]);
         }
       }
+    }
 
     ind2.add(ss);
 
-      for(int i=0;i<ind2.length;i++)
-      {
-        List<FirstTest> list1= <FirstTest>[];
-        list1=ind2[i].toList();
+    for(int i=0;i<ind2.length;i++)
+    {
+      List<FirstTest> list1= <FirstTest>[];
+      list1=ind2[i].toList();
 
-          if(widget.testtype[0].length>j)
-          {
-            if(widget.testtype[0][j].toString() == list1[0].testtype.toString())
-            {
-              ind3.add(list1);
-              j++;
-            }
-          }
+      if(widget.testtype[0].length>j)
+      {
+        if(widget.testtype[0][j].toString() == list1[0].testtype.toString())
+        {
+          ind3.add(list1);
+          j++;
+        }
       }
+    }
 
     if(ind3.length >= k && test.isEmpty){
       test.add(ind3[k]);
+      if(test.isNotEmpty){
+        Helper.selectedTest = ind3;
+      }
     }
 
+
+    /*  onlineTestIds.clear();
+    for (int i = 0; i < ind3[k].length; i++) {
+      switch (ind3[k][i].type.toString()) {
+        case 'FAILACK':
+          onlineTestIds[i] =
+              OnlineTestModel(
+                  PacketControl.startPacket +
+                      ind3[k][i].packettype!.toString() +
+                      PacketControl.splitChar +
+                      ApplicationClass().formDigits(3, ind3[k][i].packetid!.toString())! +
+                      PacketControl.endPacket,
+                  ind3[k][i].testnumber
+              );
+          break;
+        case 'SERIALNO':
+          onlineTestIds[i] =
+              OnlineTestModel(
+                  PacketControl
+                      .startPacket +
+                      ind3[k][i]
+                          .packettype
+                          .toString() +
+                      PacketControl
+                          .splitChar +
+                      ApplicationClass()
+                          .formDigits(
+                          3,
+                          ind3[k][i]
+                              .packetid!
+                              .toString())! +
+                      PacketControl
+                          .endPacket,
+                  ind3[k][i]
+                      .testnumber);
+          break;
+        case 'MAC':
+          Future.delayed(
+              const Duration(
+                  milliseconds: 25), () {
+            onlineTestIds[i] =
+                OnlineTestModel(
+                    PacketControl
+                        .startPacket +
+                        ind3[k][i]
+                            .packettype
+                            .toString() +
+                        PacketControl
+                            .splitChar +
+                        ApplicationClass()
+                            .formDigits(
+                            3,
+                            ind3[k][i]
+                                .packetid!
+                                .toString())! +
+                        PacketControl
+                            .endPacket,
+                    ind3[k][i]
+                        .testnumber);
+          });
+          break;
+        case 'UNIT':
+          Future.delayed(
+              const Duration(
+                  milliseconds: 20), () {
+            onlineTestIds[i] =
+                OnlineTestModel(
+                    PacketControl
+                        .startPacket +
+                        ind3[k][i]
+                            .packettype
+                            .toString() +
+                        PacketControl
+                            .splitChar +
+                        ApplicationClass()
+                            .formDigits(
+                            3,
+                            ind3[k][i]
+                                .packetid!
+                                .toString())! +
+                        PacketControl
+                            .endPacket,
+                    ind3[k][i]
+                        .testnumber);
+          });
+          break;
+      }
+    }
+*/
 
 
     return Scaffold(
@@ -501,51 +610,66 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
-                                              ElevatedButton(
-                                                  child: Text("START ".toUpperCase(),
-                                                      style: TextStyle(fontSize: 14)),
-                                                  style: ButtonStyle(
-                                                      foregroundColor: MaterialStateProperty.all<Color>(
-                                                          Colors.white),
-                                                      backgroundColor: MaterialStateProperty.all<Color>(
-                                                          Colors.black),
-                                                      shape: MaterialStateProperty.all<
-                                                          RoundedRectangleBorder>(
-                                                          RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(18.0),
-                                                              side: BorderSide(color: Colors.black)))),
-                                                  onPressed: () async {
-                                                    jigAddress = await ApplicationClass().getStringFormSharePreferences('Jig') ?? '';
-                                                    if (jigAddress.isNotEmpty) {
-                                                      serverIp = jigAddress;
-                                                    }
-                                                    if (jigAddress.isEmpty) {
-                                                      final snackBar = SnackBar(
-                                                        content: const Text('Please Enter the Test Jig Address'),
-                                                        backgroundColor: (Colors.black),
-                                                      );
-                                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                                    } else if (ref.read(serialNoTestProvider.notifier).state.isEmpty) {
-                                                      final snackBar = SnackBar(
-                                                        content: const Text('Please Enter the Test Serial No'),
-                                                        backgroundColor: (Colors.black),
-                                                      );
-                                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                                    } else {
-                                                      if (onlineTestIds.isNotEmpty) {
-                                                        Future.delayed(
-                                                            const Duration(microseconds: 1000), () {
-                                                              splitExcelOnlineTestData(onlineTestIds);
-                                                            });
+                                              Consumer(
+                                                builder: (context, ref, child) {
+                                                  bool status = ref.watch(testStartedProvider);
+                                                  bool value = false;
+                                                  if(ind3[k][0].isonline == 1 && isPressed == "false"){
+                                                    value = true;
+                                                  }
+                                                  return Visibility(
+                                                   visible: value,
+                                                    child: ElevatedButton(
+                                                        child: Text("START ".toUpperCase(),
+                                                            style: TextStyle(fontSize: 14)),
+                                                        style: ButtonStyle(
+                                                            foregroundColor: MaterialStateProperty.all<Color>(
+                                                                Colors.white),
+                                                            backgroundColor: MaterialStateProperty.all<Color>(
+                                                                Colors.black),
+                                                            shape: MaterialStateProperty.all<
+                                                                RoundedRectangleBorder>(
+                                                                RoundedRectangleBorder(
+                                                                    borderRadius: BorderRadius.circular(18.0),
+                                                                    side: BorderSide(color: Colors.black)))),
+                                                        onPressed:  ()async  {
 
-                                                        ref.read(testStartedProvider.notifier).state = true;
-                                                      }
-                                                    }
+                                                          print("ispressed---------------------> ${isPressed}");
+                                                          jigAddress = await ApplicationClass().getStringFormSharePreferences('Jig') ?? '';
+                                                          if (jigAddress.isNotEmpty) {
+                                                            serverIp = jigAddress;
+                                                          }
+                                                          if (jigAddress.isEmpty) {
+                                                            final snackBar = SnackBar(
+                                                              content: const Text('Please Enter the Test Jig Address'),
+                                                              backgroundColor: (Colors.black),
+                                                            );
+                                                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                                          } else if (ref.read(serialNoTestProvider.notifier).state.isEmpty) {
+                                                            final snackBar = SnackBar(
+                                                              content: const Text('Please Enter the Test Serial No'),
+                                                              backgroundColor: (Colors.black),
+                                                            );
+                                                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                                          } else {
+                                                            if (onlineTestIds.isNotEmpty) {
+                                                              Future.delayed(
+                                                                  const Duration(microseconds: 1000), () {
+                                                                splitExcelOnlineTestData(onlineTestIds);
+                                                              });
+
+                                                              ref.read(testStartedProvider.notifier).state = true;
+                                                            }
+                                                          }
 
 
 
 
-                                                  }),
+
+                                                        }),
+                                                  );
+                                                }
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -553,210 +677,193 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                       ],
                                     ),
 
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    SizedBox(
-                                      height: 50,
-                                      child: Card(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8.0),
-                                        ),
-                                        color: Color(0xff8fcceb),
-                                        //Colors.blueAccent,
-                                        elevation: 10,
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Text(' '),
-                                            Expanded(
-                                              child: Container(
-                                                height: 20.0,
-                                                width: 10.0,
-                                                child: Center(
-                                                    child: Text("Test Id",
-                                                        style: TextStyle(
-                                                            fontWeight: FontWeight.w900,
-                                                            fontSize: 15.0,
-                                                            color: Colors.black))),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Container(
-                                                height: 20.0,
-                                                width: 10.0,
-                                                child: Center(
-                                                    child: Text("Test",
-                                                        style: TextStyle(
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: 15.0,
-                                                            color: Colors.black))),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Container(
-                                                height: 20.0,
-                                                width: 10.0,
-                                                child: Center(
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Text("Option" ,
-                                                            style: TextStyle(
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 15.0,
-                                                                color: Colors.black)),
-                                                      ],
-                                                    )),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Container(
-                                                height: 20.0,
-                                                width: 10.0,
-                                                child: Center(
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Text("Result" ,
-                                                            style: TextStyle(
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 15.0,
-                                                                color: Colors.black)),
-                                                      ],
-                                                    )),
-                                              ),
-                                            ),
-                                          ],
+                              SizedBox(
+                                height: 10,
+                              ),
+                              SizedBox(
+                                height: 50,
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  color: Color(0xff8fcceb),
+                                  //Colors.blueAccent,
+                                  elevation: 10,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Text(' '),
+                                      Expanded(
+                                        child: Container(
+                                          height: 20.0,
+                                          width: 10.0,
+                                          child: Center(
+                                              child: Text("Test Id",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.w900,
+                                                      fontSize: 15.0,
+                                                      color: Colors.black))),
                                         ),
                                       ),
-                                    ),
+                                      Expanded(
+                                        child: Container(
+                                          height: 20.0,
+                                          width: 10.0,
+                                          child: Center(
+                                              child: Text("Test",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 15.0,
+                                                      color: Colors.black))),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          height: 20.0,
+                                          width: 10.0,
+                                          child: Center(
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Text("Option" ,
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 15.0,
+                                                          color: Colors.black)),
+                                                ],
+                                              )),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          height: 20.0,
+                                          width: 10.0,
+                                          child: Center(
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Text("Result" ,
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 15.0,
+                                                          color: Colors.black)),
+                                                ],
+                                              )),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
 //===============================================  first test listview builder =========================================================
-                                    Expanded(
-                                      flex: 4,
-                                      child: Consumer(
-                                        builder: (context,ref, child) {
-                                          ref.watch(tcpReceiveDataNotifier).id.when(
-                                              data: (data) {
-                                                if (data.isNotEmpty && data != 'TimeOut') {
-                                                  Future.delayed(const Duration(milliseconds: 5), () {
-                                                    ref.refresh(tcpReceiveDataNotifier);
-                                                    if (testList.length - 1 > i) {
-                                                      i++;
-                                                      ref
-                                                          .read(tcpSendDataNotifier.notifier)
-                                                          .sendPacket(testList[i].packet.toString(),
-                                                          testList[i].taskNo.toString());
-                                                    }
-                                                  });
+                              Expanded(
+                                flex: 4,
+                                child: Consumer(
+                                    builder: (context,ref, child) {
+                                      ref.watch(tcpReceiveDataNotifier).id.when(
+                                          data: (data) {
+                                            if (data.isNotEmpty && data != 'TimeOut') {
+                                              Future.delayed(const Duration(milliseconds: 5), () {
+                                                ref.refresh(tcpReceiveDataNotifier);
+                                                if (testList.length - 1 > i) {
+                                                  i++;
+                                                  ref
+                                                      .read(tcpSendDataNotifier.notifier)
+                                                      .sendPacket(testList[i].packet.toString(),
+                                                      testList[i].taskNo.toString());
                                                 }
-                                              },
-                                              error: (e, s) {},
-                                              loading: () {});
+                                              });
+                                            }
+                                          },
+                                          error: (e, s) {},
+                                          loading: () {});
 
-                                          return SingleChildScrollView(
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                    height: 500,
-                                                    color: Color(0xFFd9d8d7),
-                                                    child: ListView.builder(
-                                                        itemCount: ind3[k].length,
-                                                        itemBuilder: (BuildContext ctxt, int index) {
-                                                           if(!isOnlineTestStarted){
-                                                             isOnlineTestStarted = true;
-                                                           }
-                                                    Future.delayed(
-                                                    const Duration(milliseconds: 10), () {
-                                                      onlineTestIds.clear();
-                                                      for (int i = 0; i < ind3[k].length; i++) {
-                                                        switch (ind3[k][i].type.toString()) {
-                                                          case 'FAILACK':
-                                                            onlineTestIds[i] =
-                                                                OnlineTestModel(
-                                                                    PacketControl.startPacket +
-                                                                        ind3[k][i].packettype!.toString() +
-                                                                        PacketControl.splitChar +
-                                                                        ApplicationClass().formDigits(3, ind3[k][i].packetid!.toString())! +
-                                                                        PacketControl.endPacket,
-                                                                    ind3[k][i].testnumber
-                                                                );
-                                                            break;
-                                                          case 'SERIALNO':
-                                                            onlineTestIds[i] =
-                                                                OnlineTestModel(
-                                                                    PacketControl
-                                                                        .startPacket +
-                                                                        ind3[k][i]
-                                                                            .packettype
-                                                                            .toString() +
-                                                                        PacketControl
-                                                                            .splitChar +
-                                                                        ApplicationClass()
-                                                                            .formDigits(
-                                                                            3,
-                                                                            ind3[k][i]
-                                                                                .packetid!
-                                                                                .toString())! +
-                                                                        PacketControl
-                                                                            .endPacket,
-                                                                    ind3[k][i]
-                                                                        .testnumber);
-                                                            break;
-                                                          case 'MAC':
-                                                            Future.delayed(
-                                                                const Duration(
-                                                                    milliseconds: 25), () {
-                                                              onlineTestIds[i] =
-                                                                  OnlineTestModel(
-                                                                      PacketControl
-                                                                          .startPacket +
-                                                                          ind3[k][i]
-                                                                              .packettype
-                                                                              .toString() +
-                                                                          PacketControl
-                                                                              .splitChar +
-                                                                          ApplicationClass()
-                                                                              .formDigits(
-                                                                              3,
-                                                                              ind3[k][i]
-                                                                                  .packetid!
-                                                                                  .toString())! +
-                                                                          PacketControl
-                                                                              .endPacket,
-                                                                      ind3[k][i]
-                                                                          .testnumber);
-                                                            });
-                                                            break;
-                                                          case 'UNIT':
-                                                            Future.delayed(
-                                                                const Duration(
-                                                                    milliseconds: 20), () {
-                                                              onlineTestIds[i] =
-                                                                  OnlineTestModel(
-                                                                      PacketControl
-                                                                          .startPacket +
-                                                                          ind3[k][i]
-                                                                              .packettype
-                                                                              .toString() +
-                                                                          PacketControl
-                                                                              .splitChar +
-                                                                          ApplicationClass()
-                                                                              .formDigits(
-                                                                              3,
-                                                                              ind3[k][i]
-                                                                                  .packetid!
-                                                                                  .toString())! +
-                                                                          PacketControl
-                                                                              .endPacket,
-                                                                      ind3[k][i]
-                                                                          .testnumber);
-                                                            });
-                                                            break;
-                                                        }
+                                      return SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                                height: 500,
+                                                color: Color(0xFFd9d8d7),
+                                                child: ListView.builder(
+                                                    itemCount: ind3[k].length,
+                                                    itemBuilder: (BuildContext ctxt, int index) {
+                                                      if(!isOnlineTestStarted){
+                                                        isOnlineTestStarted = true;
                                                       }
-                                                    });
-                                                          return  getAllTest(ind3[k], index);
+                                                      Future.delayed(
+                                                          const Duration(milliseconds: 10), () {
+                                                        onlineTestIds.clear();
+                                                        for (int i = 0; i < ind3[k].length; i++) {
+                                                          switch (ind3[k][i].type.toString()) {
+                                                            case 'FAILACK':
+                                                              onlineTestIds[i] =
+                                                                  OnlineTestModel(
+                                                                      PacketControl.startPacket +
+                                                                          ind3[k][i].packettype!.toString() +
+                                                                          PacketControl.splitChar +
+                                                                          ApplicationClass().formDigits(3, ind3[k][i].packetid!.toString())! +
+                                                                          PacketControl.endPacket,
+                                                                      ind3[k][i].testnumber
+                                                                  );
+                                                              break;
+                                                            case 'SERIALNO':
+                                                              onlineTestIds[i] =
+                                                                  OnlineTestModel(
+                                                                      PacketControl.startPacket +
+                                                                          ind3[k][i].packettype.toString() +
+                                                                          PacketControl.splitChar +
+                                                                          ApplicationClass().formDigits(3, ind3[k][i].packetid!.toString())! +
+                                                                          PacketControl.endPacket,
+                                                                      ind3[k][i].testnumber);
+                                                              break;
+                                                            case 'MAC':
+                                                              Future.delayed(
+                                                                  const Duration(
+                                                                      milliseconds: 25), () {
+                                                                onlineTestIds[i] =
+                                                                    OnlineTestModel(
+                                                                        PacketControl.startPacket +
+                                                                            ind3[k][i].packettype.toString() +
+                                                                            PacketControl.splitChar +
+                                                                            ApplicationClass().formDigits(3, ind3[k][i].packetid!.toString())! +
+                                                                            PacketControl.endPacket,
+                                                                        ind3[k][i].testnumber);
+                                                              });
+                                                              break;
+                                                            case 'UNIT':
+                                                              Future.delayed(
+                                                                  const Duration(
+                                                                      milliseconds: 20), () {
+                                                                onlineTestIds[i] =
+                                                                    OnlineTestModel(
+                                                                        PacketControl.startPacket +
+                                                                            ind3[k][i].packettype.toString() +
+                                                                            PacketControl.splitChar +
+                                                                            ApplicationClass().formDigits(3, ind3[k][i].packetid!.toString())! +
+                                                                            PacketControl.endPacket,
+                                                                        ind3[k][i].testnumber);
+                                                              });
+                                                              break;
+                                                            case 'UNITCAL':
+                                                              onlineTestIds[i] = OnlineTestModel(
+                                                                  PacketControl.startPacket + PacketControl.readPacket + PacketControl.splitChar +
+                                                                      ApplicationClass().formDigits(3, ind3[k][i].packetid!.toString())! + PacketControl.endPacket,
+                                                                  ind3[k][i].testnumber);
+                                                              break;
+                                                            case 'UNITACK':
+                                                              onlineTestIds[i] = OnlineTestModel(
+                                                                  PacketControl.startPacket + ind3[k][i].packettype!.toString() + PacketControl.splitChar +
+                                                                      ApplicationClass().formDigits(3, ind3[k][i].packetid.toString())! + PacketControl.endPacket,
+                                                                  ind3[k][i].testnumber);
+                                                              break;
+
+
+                                                          }
+                                                        }
+                                                      });
+
+
+                                                      return  getAllTest(ind3[k], index);
 
                                                         })),
                                               ],
@@ -785,11 +892,16 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                 borderRadius: BorderRadius.circular(18.0),
                                                 side: BorderSide(color: Colors.black)))),
                                     onPressed: () {
+
+
                                       setState(() {
-                                        if(test != null){
-                                          test.remove(ind3[k]);
+                                        if(test.isNotEmpty){
+                                          test.clear();
+                                         // test.remove(ind3[k]);
+                                          print("ALTERED LIST"+test.toString());
                                         }
-                                        if(ind3.length>=k){
+                                        if(ind3.length>k){
+
                                           k++;
                                           if(k==ind3.length){
                                             Navigator.push(
@@ -801,6 +913,10 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                           test.add(ind3[k]);
                                         }
                                         isEast= false;
+
+
+
+
                                       });
                                       /* Navigator.push(
                                               context, MaterialPageRoute(builder: (context) => TestScreenPage()));*/
@@ -834,85 +950,115 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
     );
   }
 
+
   getAllTest(List<FirstTest> radio, int index) {
+
+
     if(isEast == false){
       radio[index].radiotype = "";
+
+    }
+    for(var firstElement in Helper.selectedTest){
+
+      if(firstElement.isNotEmpty){
+        for(var secondElement in firstElement){
+
+          if(secondElement != null){
+            if(testlist != null){
+              testlist!.add(secondElement);
+            }
+
+          }
+        }
+
+      }
+    }
+    if(isEast == false){
+      radio[index].radiotype = "";
+      testlist![index].radiotype = "";
 
     }
     bool changeUi = false;
 
     dynamic testType = Text("error occured");
 
+    var boxColor = Colors.yellow;
+    var statusText = 'InQueue';
+    var progressVisibility = true;
+
+
+
+
 
     switch(radio[index].type.toString()){
 //**********************************************FLAG TEST ********************************************************************
       case 'FLAG':
-       testType =  Row(
-         children: [
-           Radio(
-             value: "01",
-             groupValue: radio[index].radiotype,
-             onChanged: ( value) {
-               setState(() {
-                 radio[index].radiotype = value.toString();
-                 switch (value) {
-                   case '01':
-                     choice = value.toString();
-                     isEast = true;
-                     break;
-                   case '02':
-                     choice = value.toString();
-                     isEast = true;
-                     break;
-                   default:
-                     choice = null;
-                 }
-                 debugPrint(choice);//Debug the choice in console
+        testType =  Row(
+          children: [
+            Radio(
+              value: "01",
+              groupValue: radio[index].radiotype,
+              onChanged: ( value) {
+                setState(() {
+                  radio[index].radiotype = value.toString();
+                  switch (value) {
+                    case '01':
+                      choice = value.toString();
+                      isEast = true;
+                      break;
+                    case '02':
+                      choice = value.toString();
+                      isEast = true;
+                      break;
+                    default:
+                      choice = null;
+                  }
+                  debugPrint(choice);//Debug the choice in console
 
-                 Helper.classes = "DEMO";
-               });
-             },
-           ),
-           Text(radio[index].userentry!.split('/')[0],
-               style: TextStyle(
-                   fontWeight: FontWeight.w300,
-                   fontSize: 13.0,
-                   color: Colors.black)),
-           SizedBox(
-             width: 5,
-           ),
-           Radio(
-             value: "02",
-             groupValue: radio[index].radiotype,
-             onChanged:
-                 ( value) {
-               setState(() {
-                 radio[index].radiotype = value.toString();
-                 switch (value) {
-                   case '01':
-                     choice = value.toString();
-                     isEast = true;
-                     break;
-                   case '02':
-                     choice = value.toString();
-                     isEast = true;
-                     break;
-                   default:
-                     choice = null;
-                 }
-                 debugPrint(choice);
-                 Helper.classes = "DEMO";
-               });
-             },
-           ),
-           Text(radio[index].userentry!.split('/')[1],
-               style: TextStyle(
-                   fontWeight: FontWeight.w300,
-                   fontSize: 13.0,
-                   color: Colors.black)),
-         ],
-       );
-       break;
+                  Helper.classes = "DEMO";
+                });
+              },
+            ),
+            Text(radio[index].userentry!.split('/')[0],
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 13.0,
+                    color: Colors.black)),
+            SizedBox(
+              width: 5,
+            ),
+            Radio(
+              value: "02",
+              groupValue: radio[index].radiotype,
+              onChanged:
+                  ( value) {
+                setState(() {
+                  radio[index].radiotype = value.toString();
+                  switch (value) {
+                    case '01':
+                      choice = value.toString();
+                      isEast = true;
+                      break;
+                    case '02':
+                      choice = value.toString();
+                      isEast = true;
+                      break;
+                    default:
+                      choice = null;
+                  }
+                  debugPrint(choice);
+                  Helper.classes = "DEMO";
+                });
+              },
+            ),
+            Text(radio[index].userentry!.split('/')[1],
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 13.0,
+                    color: Colors.black)),
+          ],
+        );
+        break;
 //**********************************************VALUE TEST ********************************************************************
       case 'Value':
         testType =  IntrinsicWidth(
@@ -940,7 +1086,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
                     setState(() {
                       if(val.isEmpty){
-                      radio[index].setDisplayResult('UNDEFINED');
+                        radio[index].setDisplayResult('UNDEFINED');
                       }
                       if (radio[index].passcrieteria!.contains('-')) {
                         List<String> arr =
@@ -992,7 +1138,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     });
 
 
-                    print("displayresult-------->" +radio[index].displayResult.toString());
+
 
 
 
@@ -1021,63 +1167,112 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
         break;
 //***********************************************FAILACK TEST****************************************************************
       case 'FAILACK':
-        var boxColor = Colors.yellow;
-        var statusText = 'InQueue';
-        var progressVisibility = true;
-        switch (radio[index].result) {
-          case 'PASS':
-            boxColor = Colors.green;
-            statusText = 'COMPLETED';
-            progressVisibility = false;
-            /*canContinueTest = true;*/
-            break;
-
-          case 'TimeOut':
-            boxColor = Colors.indigo;
-            statusText = 'Time out';
-            progressVisibility = false;
-            radio[index].setRemarks("Failed");
-
-            break;
-
-          case 'FAIL':
-            radio[index].setRemarks("Failed");
-            Future.delayed(const Duration(milliseconds: 1), () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => SecondTaskViewPage()));
-
-            });
-            Future.delayed(const Duration(milliseconds: 3), () {
-              popDialog(
-                  title: 'Connection Failed',
-                  msg: 'Connection error please restart your testJig',
-                  context: context);
-            });
-            break;
-
-          default:
-            if (ref
-                .read(testStartedProvider.notifier)
-                .state) {
-              if (ref
-                  .read(lastTestSentProvider.notifier)
-                  .state ==
-                  radio[index].testnumber) {
-                boxColor = Colors.yellow;
-                statusText = 'TESTING';
-                progressVisibility = true;
-              } else {
-                boxColor = Colors.orange;
-                statusText = 'IN QUEUE';
-                progressVisibility = true;
-              }
-            } else {
-              boxColor = Colors.yellow;
-              statusText = 'Yet Stared';
-              progressVisibility = false;
-            }
-            break;
+        if(radio[index].result =='PASS')
+        {
+          boxColor = Colors.green;
+          statusText = 'COMPLETED';
+          progressVisibility = false;
         }
+        else if(radio[index].result =='TimeOut')
+        {
+          boxColor = Colors.indigo;
+          statusText = 'Time out';
+          progressVisibility = false;
+          radio[index].setRemarks("Failed");
+        }
+        else if(radio[index].result =='FAIL')
+        {
+          radio[index].setRemarks("Failed");
+          Future.delayed(const Duration(milliseconds: 1), () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => SecondTaskViewPage()));
+
+          });
+          Future.delayed(const Duration(milliseconds: 3), () {
+            popDialog(
+                title: 'Connection Failed',
+                msg: 'Connection error please restart your testJig',
+                context: context);
+          });
+        }
+        else
+        {
+          if (ref
+              .read(testStartedProvider.notifier)
+              .state) {
+            if (ref
+                .read(lastTestSentProvider.notifier)
+                .state ==
+                radio[index].testnumber) {
+              boxColor = Colors.yellow;
+              statusText = 'TESTING';
+              progressVisibility = true;
+            } else {
+              boxColor = Colors.orange;
+              statusText = 'IN QUEUE';
+              progressVisibility = true;
+            }
+          } else {
+            boxColor = Colors.yellow;
+            statusText = 'Yet Stared';
+            progressVisibility = false;
+          }
+        }
+        /*switch (radio[index].result) {
+              case 'PASS':
+                boxColor = Colors.green;
+                statusText = 'COMPLETED';
+                progressVisibility = false;
+                */
+        /*canContinueTest = true;*//*
+                break;
+
+              case 'TimeOut':
+                boxColor = Colors.indigo;
+                statusText = 'Time out';
+                progressVisibility = false;
+                radio[index].setRemarks("Failed");
+
+                break;
+
+              case 'FAIL':
+                radio[index].setRemarks("Failed");
+                Future.delayed(const Duration(milliseconds: 1), () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => SecondTaskViewPage()));
+
+                });
+                Future.delayed(const Duration(milliseconds: 3), () {
+                  popDialog(
+                      title: 'Connection Failed',
+                      msg: 'Connection error please restart your testJig',
+                      context: context);
+                });
+                break;
+
+              default:
+                if (ref
+                    .read(testStartedProvider.notifier)
+                    .state) {
+                  if (ref
+                      .read(lastTestSentProvider.notifier)
+                      .state ==
+                      radio[index].testnumber) {
+                    boxColor = Colors.yellow;
+                    statusText = 'TESTING';
+                    progressVisibility = true;
+                  } else {
+                    boxColor = Colors.orange;
+                    statusText = 'IN QUEUE';
+                    progressVisibility = true;
+                  }
+                } else {
+                  boxColor = Colors.yellow;
+                  statusText = 'Yet Stared';
+                  progressVisibility = false;
+                }
+                break;
+            }*/
         testType = Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
@@ -1120,9 +1315,9 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 //************************************************SERIAL NO***********************************************************************
 
       case 'SERIALNO':
-        var boxColor = Colors.yellow;
-        var statusText = 'InQueue';
-        var progressVisibility = true;
+      // var boxColor = Colors.yellow;
+      // var statusText = 'InQueue';
+      // var progressVisibility = true;
         switch (radio[index].result) {
           case 'TimeOut':
             boxColor = Colors.indigo;
@@ -1260,27 +1455,31 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
               ),
             );
             break;
-
           case 'USERACK':
             boxColor = Colors.green;
             statusText = 'COMPLETED';
             progressVisibility = false;
             changeUi = true;
-            testType = Row(
+            testType =  Row(
               children: [
                 SizedBox(
                     height: 50,
                     child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: 2,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) =>
-                          Padding(
+                        shrinkWrap: true,
+                        itemCount: 2,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index1) {
+                          print("nan----------------..>${radio[index].userentry!.split('/')[index1]}");
+                          print("nanCYADES----------------..>${radio[index].testname}");
+                          print("nantest----------------..>${radio[index].type}");
+                          print("index----------------..>${index}");
+
+                          return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
                               children: [
                                 Radio<String>(
-                                  value: radio[index].userentry!.split('/')[index],
+                                  value: radio[index].userentry!.split('/')[index1],
                                   groupValue: radio[index].result,
                                   onChanged: (value) {
                                     print("nancy----------------..>${radio[index].userentry}");
@@ -1312,22 +1511,24 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
                                       }
                                     }
-                                /*    ref
+                                    /*    ref
                                         .read(
                                         extractExcelNotifierProvider.notifier)
                                         .setSelectedState(map);*/
                                   },
                                 ),
                                 Text(
-                                  radio[index].userentry!.split('/')[index],
+                                  radio[index].userentry!.split('/')[index1],
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
                                       fontSize: 13.0,
-                                      color: Colors.white),
+                                      color: Colors.black),
                                 )
                               ],
                             ),
-                          ),
+                          );
+                        }
+
                     )),
                 Padding(
                   padding: const EdgeInsets.only(left: 2.0),
@@ -1436,72 +1637,72 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
             progressVisibility = false;
             changeUi = true;
             testType = Row(
-                    children: [
-                      Radio(
-                        value: "01",
-                        groupValue: radio[index].radiotype,
-                        onChanged: ( value) {
-                          setState(() {
-                            radio[index].radiotype = value.toString();
-                            switch (value) {
-                              case '01':
-                                choice = value.toString();
-                                isEast = true;
-                                break;
-                              case '02':
-                                choice = value.toString();
-                                isEast = true;
-                                break;
-                              default:
-                                choice = null;
-                            }
-                            debugPrint(choice);//Debug the choice in console
+              children: [
+                Radio(
+                  value: "01",
+                  groupValue: radio[index].radiotype,
+                  onChanged: ( value) {
+                    setState(() {
+                      radio[index].radiotype = value.toString();
+                      switch (value) {
+                        case '01':
+                          choice = value.toString();
+                          isEast = true;
+                          break;
+                        case '02':
+                          choice = value.toString();
+                          isEast = true;
+                          break;
+                        default:
+                          choice = null;
+                      }
+                      debugPrint(choice);//Debug the choice in console
 
-                            Helper.classes = "DEMO";
-                          });
-                        },
-                      ),
-                      Text(radio[index].userentry!.split('/')[0],
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black)),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Radio(
-                        value: "02",
-                        groupValue: radio[index].radiotype,
-                        onChanged:
-                            ( value) {
-                          setState(() {
-                            radio[index].radiotype = value.toString();
-                            switch (value) {
-                              case '01':
-                                choice = value.toString();
-                                isEast = true;
-                                break;
-                              case '02':
-                                choice = value.toString();
-                                isEast = true;
-                                break;
-                              default:
-                                choice = null;
-                            }
-                            debugPrint(choice);
-                            Helper.classes = "DEMO";
-                          });
-                        },
-                      ),
-                      Text(radio[index].userentry!.split('/')[1],
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black)),
-                    ],
-                  );
-
+                      Helper.classes = "DEMO";
+                    });
+                  },
+                ),
+                Text(radio[index].userentry!.split('/')[0],
+                    style: TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 13.0,
+                        color: Colors.black)),
+                SizedBox(
+                  width: 5,
+                ),
+                Radio(
+                  value: "02",
+                  groupValue: radio[index].radiotype,
+                  onChanged:
+                      ( value) {
+                    setState(() {
+                      radio[index].radiotype = value.toString();
+                      switch (value) {
+                        case '01':
+                          choice = value.toString();
+                          isEast = true;
+                          break;
+                        case '02':
+                          choice = value.toString();
+                          isEast = true;
+                          break;
+                        default:
+                          choice = null;
+                      }
+                      debugPrint(choice);
+                      Helper.classes = "DEMO";
+                    });
+                  },
+                ),
+                Text(radio[index].userentry!.split('/')[1],
+                    style: TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 13.0,
+                        color: Colors.black)),
+              ],
+            );
             break;
+
           default:
             if (ref
                 .read(testStartedProvider.notifier)
@@ -1802,13 +2003,8 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
             break;
 
           default:
-            if (ref
-                .read(testStartedProvider.notifier)
-                .state) {
-              if (ref
-                  .read(lastTestSentProvider.notifier)
-                  .state ==
-                  radio[index].testnumber) {
+            if (ref.read(testStartedProvider.notifier).state) {
+              if (ref.read(lastTestSentProvider.notifier).state == radio[index].testnumber) {
                 boxColor = Colors.yellow;
                 statusText = 'TESTING';
                 progressVisibility = true;
@@ -1948,17 +2144,340 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
         }
         break;
 
+//**************************************************UNITCAL***************************************************************************
+      case 'UNITCAL':
+        var boxColor = Colors.yellow;
+        var statusText = 'InQueue';
+        var progressVisibility = true;
+
+        switch (radio[index].result) {
+          case 'TimeOut':
+            radio[index].setRemarks("Failed");
+            boxColor = Colors.indigo;
+            statusText = 'Time out';
+            progressVisibility = false;
+            break;
+          case 'PASS':
+            boxColor = Colors.green;
+            statusText = 'COMPLETED';
+            progressVisibility = false;
+            break;
+          case 'FAIL':
+            boxColor = Colors.red;
+            statusText = 'COMPLETED';
+            progressVisibility = false;
+            break;
+          default:
+            if (ref
+                .read(testStartedProvider.notifier)
+                .state) {
+              if (ref
+                  .read(lastTestSentProvider.notifier)
+                  .state ==
+                  radio[index].testnumber) {
+                boxColor = Colors.yellow;
+                statusText = 'TESTING';
+                progressVisibility = true;
+              } else {
+                boxColor = Colors.orange;
+                statusText = 'IN QUEUE';
+                progressVisibility = true;
+              }
+            } else {
+              boxColor = Colors.yellow;
+              statusText = 'Yet Stared';
+              progressVisibility = false;
+            }
+            break;
+        }
+        testType = Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withOpacity(0.85), blurRadius: 3)
+              ],
+              color: boxColor),
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Center(
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                      child: Text(statusText,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w300,
+                              fontSize: 13.0,
+                              color: Colors.black)),
+                    ),
+                    Visibility(
+                      visible: progressVisibility,
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                        child: SizedBox(
+                            height: 10,
+                            width: 10,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.blue,
+                            )),
+                      ),
+                    )
+                  ],
+                )),
+          ),
+        );
+        break;
+
+//*****************************************************UNITACK*******************************************************************************************************
+
+      case 'UNITACK':
+        var boxColor = Colors.yellow;
+        var statusText = 'InQueue';
+        var progressVisibility = true;
+
+        switch (radio[index].result) {
+          case 'TimeOut':
+            boxColor = Colors.indigo;
+            statusText = 'Time out';
+            progressVisibility = false;
+            radio[index].setRemarks("Failed");
+
+            break;
+
+          case 'FAIL':
+            boxColor = Colors.red;
+            statusText = 'COMPLETED';
+            progressVisibility = false;
+            testType = Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.85),
+                        blurRadius: 3)
+                  ],
+                  color: boxColor),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Center(
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
+              ),
+            );
+            break;
+
+          case 'PASS':
+            boxColor = Colors.green;
+            statusText = 'COMPLETED';
+            progressVisibility = false;
+            testType = Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.85),
+                        blurRadius: 3)
+                  ],
+                  color: boxColor),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Center(
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
+              ),
+            );
+            break;
+          case 'USERACK':
+            boxColor = Colors.red;
+            statusText = 'COMPLETED';
+            progressVisibility = false;
+            changeUi = true;
+            testType = Row(
+              children: [
+                Radio(
+                  value: "01",
+                  groupValue: radio[index].radiotype,
+                  onChanged: ( value) {
+                    setState(() {
+                      radio[index].radiotype = value.toString();
+                      switch (value) {
+                        case '01':
+                          choice = value.toString();
+                          isEast = true;
+                          break;
+                        case '02':
+                          choice = value.toString();
+                          isEast = true;
+                          break;
+                        default:
+                          choice = null;
+                      }
+                      debugPrint(choice);//Debug the choice in console
+
+                      Helper.classes = "DEMO";
+                    });
+                  },
+                ),
+                Text(radio[index].userentry!.split('/')[0],
+                    style: TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 13.0,
+                        color: Colors.black)),
+                SizedBox(
+                  width: 5,
+                ),
+                Radio(
+                  value: "02",
+                  groupValue: radio[index].radiotype,
+                  onChanged:
+                      ( value) {
+                    setState(() {
+                      radio[index].radiotype = value.toString();
+                      switch (value) {
+                        case '01':
+                          choice = value.toString();
+                          isEast = true;
+                          break;
+                        case '02':
+                          choice = value.toString();
+                          isEast = true;
+                          break;
+                        default:
+                          choice = null;
+                      }
+                      debugPrint(choice);
+                      Helper.classes = "DEMO";
+                    });
+                  },
+                ),
+                Text(radio[index].userentry!.split('/')[1],
+                    style: TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 13.0,
+                        color: Colors.black)),
+              ],
+            );
+            break;
 
 
+          default:
+            if (ref
+                .read(testStartedProvider.notifier)
+                .state) {
+              if (ref
+                  .read(lastTestSentProvider.notifier)
+                  .state ==
+                  radio[index].testnumber) {
+                boxColor = Colors.yellow;
+                statusText = 'TESTING';
+                progressVisibility = true;
+              } else {
+                boxColor = Colors.orange;
+                statusText = 'IN QUEUE';
+                progressVisibility = true;
+              }
+            } else {
+              boxColor = Colors.yellow;
+              statusText = 'Yet Stared';
+              progressVisibility = false;
+            }
+            testType = Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.85),
+                        blurRadius: 3)
+                  ],
+                  color: boxColor),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Center(
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
+              ),
+            );
+            break;
+        }
+        break;
 
 
 
     }
-
-
-
-
-
     return Card(
         color: Colors.white,
         child: Padding(
@@ -1998,7 +2517,6 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       testType
-
                     ],
                   ),
                 ),
@@ -2009,73 +2527,82 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   width: 10.0,
                   child: Center(
                       child: (){
-                     if(radio[index].type == "FLAG"){
-                       if(radio[index].radiotype == "01"){
-                         if(radio[index].userentry!.split('/')[0] == "YES" ){
-                           radio[index].radiotype = "YES";
-                         }else{
-                           radio[index].radiotype = "SHORT";
-                         }
-                         if(radio[index].radiotype != radio[index].passcrieteria){
-                           radio[index].radiotype = "01";
-                           return Text(radio[index].userentry!.split('/')[0] == "OK" ?"PASS": "FAIL",
-                               style: TextStyle(
-                                   fontWeight: FontWeight.w300,
-                                   fontSize: 13.0,
-                                   color: Colors.black));
-                         }
-                       }
-                       else  if(radio[index].radiotype == "02"){
-                         if(radio[index].userentry!.split('/')[1] == "NO" ){
-                           radio[index].radiotype = "NO";
-                         }else{
-                           radio[index].radiotype = "NO SHORT";
-                         }
-                         if(radio[index].radiotype == radio[index].passcrieteria ||  radio[index].radiotype != radio[index].passcrieteria){
-                           radio[index].radiotype = "02";
-                           print('print userentry-----> ${radio[index].userentry!.split('/')[1].toString()}');
-                           return Text(radio[index].userentry!.split('/')[0] == "OK" ?"FAIL": "PASS",
-                               style: TextStyle(
-                                   fontWeight: FontWeight.w300,
-                                   fontSize: 13.0,
-                                   color: Colors.black));
-                         }else{
-                           return  Text("FAIL");
-                         }
+                        if(radio[index].type == "FLAG"){
+                             if(radio[index].radiotype == "01"){
+                                  if(radio[index].userentry!.split('/')[0] == "YES " ){
+                                    radio[index].radiotype = "YES";
+                                  }else{
+                                    radio[index].radiotype = "SHORT";
+                                  }
+                                  if(radio[index].radiotype != radio[index].passcrieteria){
+                                    radio[index].radiotype = "01";
+                                  return Text(radio[index].userentry!.split('/')[0] == "OK" ?"PASS": "FAIL",
+                                  style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                      fontSize: 13.0,
+                                      color: Colors.black));
+                            }
+                          }
+                          else  if(radio[index].radiotype == "02"){
+                            if(radio[index].userentry!.split('/')[1] == "NO" ){
+                              radio[index].radiotype = "NO";
+                            }else{
+                              radio[index].radiotype = "NO SHORT";
+                            }
+                            if(radio[index].radiotype == radio[index].passcrieteria ||  radio[index].radiotype != radio[index].passcrieteria){
+                              radio[index].radiotype = "02";
+                              print('print userentry-----> ${radio[index].userentry!.split('/')[1].toString()}');
+                              return Text(radio[index].userentry!.split('/')[0] == "OK" ?"FAIL": "PASS",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 13.0,
+                                      color: Colors.black));
+                            }else{
+                              return  Text("FAIL");
+                            }
 
-                       }
-                       else{
-                         return  Text("");
-                       }
-                     }
-                     if(radio[index].type == "Value"){
-                       if(radio[index].displayResult.toString() == "FAIL"){
-                         return Text("FAIL",
-                             style: TextStyle(
-                                 fontWeight: FontWeight.w300,
-                                 fontSize: 13.0,
-                                 color: Colors.black));
-                       }else if(radio[index].displayResult.toString() == "PASS"){
-                         return Text("PASS",
-                             style: TextStyle(
-                                 fontWeight: FontWeight.w300,
-                                 fontSize: 13.0,
-                                 color: Colors.black));
-                       }else if(radio[index].displayResult.toString() == "UNDEFINED"){
-                         return Text(" ",
-                             style: TextStyle(
-                                 fontWeight: FontWeight.w300,
-                                 fontSize: 13.0,
-                                 color: Colors.black));
-                       }
-                       else{
-                         return Text("",
-                             style: TextStyle(
-                                 fontWeight: FontWeight.w300,
-                                 fontSize: 13.0,
-                                 color: Colors.black));
-                       }
-                     }
+                          }
+                          else{
+                            return  Text("");
+                          }
+                        }
+                        if(radio[index].type == "Value"){
+                          if(radio[index].displayResult.toString() == "FAIL"){
+                            return Text("FAIL",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black));
+                          }else if(radio[index].displayResult.toString() == "PASS"){
+                            return Text("PASS",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black));
+                          }else if(radio[index].displayResult.toString() == "UNDEFINED"){
+                            return Text(" ",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black));
+                          }
+                          else{
+                            return Text("",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black));
+                          }
+                        }
+                        return Text(
+                            radio[index].displayResult.toString() == "null"
+                                ? ""
+                                : radio[index].displayResult.toString(),
+                            style: TextStyle(
+                                fontSize: 13.0,
+                                fontWeight: FontWeight.w300,
+                                color: Colors.black));
+
 
 
 
@@ -2088,6 +2615,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
   }
 
   splitExcelOnlineTestData(Map<int, OnlineTestModel> testMap) {
+
     testList.clear();
     i = 0;
     testMap.forEach((key, value) {
@@ -2099,6 +2627,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
         ref.read(tcpSendDataNotifier.notifier).sendPacket(
             testList[i].packet.toString(), testList[i].taskNo.toString());
       });
+
     }
   }
 

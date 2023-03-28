@@ -291,7 +291,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                                     ],
                                                   ),
                                                 ),
-                                                Row(
+                                               /* Row(
                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Padding(
@@ -317,7 +317,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                                       ),
                                                     ),
                                                   ],
-                                                ),
+                                                ),*/
                                                 Padding(
                                                   padding: const EdgeInsets.all(20.0),
                                                   child: Row(

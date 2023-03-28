@@ -78,6 +78,8 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
 
   @override
   Widget build(BuildContext context) {
+    var Width = MediaQuery.of(context).size.width;
+    var Height = MediaQuery.of(context).size.height;
     if (Allvalues.WorkOrder_Code != null &&
         Allvalues.Quantity != null &&
         Allvalues.Start_Serial_No != null &&
@@ -495,6 +497,7 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Expanded(
+                                  flex: 2,
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: DropdownButton(
@@ -542,7 +545,7 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                                             Text("Quantity",
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.w600,
-                                                    fontSize: 11.0,
+                                                    fontSize: Width * 0.0069,
                                                     color: Colors.blueAccent)),
                                           ],
                                         ),
@@ -584,7 +587,7 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                                             Text("Start Serialno",
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.w600,
-                                                    fontSize: 11.0,
+                                                    fontSize: Width * 0.0069,
                                                     color: Colors.blueAccent)),
                                           ],
                                         ),
@@ -614,6 +617,7 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                                   ),
                                 ),
                                 Expanded(
+
                                   child: Column(
                                     children: [
                                       Padding(
@@ -623,7 +627,7 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                                             Text("End Serialno",
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.w600,
-                                                    fontSize: 11.0,
+                                                    fontSize: Width * 0.0069,
                                                     color: Colors.blueAccent)),
                                           ],
                                         ),
@@ -757,6 +761,8 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                         color: Color(0xffcbdff2),
                         elevation: 10,
                         child: ListView.builder(
+                          shrinkWrap: true,
+                            controller: ScrollController(),
                             itemCount: listofproduct.length,
                             itemBuilder: (BuildContext ctxt, int index) {
                               return Card(

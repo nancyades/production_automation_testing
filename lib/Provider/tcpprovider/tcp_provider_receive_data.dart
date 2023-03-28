@@ -26,92 +26,26 @@ class TcpReceiveDataProvider extends StateNotifier<TcpResponseSate> {
       : super(TcpResponseSate(false, const AsyncLoading(), ''));
 
   void getResponseData(String receivedData) {
-
+    var currentStep = ref.read(currentStepProvider);
+    var lastTestSent = ref.read(lastTestSentProvider);
+    var lastPacketSent = ref.read(lastPacketSentProvider);
+    List<FirstTest> ? testlist = [];
     state = _dataState(receivedData);
-    if (receivedData.isNotEmpty) {
+    Helper.tcpResponse = receivedData;
 
-      List<FirstTest>? alltest   = ref.watch(getallestNotifier).value;
-      List<int> ind=[];
-      List<List<FirstTest>> ind2 =[];
-      List<List<FirstTest>> ind3 =[];
-      List<FirstTest> ss= <FirstTest>[];
-      int j=0;
-      int k=0;
-      List<FirstTest> testlist = [];
+    if(Helper.tcpResponse != ""){
+      for(var firstElement in Helper.selectedTest){
 
-
-
-        print(Helper.testType.length);
-
-
-        for(int i=0; i<alltest!.length;i++) {
-          if (Helper.testType[0].length > j) {
-            if (alltest[i].testtype != "" && alltest[i].testtype != "Title") {
-              ind.add(i);
-
-
-              if (ss.length != 0) {
-                ind2.add(ss);
-                ss = <FirstTest>[];
-              }
-              ss.add(alltest[i]);
-            }
-            else if(alltest[i].testtype != "Title"){
-              ss.add(alltest[i]);
-            }
+        if(firstElement.isNotEmpty){
+        for(var secondElement in firstElement){
+          if(secondElement != null && secondElement.testnumber == lastTestSent ){
+            testlist.add(secondElement) ;
+            Helper.firstTest = secondElement;
           }
         }
 
-        ind2.add(ss);
-
-        for(int i=0;i<ind2.length;i++)
-        {
-          List<FirstTest> list1= <FirstTest>[];
-          list1=ind2[i].toList();
-
-          if(Helper.testType[0].length>j)
-          {
-            if(Helper.testType[j].toString() == list1[0].testtype.toString())
-            {
-              ind3.add(list1);
-              j++;
-            }
-          }
         }
-
-
-        // if(ind3.length >= k && test.isEmpty){
-        //   test.add(ind3[k]);
-        // }
-
-
-      for(int i =0; i<ind3[k].length; i++){
-        FirstTest testvalue = FirstTest(
-          testnumber: ind3[k][i].testnumber,
-          testtype: ind3[k][i].testtype,
-          testname: ind3[k][i].testname,
-          isonline: ind3[k][i].isonline,
-          type: ind3[k][i].type,
-          packetid: ind3[k][i].packetid,
-          packettype: ind3[k][i].packettype,
-          passcrieteria: ind3[k][i].passcrieteria,
-          wifiresult: ind3[k][i].wifiresult,
-          remarks: ind3[k][i].remarks,
-          userentry: ind3[k][i].userentry,
-          radiotype: ind3[k][i].radiotype,
-          displayResult: ind3[k][i].displayResult,
-          result: ind3[k][i].result,
-          userAckValue: ind3[k][i].userAckValue,
-        );
-        testlist.add(testvalue);
       }
-
-
-
-      var currentStep = ref.read(currentStepProvider);
-      var lastTestSent = ref.read(lastTestSentProvider);
-      var lastPacketSent = ref.read(lastPacketSentProvider);
-
       for (var element in testlist) {
         if (element.testnumber.toString() == lastTestSent) {
           if (receivedData == "TimeOut") {

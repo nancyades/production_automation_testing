@@ -44,7 +44,7 @@ class _NavBarState extends ConsumerState<NavBar> {
           NavBarItem(
             active: selected[1],
             icon: Icons.menu,
-            name: 'WorkOrder',
+            name: 'Workorder',
             touched: () {
               ref.read(navNotifier.notifier).currentIndex(1);
               setState(() {
@@ -66,7 +66,7 @@ class _NavBarState extends ConsumerState<NavBar> {
           NavBarItem(
             active: selected[3],
             icon: Icons.message_sharp,
-            name: ' Report ',
+            name: '  Report ',
             touched: () {
               ref.read(navNotifier.notifier).currentIndex(3);
               setState(() {
@@ -77,7 +77,7 @@ class _NavBarState extends ConsumerState<NavBar> {
           NavBarItem(
             active: selected[4],
             icon: Icons.contacts,
-            name: 'User',
+            name: '   User  ',
             touched: () {
               ref.read(navNotifier.notifier).currentIndex(4);
               setState(() {
@@ -88,7 +88,7 @@ class _NavBarState extends ConsumerState<NavBar> {
           NavBarItem(
             active: selected[5],
             icon: Icons.task_alt_outlined,
-            name: ' Test ',
+            name: '   Test  ',
             touched: () {
               ref.read(navNotifier.notifier).currentIndex(5);
               setState(() {
@@ -171,10 +171,10 @@ class _NavBarItemState extends State<NavBarItem> {
                                 fontWeight: FontWeight.w400,
                                 fontSize: 10.0,
                                 color: widget.active! ? Colors.white : Colors.white54,)),
-
                         ],
                       ),
                     ),
+
 
                   ],
                 ),

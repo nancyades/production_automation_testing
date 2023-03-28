@@ -38,10 +38,19 @@ class _ProductPageState extends ConsumerState<ProductPage> {
   int looping = 0;
   bool procount = true;
 
+  bool search = true;
+
   @override
   void initState() {
     ref.refresh(getProductNotifier);
   }
+
+  var selectRole = "aa";
+  List<String> status = [
+    'aa',
+    'Approved',
+    'Verified',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +117,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                   AddProduct(product: product);
                                   _isShow = !_isShow;
                                   procount = !procount;
+                                  search = !search;
                                 });
                               },
                               child: const Icon(
@@ -122,90 +132,511 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                       ),
                       Consumer(
                           builder: (context, ref, child) {
-                            return ref.watch(getProductCountNotifier).when(
-                                data: (count){
-                                  return Container(
-                                    margin: EdgeInsets.only(top: 5.0),
-                                    height: 200.0,
-                                    width: MediaQuery.of(context).size.width,
-                                    child: Row(
-                                      //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            ProductCountView(
-                                                color: Color(0xffFF4C60),
-                                                projectName: 'Product Count',
-                                                percentComplete: '${count[0].productCount}%',
-                                                peopleCount: count[0].productCount,
-                                                progressIndicatorColor: Colors.redAccent[100],
-                                                icon: Feather.credit_card,
-                                            ),
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            ProductCountView(
-                                                color: Color(0xff6C6CE5),
-                                                projectName: 'Created',
-                                                percentComplete: '${count[0].created}%',
-                                                peopleCount: count[0].created,
-                                                progressIndicatorColor: Colors.blue[200],
-                                                icon: Feather.book_open,
-                                            ),
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            ProductCountView(
-                                                color: Color(0xffFAAA1E),
-                                                projectName: 'Verified',
-                                                percentComplete: '${count[0].verified}%',
-                                                peopleCount: count[0].verified,
-                                                progressIndicatorColor: Colors.amber[200],
-                                                icon: Icons.verified
-                                            ),
-                                          ],
-                                        ),
-                                        Visibility(
-                                            visible: procount,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                SizedBox(
-                                                  width: 20,
-                                                ),
-                                                ProductCountView(
-                                                    color: Color(0xff2d6666),
-                                                    projectName: 'Approved',
-                                                    peopleCount: count[0].approved,
-                                                    percentComplete: '${count[0].approved}%',
-                                                    progressIndicatorColor: Colors
-                                                        .tealAccent[200],
-                                                    icon: Icons.fmd_good_outlined),
-                                                SizedBox(
-                                                  width: 20,
-                                                ),
-                                                ProductCountView(
-                                                    color: Color(0xff4c2d66),
-                                                    projectName: 'Rejected',
-                                                    peopleCount: count[0].rejected,
-                                                    percentComplete: '${count[0].rejected}%',
-                                                    progressIndicatorColor: Colors
-                                                        .deepPurpleAccent[200],
-                                                    icon: Icons.fmd_bad),
-                                              ],
-                                            ))
+                            return ref.watch(getProductCountNotifier).when(data: (count){
+                              return Container(
+                                  margin: EdgeInsets.only(top: 5.0),
+                                  height: 218.0,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 3,
+                                        child:SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child:Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 30,
+                                              ),
+                                              SingleChildScrollView(
+                                                  scrollDirection: Axis.horizontal,
+                                                  child:Column(
+                                                      children:[
+                                                        Card(
+                                                          elevation:12,
+                                                          child: Container(
+                                                            width:200,
+                                                            height:100,
+                                                            decoration: BoxDecoration(
+                                                                boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                                border: Border.all(color: Colors.grey),
+                                                                backgroundBlendMode: BlendMode.darken,
+                                                                color: Colors.white,
+                                                                shape: BoxShape.rectangle
+                                                            ),
+                                                            child: Column(
+                                                              children: [
+                                                                Padding(
+                                                                  padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        flex: 2,
+                                                                        child: Column(
+                                                                          children: [
+                                                                            Row(
+                                                                              children: [
+                                                                                Text("${count[0].created}%",  style: TextStyle(
+                                                                                    fontWeight: FontWeight.bold,
+                                                                                    fontSize: 15.0,
+                                                                                    color:  Colors.black
+                                                                                ))
+                                                                              ],
+                                                                            ),
+                                                                            Row(
+                                                                              children: [
+                                                                                Text("Created", style: TextStyle(
+                                                                                    fontWeight: FontWeight.w600,
+                                                                                    fontSize: 10.0,
+                                                                                    color:  Colors.black
+                                                                                ))
+                                                                              ],
+                                                                            ),
+                                                                          ],
+                                                                        ),
 
-                                      ],
-                                    ),
-                                  );
-                                }, error: (e,s){
-                                  return Text((e.toString()));
+                                                                      ),
+                                                                      Expanded(
+                                                                        child: Column(
+                                                                          children: [
+                                                                            Icon(Icons.incomplete_circle, size: 20,)
+                                                                          ],
+                                                                        ),
+
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+
+
+                                                                SizedBox(
+                                                                  height: 14,
+                                                                ),
+                                                                Row(
+                                                                  children: [
+                                                                    Container(
+                                                                      width:198,
+                                                                      height:36,
+                                                                      decoration: BoxDecoration(
+                                                                          color: Colors.green.shade300,
+                                                                          shape: BoxShape.rectangle
+                                                                      ),
+                                                                      child:  Padding(
+                                                                        padding: const EdgeInsets.all(8.0),
+                                                                        child: Row(
+                                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                          children: [
+                                                                            Text('% change'),
+                                                                            Icon(Icons.call_made, size: 12,),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+
+                                                                  ],
+                                                                )
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Card(
+                                                          elevation:12,
+                                                          child: Container(
+                                                            width:200,
+                                                            height:100,
+                                                            decoration: BoxDecoration(
+                                                                boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                                border: Border.all(color: Colors.grey),
+                                                                backgroundBlendMode: BlendMode.darken,
+                                                                color: Colors.white,
+                                                                shape: BoxShape.rectangle
+                                                            ),
+                                                            child: Column(
+                                                              children: [
+                                                                Padding(
+                                                                  padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        flex: 2,
+                                                                        child: Column(
+                                                                          children: [
+                                                                            Row(
+                                                                              children: [
+                                                                                Text("${count[0].verified}%",  style: TextStyle(
+                                                                                    fontWeight: FontWeight.bold,
+                                                                                    fontSize: 15.0,
+                                                                                    color:  Colors.black
+                                                                                ))
+                                                                              ],
+                                                                            ),
+                                                                            Row(
+                                                                              children: [
+                                                                                Text("verified", style: TextStyle(
+                                                                                    fontWeight: FontWeight.w600,
+                                                                                    fontSize: 9.0,
+                                                                                    color:  Colors.black
+                                                                                ))
+                                                                              ],
+                                                                            ),
+                                                                          ],
+                                                                        ),
+
+                                                                      ),
+                                                                      Expanded(
+                                                                        child: Column(
+                                                                          children: [
+                                                                            Icon(Icons.admin_panel_settings_outlined,size: 20,)
+                                                                          ],
+                                                                        ),
+
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+
+
+                                                                SizedBox(
+                                                                  height: 16,
+                                                                ),
+                                                                Row(
+                                                                  children: [
+                                                                    Container(
+                                                                      width:198,
+                                                                      height:36,
+                                                                      decoration: BoxDecoration(
+                                                                          color: Colors.amber.shade300,
+                                                                          shape: BoxShape.rectangle
+                                                                      ),
+                                                                      child:  Padding(
+                                                                        padding: const EdgeInsets.all(8.0),
+                                                                        child: Row(
+                                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                          children: [
+                                                                            Text('% change'),
+                                                                            Icon(Icons.call_made, size: 12,),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+
+                                                                  ],
+                                                                )
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ])),
+                                              Padding(padding: EdgeInsets.only(left: 50)),
+                                              Column(
+                                                  children:[
+                                                    Card(
+                                                      elevation:12,
+                                                      child: Container(
+                                                        width:200,
+                                                        height:100,
+                                                        decoration: BoxDecoration(
+                                                            boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                            border: Border.all(color: Colors.grey),
+                                                            backgroundBlendMode: BlendMode.darken,
+                                                            color: Colors.white,
+                                                            shape: BoxShape.rectangle
+                                                        ),
+                                                        child: Column(
+                                                          children: [
+                                                            Padding(
+                                                              padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    flex: 2,
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Text("${count[0].approved}%",  style: TextStyle(
+                                                                                fontWeight: FontWeight.bold,
+                                                                                fontSize: 15.0,
+                                                                                color:  Colors.black
+                                                                            ))
+                                                                          ],
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Text("Approved", style: TextStyle(
+                                                                                fontWeight: FontWeight.w600,
+                                                                                fontSize: 10.0,
+                                                                                color:  Colors.black
+                                                                            ))
+                                                                          ],
+                                                                        ),
+                                                                      ],
+                                                                    ),
+
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Icon(Icons.task,size: 20,)
+                                                                      ],
+                                                                    ),
+
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+
+
+                                                            SizedBox(
+                                                              height: 14,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Container(
+                                                                  width:198,
+                                                                  height:36,
+                                                                  decoration: BoxDecoration(
+                                                                      color: Colors.blue,
+                                                                      shape: BoxShape.rectangle
+                                                                  ),
+                                                                  child:  Padding(
+                                                                    padding: const EdgeInsets.all(8.0),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        Text('% change'),
+                                                                        Icon(Icons.call_made, size: 12,),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+
+                                                              ],
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Card(
+                                                      elevation:12,
+                                                      child: Container(
+                                                        width:200,
+                                                        height:100,
+                                                        decoration: BoxDecoration(
+                                                            boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                            border: Border.all(color: Colors.grey),
+                                                            backgroundBlendMode: BlendMode.darken,
+                                                            color: Colors.white,
+                                                            shape: BoxShape.rectangle
+                                                        ),
+                                                        child: Column(
+                                                          children: [
+                                                            Padding(
+                                                              padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    flex: 2,
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Text("${count[0].rejected}%",  style: TextStyle(
+                                                                                fontWeight: FontWeight.bold,
+                                                                                fontSize: 15.0,
+                                                                                color:  Colors.black
+                                                                            ))
+                                                                          ],
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Text("Rejected", style: TextStyle(
+                                                                                fontWeight: FontWeight.w600,
+                                                                                fontSize: 10.0,
+                                                                                color:  Colors.black
+                                                                            ))
+                                                                          ],
+                                                                        ),
+                                                                      ],
+                                                                    ),
+
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Icon(Icons.account_circle_outlined,size: 20)
+                                                                      ],
+                                                                    ),
+
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+
+
+                                                            SizedBox(
+                                                              height: 14,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Container(
+                                                                  width:198,
+                                                                  height:36,
+                                                                  decoration: BoxDecoration(
+                                                                      color: Colors.red.shade300,
+                                                                      shape: BoxShape.rectangle
+                                                                  ),
+                                                                  child:  Padding(
+                                                                    padding: const EdgeInsets.all(8.0),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        Text('% change'),
+                                                                        Icon(Icons.call_made, size: 12,),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+
+                                                              ],
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ]),
+                                              Padding(
+                                                  padding:EdgeInsets.only(left: 80.0)),
+                                              Card(
+                                                elevation: 10,
+                                                child: Container(
+                                                  width:402,
+                                                  height:400,
+                                                  decoration: BoxDecoration(
+                                                      boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                      border: Border.all(color: Colors.grey),
+                                                      backgroundBlendMode: BlendMode.darken,
+                                                      color: Colors.white,
+                                                      shape: BoxShape.rectangle
+                                                  ),
+                                                  child: Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                          child: Row(
+                                                            children: [
+                                                              Expanded(
+                                                                flex: 2,
+                                                                child: Column(
+                                                                  children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Text("${count[0].productCount}%",  style: TextStyle(
+                                                                          fontWeight: FontWeight.bold,
+                                                                          fontSize: 15.0,
+                                                                          color:  Colors.black,
+                                                                        ))
+                                                                      ],
+                                                                    ),
+                                                                    Row(
+                                                                      children: [
+                                                                        Text("Product", style: TextStyle(
+                                                                            fontWeight: FontWeight.w600,
+                                                                            fontSize: 10.0,
+                                                                            color:  Colors.black
+                                                                        ))
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+
+                                                              ),
+                                                              Expanded(
+                                                                child: Column(
+                                                                  children: [
+                                                                    Icon(Icons.bar_chart,size: 20,)
+                                                                  ],
+                                                                ),
+
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+
+                                                        SizedBox(
+                                                          height: 70,
+                                                        ),
+                                                        // AnimatedContainer(duration: ),
+                                                        Row(
+                                                          children: [
+                                                            Container(
+                                                              width:400,
+                                                              height:90,
+                                                              decoration: BoxDecoration(
+                                                                  color: Colors.blue,
+                                                                  shape: BoxShape.rectangle
+                                                              ),
+                                                              child:  Padding(
+                                                                  padding: const EdgeInsets.all(8.0),
+                                                                  child:SingleChildScrollView(
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        Column(
+                                                                            children:[
+                                                                              Text(
+                                                                                  "${count[0].productCount}%",  style: TextStyle(
+                                                                                fontWeight: FontWeight.bold,
+                                                                                fontSize: 15.0,
+                                                                                color:  Colors.black,
+                                                                              )),
+
+                                                                              Text('All',
+                                                                                  style:
+                                                                                  TextStyle(
+                                                                                    fontWeight: FontWeight.bold,)),
+
+
+                                                                            ]),
+                                                                        Column(
+                                                                            children:[
+                                                                              Text(
+                                                                                  "${count[0].productCount}%",  style: TextStyle(
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 15.0,
+                                                                                  color:  Colors.deepOrange.shade300
+                                                                              )),
+                                                                              Text('Active',style: (TextStyle(fontWeight: FontWeight.bold,)))]),
+                                                                        Column(
+                                                                            children:[
+                                                                              Text(
+                                                                                  "${count[0].productCount}%",  style: TextStyle(
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 15.0,
+                                                                                  color:  Colors.deepOrange.shade300
+                                                                              )),
+                                                                              Text('InActive',style: (TextStyle(fontWeight: FontWeight.bold,)))]),
+                                                                      ],
+                                                                    ),
+                                                                  )),
+                                                            ),
+
+                                                          ],
+                                                        )
+                                                      ]),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )],
+                                  ),
+                                );
+
+                            }, error: (e,s){
+                              return Text(e.toString());
                             }, loading: (){
-                               return CircularProgressIndicator();
+                              return CircularProgressIndicator();
                             });
 
                           }
@@ -297,6 +728,71 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                     inactive = true;
                                   });
                                 }),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 20.0),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            right: 15.0),
+                                        child: DropdownButton(
+
+                                          icon: const Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 25.0),
+                                            child: Icon(
+                                                Icons.keyboard_arrow_down),
+                                          ),
+                                          items: status
+                                              .map<DropdownMenuItem<String>>((
+                                              String setlist) {
+                                            return DropdownMenuItem<String>(
+                                              value: setlist,
+
+                                              child: Text(setlist.toString()),
+                                            );
+                                          }).toList(),
+                                          value: selectRole,
+                                          onChanged: (item) {
+                                            setState(() {
+                                              selectRole = item.toString();
+                                              //List<FirstClass> emptylist = [];
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Visibility(
+                                  visible: search,
+                                  child: Container(
+                                      width: MediaQuery.of(context).size.width * 0.25,
+                                      //MediaQuery.of(context).size.width * 0.25,
+                                      height: 30,
+                                      child: TextField(
+                                          decoration: InputDecoration(
+                                            prefixIcon: Icon(Icons.search),
+                                            hintText: 'search',
+                                            hintStyle: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 18,
+                                            ),
+                                            border: InputBorder.none,
+                                          ),
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                          onChanged: (String query) {
+
+                                          })
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -397,7 +893,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                             children: [
                               Container(
                                 height: 500,
-                                color: Color(0xFFd9d8d7),
+                                color: Color(0xffcbdff2),
 
                                 child: ValueListenableBuilder<
                                     Box<ProductModel>>(
@@ -483,126 +979,134 @@ class _ProductPageState extends ConsumerState<ProductPage> {
   getProduct(List<Productmodel> items, int index) {
     return Card(
         color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0),
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                    color: items[index].flg == 1
-                        ? Colors.green
-                        : Colors.red,
-                    shape: BoxShape.circle),
-              ),
-            ),
-
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text((index + 1).toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(items[index].productCode.toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(items[index].productName.toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(items[index].quantity.toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(items[index].status.toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(items[index].timeRequired.toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
-              ),
-            ),
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          setState(() {
-                            product.productId = int.parse(items[index].productId
-                                .toString());
-                            product.productCode = items[index].productCode
-                                .toString();
-                            product.productName = items[index].productName
-                                .toString();
-                            product.quantity = int.parse(items[index].quantity
-                                .toString());
-                            product.status = items[index].status.toString();
-                            product.timeRequired = int.parse(items[index]
-                                .timeRequired.toString());
-                            product.description = items[index].description
-                                .toString();
-                            product.templateId = int.parse(items[index]
-                                .templateId.toString());
-                            product.flg = items[index].flg;
-
-                            AddProduct(product: product);
-
-                            _isShow = true;
-                            procount = false;
-                          });
-                        },
-                        icon: Icon(Icons.edit)),
-                    IconButton(
-                        onPressed: () {
-                          // Product().deleteProduct(datamodels[index]);
-                        },
-                        icon: Icon(Icons.delete))
-                  ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                        color: items[index].flg == 1
+                            ? Colors.green
+                            : Colors.red,
+                        shape: BoxShape.circle),
+                  ),
                 ),
-              ),
-            ),
+                Expanded(
+                  child: Container(
+                    height: 20.0,
+                    width: 10.0,
+                    child: Center(child: Text((index + 1).toString(),
+                        style: TextStyle(fontWeight: FontWeight.w300,
+                            fontSize: 13.0,
+                            color: Colors.black))),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 20.0,
+                    width: 10.0,
+                    child: Center(child: Text(items[index].productCode.toString(),
+                        style: TextStyle(fontWeight: FontWeight.w300,
+                            fontSize: 13.0,
+                            color: Colors.black))),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 20.0,
+                    width: 10.0,
+                    child: Center(child: Text(items[index].productName.toString(),
+                        style: TextStyle(fontWeight: FontWeight.w300,
+                            fontSize: 13.0,
+                            color: Colors.black))),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 20.0,
+                    width: 10.0,
+                    child: Center(child: Text(items[index].quantity.toString(),
+                        style: TextStyle(fontWeight: FontWeight.w300,
+                            fontSize: 13.0,
+                            color: Colors.black))),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 20.0,
+                    width: 10.0,
+                    child: Center(child: Text(items[index].status.toString(),
+                        style: TextStyle(fontWeight: FontWeight.w300,
+                            fontSize: 13.0,
+                            color: Colors.black))),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 20.0,
+                    width: 10.0,
+                    child: Center(child: Text(items[index].timeRequired.toString(),
+                        style: TextStyle(fontWeight: FontWeight.w300,
+                            fontSize: 13.0,
+                            color: Colors.black))),
+                  ),
+                ),
 
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  product.productId = int.parse(items[index].productId
+                                      .toString());
+                                  product.productCode = items[index].productCode
+                                      .toString();
+                                  product.productName = items[index].productName
+                                      .toString();
+                                  product.quantity = int.parse(items[index].quantity
+                                      .toString());
+                                  product.status = items[index].status.toString();
+                                  product.timeRequired = int.parse(items[index]
+                                      .timeRequired.toString());
+                                  product.description = items[index].description
+                                      .toString();
+                                  product.templateId = int.parse(items[index]
+                                      .templateId.toString());
+                                  product.flg = items[index].flg;
+
+                                  AddProduct(product: product);
+
+                                  _isShow = true;
+                                  procount = false;
+                                  search = false;
+                                });
+                              },
+                              icon: Icon(Icons.edit)),
+                        ),
+                        Expanded(
+                          child: IconButton(
+                              onPressed: () {
+                                // Product().deleteProduct(datamodels[index]);
+                              },
+                              icon: Icon(Icons.delete)),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+
+              ],
+            ),
           ],
         ));
   }
@@ -725,6 +1229,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
 
                             _isShow = true;
                             procount = false;
+                            search = false;
                           });
                         },
                         icon: Icon(Icons.edit)),
@@ -859,6 +1364,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                             AddProduct(product: product);
                             _isShow = true;
                             procount = false;
+                            search = false;
                           });
                         },
                         icon: Icon(Icons.edit)),
