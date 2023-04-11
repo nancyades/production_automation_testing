@@ -14,9 +14,11 @@ import 'package:production_automation_testing/Helper/helper.dart';
 import 'package:production_automation_testing/noofpages/Users/user.dart';
 import '../../Database/Curd_operation/HiveModel/usermodel.dart';
 import '../../Model/APIModel/usermodel.dart';
+import '../../Provider/changenotifier/widget_notifier.dart';
 import '../../Provider/excelprovider.dart';
 import '../../Provider/general_provider.dart';
 import '../../Provider/post_provider/user_provider.dart';
+import '../../res/appColors.dart';
 
 class AddUsers extends ConsumerStatefulWidget {
 
@@ -32,7 +34,7 @@ class _AddUsersState extends ConsumerState<AddUsers> {
   var selectProduct = "PSBE";
   List<String> products = ['PSBE', '16 Zone', 'PSBE-E', '32 Zone'];
 
-  var selectRole = "Super Admin";
+  var selectRole;
   List<String> roles = [
     'Super Admin',
     'Design Admin',
@@ -85,6 +87,7 @@ class _AddUsersState extends ConsumerState<AddUsers> {
   @override
   void initState() {
     super.initState();
+    ref.refresh(addUserNotifier.notifier);
     dataBox = Hive.box<UserManagementmodel>('users');
   }
 
@@ -128,6 +131,7 @@ class _AddUsersState extends ConsumerState<AddUsers> {
       controllerContactNo.text = widget.user.phoneno!;
       controllerPassword.text = widget.user.password!;
       isSelected  =  widget.user.flg == 0 ? false : true;
+      selectRole = widget.user.role;
     }
 
 
@@ -548,39 +552,70 @@ class _AddUsersState extends ConsumerState<AddUsers> {
                                   ),
                                 ],
                               ),
-                              Padding(
+                              (widget.user.name == "")?
+                                Consumer(builder: (context, ref, child) {
+                                  ref.watch(counterModelProvider);
+                                  return Padding(
+                                    padding: const EdgeInsets.only(left: 20.0),
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 15.0),
+                                          child: DropdownButton(
+                                            icon: Padding(
+                                              padding:
+                                              const EdgeInsets.only(left: 25.0),
+                                              child: Icon(
+                                                  Icons.keyboard_arrow_down),
+                                            ),
+                                            items: roles
+                                                .map<DropdownMenuItem<String>>(
+                                                    (String setlist) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: setlist,
+                                                    child: Text(
+                                                        setlist.toString()),
+                                                  );
+                                                }).toList(),
+                                            // value: selectRole,
+                                            // onChanged: (item) {
+                                            //   setState(() {
+                                            //     selectRole = item.toString();
+                                            //
+                                            //    });
+                                            // },
+                                            value: selectRole,
+                                            onChanged: (item) {
+                                              ref
+                                                  .read(counterModelProvider
+                                                  .notifier)
+                                                  .press();
+                                              selectRole = item.toString();
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                })
+                                  : Padding(
                                 padding: const EdgeInsets.only(left: 20.0),
                                 child: Row(
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.only(right: 15.0),
-                                      child: DropdownButton(
-                                        icon: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 25.0),
-                                          child: Icon(Icons.keyboard_arrow_down),
-                                        ),
-                                        items: roles
-                                            .map<DropdownMenuItem<String>>(
-                                                (String setlist) {
-                                          return DropdownMenuItem<String>(
-                                            value: setlist,
-                                            child: Text(setlist.toString()),
-                                          );
-                                        }).toList(),
-                                        value: selectRole,
-                                        onChanged: (item) {
-                                          setState(() {
-                                            selectRole = item.toString();
-                                            print("Index==>" + selectRole);
-                                            //List<FirstClass> emptylist = [];
-                                          });
-                                        },
-                                      ),
+                                      padding: const EdgeInsets.only(
+                                          right: 15.0, top: 10),
+                                      child: Text(widget.user.role.toString(),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15.0,
+                                              color: Colors.black)),
                                     ),
                                   ],
                                 ),
-                              ),
+                              )
                             ],
                           ),
                         ),
@@ -598,22 +633,40 @@ class _AddUsersState extends ConsumerState<AddUsers> {
                                               fontWeight: FontWeight.bold,
                                               fontSize: 15.0,
                                               color: Colors.black))),
-                                  Center(
-                                      child: Checkbox(
-                                    value: isSelected,
-                                    onChanged: (val) {
-                                      setState(() {
-                                        /* this.isSelected = val!;
-                                            if(isSelected == true ? false : true){
 
-                                            }*/
-                                        isSelected = !isSelected;
+                                  // Center(
+                                  //     child: Checkbox(
+                                  //
+                                  //   value: isSelected,
+                                  //   onChanged: (val) {
+                                  //      setState(() {
+                                  //       /* this.isSelected = val!;
+                                  //           if(isSelected == true ? false : true){
+                                  //
+                                  //           }*/
+                                  //       isSelected = val!;
+                                  //       widget.user.flg = isSelected == false ? 0 : 1;
+                                  //
+                                  //      // Allvalues.isActive = isSelected;
+                                  //      });
+                                  //   },
+                                  // )),
+                                  Consumer(builder: (context, ref, child) {
+                                    ref.watch(counterModelProvider);
+                                    return Checkbox(
+                                      checkColor: AppColors.white,
+                                      activeColor: Colors.blue,
+                                      value: isSelected,
+                                      onChanged: (value) {
+                                        ref
+                                            .read(counterModelProvider
+                                            .notifier)
+                                            .press();
+                                        isSelected = value!;
                                         widget.user.flg = isSelected == false ? 0 : 1;
-
-                                       // Allvalues.isActive = isSelected;
-                                      });
-                                    },
-                                  )),
+                                      },
+                                    );
+                                  }),
                                 ],
                               ),
                             ),
@@ -625,107 +678,198 @@ class _AddUsersState extends ConsumerState<AddUsers> {
                 ),
               ),
             ),
-            SingleChildScrollView( 
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text("ADD USERS ".toUpperCase(),
-                                  style: TextStyle(fontSize: 14)),
-                            ),
-                            style: ButtonStyle(
-                                foregroundColor:
-                                    MaterialStateProperty.all<Color>(Colors.white),
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(Colors.red),
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8.0),
-                                        side: BorderSide(color: Colors.red)))),
-                            onPressed: () {
-                              if (validateFields()) {
-                                ref.read(addUserNotifier.notifier).addUser({
-                                  "name": controllerUsername.text,
-                                  "password": controllerPassword.text,
-                                  "avatar_id": "",
-                                  "emailid": controllerEmail.text,
-                                  "phoneno": controllerContactNo.text,
-                                  "role": selectRole,
-                                  "created_by": 0,
-                                  "updated_by": 0,
-                                  "created_date": null,
-                                  "updated_date": null,
-                                  "flg": isSelected ? 0 : 1,
-                                });
-
-                                /*User().addUsers(
-                                  "",
-                                  controllerEmpId.text,
-                                  controllerUsername.text,
-                                  controllerPassword.text,
-                                  "",
-                                  controllerEmail.text,
-                                  controllerContactNo.text,
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  isSelected,
-                                );*/
-                                clearText();
-                              }
-                              Helper.isadd = true;
-                            }),
-                        ElevatedButton(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text("EDIT USERS".toUpperCase(),
-                                  style: TextStyle(fontSize: 14)),
-                            ),
-                            style: ButtonStyle(
-                                foregroundColor:
-                                    MaterialStateProperty.all<Color>(Colors.white),
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(Colors.red),
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8.0),
-                                        side: BorderSide(color: Colors.red)))),
-                            onPressed: () async {
-                              ref.read(updateUserNotifier.notifier).updatetUser({
-                                    "user_id": userid,
-                                    "emp_id": controllerEmpId.text,
-                                    "name": controllerUsername.text,
-                                    "password": controllerPassword.text,
-                                    "avatar_id": null,
-                                    "emailid": controllerEmail.text,
-                                    "phoneno": controllerContactNo.text,
-                                    "role": selectRole,
-                                    "created_by": 0,
-                                    "updated_by": 0,
-                                    "created_date": null,
-                                    "updated_date": null,
-                                    "flg": widget.user.flg
-                                  });
-                              clearText();
-
-
-                            }),
-                      ],
-                    ),
+            (widget.user.name == "")?
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: ElevatedButton(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text("ADD USERS ".toUpperCase(),
+                        style: TextStyle(fontSize: 14)),
                   ),
+                  style: ButtonStyle(
+                      foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.red),
+                      shape: MaterialStateProperty.all<
+                          RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              side: BorderSide(color: Colors.red)))),
+                  onPressed: () {
+
+                    if (validateFields()) {
+                      ref.read(addUserNotifier.notifier).addUser({
+                        "name": controllerUsername.text,
+                        "password": controllerPassword.text,
+                        "avatar_id": "",
+                        "emailid": controllerEmail.text,
+                        "phoneno": controllerContactNo.text,
+                        "role": selectRole,
+                        "created_by": 0,
+                        "updated_by": 0,
+                        "created_date": null,
+                        "updated_date": null,
+                        "flg": isSelected ? 1 : 0,
+                      });
+
+                      /*User().addUsers(
+                              "",
+                              controllerEmpId.text,
+                              controllerUsername.text,
+                              controllerPassword.text,
+                              "",
+                              controllerEmail.text,
+                              controllerContactNo.text,
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              isSelected,
+                            );*/
+                      clearText();
+                    }
+
+                    Helper.isadd = true;
+                  }),
+            )
+            : Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: ElevatedButton(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text("EDIT USERS".toUpperCase(),
+                        style: TextStyle(fontSize: 14)),
+                  ),
+                  style: ButtonStyle(
+                      foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.red),
+                      shape: MaterialStateProperty.all<
+                          RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              side: BorderSide(color: Colors.red)))),
+                  onPressed: () async {
+                    ref.read(updateUserNotifier.notifier).updatetUser({
+                      "user_id": userid,
+                      "emp_id": controllerEmpId.text,
+                      "name": controllerUsername.text,
+                      "password": controllerPassword.text,
+                      "avatar_id": null,
+                      "emailid": controllerEmail.text,
+                      "phoneno": controllerContactNo.text,
+                      "role": selectRole,
+                      "created_by": 0,
+                      "updated_by": 0,
+                      "created_date": null,
+                      "updated_date": null,
+                      "flg": widget.user.flg
+                    });
+                    clearText();
+                  }),
+            ),
+
+          /*  Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("ADD USERS ".toUpperCase(),
+                            style: TextStyle(fontSize: 14)),
+                      ),
+                      style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.red),
+                          shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  side: BorderSide(color: Colors.red)))),
+                      onPressed: () {
+
+                          if (validateFields()) {
+                            ref.read(addUserNotifier.notifier).addUser({
+                              "name": controllerUsername.text,
+                              "password": controllerPassword.text,
+                              "avatar_id": "",
+                              "emailid": controllerEmail.text,
+                              "phoneno": controllerContactNo.text,
+                              "role": selectRole,
+                              "created_by": 0,
+                              "updated_by": 0,
+                              "created_date": null,
+                              "updated_date": null,
+                              "flg": isSelected ? 1 : 0,
+                            });
+
+                            */
+            /*User().addUsers(
+                            "",
+                            controllerEmpId.text,
+                            controllerUsername.text,
+                            controllerPassword.text,
+                            "",
+                            controllerEmail.text,
+                            controllerContactNo.text,
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            isSelected,
+                          );*/
+            /*
+                            clearText();
+                          }
+
+                        Helper.isadd = true;
+                      }),
+                  ElevatedButton(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("EDIT USERS".toUpperCase(),
+                            style: TextStyle(fontSize: 14)),
+                      ),
+                      style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.red),
+                          shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  side: BorderSide(color: Colors.red)))),
+                      onPressed: () async {
+                        ref.read(updateUserNotifier.notifier).updatetUser({
+                              "user_id": userid,
+                              "emp_id": controllerEmpId.text,
+                              "name": controllerUsername.text,
+                              "password": controllerPassword.text,
+                              "avatar_id": null,
+                              "emailid": controllerEmail.text,
+                              "phoneno": controllerContactNo.text,
+                              "role": selectRole,
+                              "created_by": 0,
+                              "updated_by": 0,
+                              "created_date": null,
+                              "updated_date": null,
+                              "flg": widget.user.flg
+                            });
+                        clearText();
+            }),
                 ],
               ),
-            ),
+            ),*/
           ],
         ),
       ),

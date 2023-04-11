@@ -17,6 +17,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../Model/APIModel/usermodel.dart';
 import 'package:pie_chart/pie_chart.dart';
 
+import '../../Provider/post_provider/user_provider.dart';
+
 
 class UserPage extends ConsumerStatefulWidget {
   UserPage({Key, key});
@@ -56,9 +58,11 @@ class _UserPageState extends ConsumerState<UserPage> {
   List<dynamic>? allusers;
   List<UserManagementmodel>  use = [];
 
+
   @override
   void initState(){
     Helper.classes ='userlist';
+   // ref.refresh(getUserNotifier);
 
   }
 
@@ -108,6 +112,8 @@ class _UserPageState extends ConsumerState<UserPage> {
        ),
      );
    }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +300,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                                                                  width:198,
                                                                  height:36,
                                                                  decoration: BoxDecoration(
-                                                                     color: Colors.deepOrange.shade300,
+                                                                     color: Colors.deepOrange,
                                                                      shape: BoxShape.rectangle
                                                                  ),
                                                                  child:  Padding(
@@ -381,7 +387,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                                                                    width:198,
                                                                    height:36,
                                                                    decoration: BoxDecoration(
-                                                                       color: Colors.green.shade300,
+                                                                       color: Colors.green,
                                                                        shape: BoxShape.rectangle
                                                                    ),
                                                                    child:  Padding(
@@ -471,7 +477,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                                                                    width:198,
                                                                    height:36,
                                                                    decoration: BoxDecoration(
-                                                                       color: Colors.amber.shade300,
+                                                                       color: Colors.amber,
                                                                        shape: BoxShape.rectangle
                                                                    ),
                                                                    child:  Padding(
@@ -648,7 +654,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                                                                    width:198,
                                                                    height:36,
                                                                    decoration: BoxDecoration(
-                                                                       color: Colors.red.shade300,
+                                                                       color: Colors.red,
                                                                        shape: BoxShape.rectangle
                                                                    ),
                                                                    child:  Padding(
@@ -735,7 +741,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                                                                    width:198,
                                                                    height:36,
                                                                    decoration: BoxDecoration(
-                                                                       color: Colors.purple.shade300,
+                                                                       color: Colors.purple,
                                                                        shape: BoxShape.rectangle
                                                                    ),
                                                                    child:  Padding(
@@ -1345,6 +1351,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                                  user.password= items[index].password.toString();
                                  user.phoneno= items[index].phoneno.toString();
                                  user.flg= items[index].flg == 0 ? 0 : 1;
+                                 user.role = items[index].role.toString();
 
                                 AddUsers(user: user);
 
@@ -1372,7 +1379,25 @@ class _UserPageState extends ConsumerState<UserPage> {
                             icon: Icon(Icons.edit)),
                         IconButton(
                             onPressed: () {
-                              User().deleteUser(datamodels![index]);
+                              print("object");
+                              //User().deleteUser(datamodels![index]);
+                              ref.read(updateUserNotifier.notifier).updatetUser({
+                                "user_id": items[index].userId,
+                                "emp_id": items[index].empId.toString(),
+                                "name": items[index].name.toString(),
+                                "password": items[index].password.toString(),
+                                "avatar_id": null,
+                                "emailid": items[index].emailid.toString(),
+                                "phoneno": items[index].phoneno.toString(),
+                                "role": items[index].role.toString(),
+                                "created_by": 0,
+                                "updated_by": 0,
+                                "created_date": null,
+                                "updated_date": null,
+                                "flg": 0
+                              });
+
+
                             },
                             icon: Icon(Icons.delete))
                       ],
@@ -1496,6 +1521,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                                 user.password= activevalue[index].password.toString();
                                 user.phoneno= activevalue[index].phoneno.toString();
                                 user.flg= activevalue[index].flg == 0 ? 0 : 1;
+                                user.role = activevalue[index].role.toString();
 
                                 AddUsers(user: user);
 
@@ -1507,7 +1533,21 @@ class _UserPageState extends ConsumerState<UserPage> {
                             icon: Icon(Icons.edit)),
                         IconButton(
                             onPressed: () {
-                             // User().deleteUser(activevalue![index]);
+                              ref.read(updateUserNotifier.notifier).updatetUser({
+                                "user_id": activevalue[index].userId,
+                                "emp_id": activevalue[index].empId.toString(),
+                                "name": activevalue[index].name.toString(),
+                                "password": activevalue[index].password.toString(),
+                                "avatar_id": null,
+                                "emailid": activevalue[index].emailid.toString(),
+                                "phoneno": activevalue[index].phoneno.toString(),
+                                "role": activevalue[index].role.toString(),
+                                "created_by": 0,
+                                "updated_by": 0,
+                                "created_date": null,
+                                "updated_date": null,
+                                "flg": 0
+                              });
                             },
                             icon: Icon(Icons.delete))
                       ],
@@ -1630,6 +1670,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                                 user.password= inactivevalue[index].password.toString();
                                 user.phoneno= inactivevalue[index].phoneno.toString();
                                 user.flg= inactivevalue[index].flg == 0 ? 0 : 1;
+                                user.role = inactivevalue[index].role.toString();
 
                                 AddUsers(user: user);
 
@@ -1641,7 +1682,21 @@ class _UserPageState extends ConsumerState<UserPage> {
                             icon: Icon(Icons.edit)),
                         IconButton(
                             onPressed: () {
-                             // User().deleteUser(inactivevalue[index]);
+                              ref.read(updateUserNotifier.notifier).updatetUser({
+                                "user_id": inactivevalue[index].userId,
+                                "emp_id": inactivevalue[index].empId.toString(),
+                                "name": inactivevalue[index].name.toString(),
+                                "password": inactivevalue[index].password.toString(),
+                                "avatar_id": null,
+                                "emailid": inactivevalue[index].emailid.toString(),
+                                "phoneno": inactivevalue[index].phoneno.toString(),
+                                "role": inactivevalue[index].role.toString(),
+                                "created_by": 0,
+                                "updated_by": 0,
+                                "created_date": null,
+                                "updated_date": null,
+                                "flg": 0
+                              });
                             },
                             icon: Icon(Icons.delete))
                       ],

@@ -9,6 +9,7 @@ class Template {
     this.updatedDate,
     this.flg,
     this.remarks,
+    this.productid,
   });
 
   int? templateId;
@@ -20,5 +21,6 @@ class Template {
   dynamic updatedDate;
   int? flg;
   String? remarks;
+  String? productid;
 
 }

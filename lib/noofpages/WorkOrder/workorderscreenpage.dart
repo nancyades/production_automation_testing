@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:production_automation_testing/Helper/helper.dart';
+import 'package:production_automation_testing/Provider/post_provider/workorder_provider.dart';
 import 'package:production_automation_testing/noofpages/WorkOrder/addworkorder.dart';
 import '../../DashBoard/src/ProjectCardOverview.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -13,6 +15,7 @@ import '../../Database/Curd_operation/database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../Model/APIModel/workordermodel.dart';
+import '../../Model/templatemodel.dart';
 import '../../Provider/excelprovider.dart';
 
 
@@ -29,6 +32,8 @@ WorkOrderModel? data;
 List<WorkOrderModel>? datamodels;
 
 WorkorderModel workorder = WorkorderModel();
+ProductList productList = ProductList();
+
 
 class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
   bool _isShow = false;
@@ -153,8 +158,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                   workorder.quantity = 0;
                                   workorder.startSerialNo = "";
                                   workorder.endSerialNo = "";
-                                  workorder.status = "";
-
+                                  workorder.status = "Created";
                                   _isShow = !_isShow;
                                   chart = !chart;
                                   searchdropdown = !searchdropdown;
@@ -213,7 +217,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                                                     children: [
                                                                       Row(
                                                                         children: [
-                                                                          Text("${count[0].wOCount}%",  style: TextStyle(
+                                                                          Text("${count[0].wOCount.toString()}%",  style: TextStyle(
                                                                               fontWeight: FontWeight.bold,
                                                                               fontSize: 15.0,
                                                                               color:  Colors.black
@@ -255,7 +259,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                                                 width:198,
                                                                 height:36,
                                                                 decoration: BoxDecoration(
-                                                                    color: Colors.deepOrange.shade300,
+                                                                    color: Colors.deepOrange,
                                                                     shape: BoxShape.rectangle
                                                                 ),
                                                                 child:  Padding(
@@ -300,7 +304,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                                                       children: [
                                                                         Row(
                                                                           children: [
-                                                                            Text("${count[0].created}%",  style: TextStyle(
+                                                                            Text("${count[0].created.toString()}%",  style: TextStyle(
                                                                                 fontWeight: FontWeight.bold,
                                                                                 fontSize: 15.0,
                                                                                 color:  Colors.black
@@ -342,7 +346,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                                                   width:198,
                                                                   height:36,
                                                                   decoration: BoxDecoration(
-                                                                      color: Colors.green.shade300,
+                                                                      color: Colors.green,
                                                                       shape: BoxShape.rectangle
                                                                   ),
                                                                   child:  Padding(
@@ -391,7 +395,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                                                       children: [
                                                                         Row(
                                                                           children: [
-                                                                            Text("${count[0].verified}%",  style: TextStyle(
+                                                                            Text("${count[0].verified.toString()}%",  style: TextStyle(
                                                                                 fontWeight: FontWeight.bold,
                                                                                 fontSize: 15.0,
                                                                                 color:  Colors.black
@@ -433,7 +437,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                                                   width:198,
                                                                   height:36,
                                                                   decoration: BoxDecoration(
-                                                                      color: Colors.amber.shade300,
+                                                                      color: Colors.amber,
                                                                       shape: BoxShape.rectangle
                                                                   ),
                                                                   child:  Padding(
@@ -478,7 +482,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                                                       children: [
                                                                         Row(
                                                                           children: [
-                                                                            Text("${count[0].approved}%",  style: TextStyle(
+                                                                            Text("${count[0].approved.toString()}%",  style: TextStyle(
                                                                                 fontWeight: FontWeight.bold,
                                                                                 fontSize: 15.0,
                                                                                 color:  Colors.black
@@ -542,6 +546,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                                       ),
                                                     ),
                                                   ]),
+                                              Padding(padding: EdgeInsets.only(left: 30)),
                                               Card(
                                                 elevation:12,
                                                 child: Container(
@@ -608,7 +613,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                                             width:198,
                                                             height:36,
                                                             decoration: BoxDecoration(
-                                                                color: Colors.red.shade300,
+                                                                color: Colors.red,
                                                                 shape: BoxShape.rectangle
                                                             ),
                                                             child:  Padding(
@@ -681,7 +686,12 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 );
 
                             }, error: (e,s){
-                              return Text(e.toString());
+                              return Image.asset(
+                                'assets/images/404.gif',
+                                height: 200,
+                                width: 200,
+                                fit: BoxFit.cover,
+                              );
                             }, loading: (){
                               return CircularProgressIndicator();
                             });
@@ -699,22 +709,44 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 ElevatedButton(
+                            child: Row(
+                            children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Color(0xffFFAAA1E),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              datum.length.toString(),
+                                              style: TextStyle(color: Colors.black, fontSize: 10),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                              Padding(
+                                  padding: const EdgeInsets.all(5.0),
                                     child: Text("All".toUpperCase(),
-                                        style: TextStyle(fontSize: 14)),
+                                        style: TextStyle(fontSize: 14)))]),
                                     style: ButtonStyle(
                                         foregroundColor:
                                         MaterialStateProperty.all<Color>(
                                             Colors.white),
                                         backgroundColor:
                                         MaterialStateProperty.all<Color>(
-                                            Colors.black),
+                                            Color(0xff6C6CE5)),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                             RoundedRectangleBorder(
                                                 borderRadius:
                                                 BorderRadius.circular(18.0),
                                                 side: BorderSide(
-                                                    color: Colors.black)))),
+                                                    color: Color(0xff6C6CE5))))),
                                     onPressed: () {
                                       setState(() {
                                         all = true;
@@ -727,23 +759,47 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 /* SizedBox(
                                         width: 10.0,
                                       ),*/
+
                                 ElevatedButton(
+                                    child: Row(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 20,
+                                                height: 20,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Color(0xffFFAAA1E),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    createdvalue.length.toString(),
+                                                    style: TextStyle(color: Colors.black, fontSize: 10),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Padding(
+                                              padding: const EdgeInsets.all(5.0),
+
                                     child: Text("Created".toUpperCase(),
-                                        style: TextStyle(fontSize: 14)),
+                                        style: TextStyle(fontSize: 14)))]),
                                     style: ButtonStyle(
                                         foregroundColor:
                                         MaterialStateProperty.all<Color>(
                                             Colors.white),
                                         backgroundColor:
                                         MaterialStateProperty.all<Color>(
-                                            Colors.black),
+                                            Color(0xff6C6CE5)),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                             RoundedRectangleBorder(
                                                 borderRadius:
                                                 BorderRadius.circular(18.0),
                                                 side: BorderSide(
-                                                    color: Colors.black)))),
+                                                    color: Color(0xff6C6CE5))))),
                                     onPressed: () {
                                       /* ref.read(ActiveUser.notifier).state =
                             !ref.watch(ActiveUser);*/
@@ -759,22 +815,46 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                         width: 10.0,
                                       ),*/
                                 ElevatedButton(
+                                    child: Row(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 20,
+                                                height: 20,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Color(0xffFFAAA1E),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    verifiedvalue.length.toString(),
+                                                    style: TextStyle(color: Colors.black, fontSize: 10),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Padding(
+                                              padding: const EdgeInsets.all(5.0),
+
+
                                     child: Text("Verified".toUpperCase(),
-                                        style: TextStyle(fontSize: 14)),
+                                        style: TextStyle(fontSize: 14)))]),
                                     style: ButtonStyle(
                                         foregroundColor:
                                         MaterialStateProperty.all<Color>(
                                             Colors.white),
                                         backgroundColor:
                                         MaterialStateProperty.all<Color>(
-                                            Colors.black),
+                                            Color(0xff6C6CE5)),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                             RoundedRectangleBorder(
                                                 borderRadius:
                                                 BorderRadius.circular(18.0),
                                                 side: BorderSide(
-                                                    color: Colors.black)))),
+                                                    color: Color(0xff6C6CE5))))),
                                     onPressed: () {
                                       setState(() {
                                         all = false;
@@ -788,22 +868,46 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                         width: 10.0,
                                       ),*/
                                 ElevatedButton(
+                                    child: Row(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 20,
+                                                height: 20,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Color(0xffFFAAA1E),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    approvedvalue.length.toString(),
+                                                    style: TextStyle(color: Colors.black, fontSize: 10),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Padding(
+                                              padding: const EdgeInsets.all(5.0),
+
+
                                     child: Text("Approved".toUpperCase(),
-                                        style: TextStyle(fontSize: 14)),
+                                        style: TextStyle(fontSize: 14)))]),
                                     style: ButtonStyle(
                                         foregroundColor:
                                         MaterialStateProperty.all<Color>(
                                             Colors.white),
                                         backgroundColor:
                                         MaterialStateProperty.all<Color>(
-                                            Colors.black),
+                                            Color(0xff6C6CE5)),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                             RoundedRectangleBorder(
                                                 borderRadius:
                                                 BorderRadius.circular(18.0),
                                                 side: BorderSide(
-                                                    color: Colors.black)))),
+                                                    color: Color(0xff6C6CE5))))),
                                     onPressed: () {
                                       /* ref.read(ActiveUser.notifier).state =
                             !ref.watch(ActiveUser);*/
@@ -819,22 +923,46 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                         width: 10.0,
                                       ),*/
                                 ElevatedButton(
+                                    child: Row(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 20,
+                                                height: 20,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Color(0xffFFAAA1E),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    rejectedvalue.length.toString(),
+                                                    style: TextStyle(color: Colors.black, fontSize: 10),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Padding(
+                                              padding: const EdgeInsets.all(5.0),
+
+
                                     child: Text("Rejected".toUpperCase(),
-                                        style: TextStyle(fontSize: 14)),
+                                        style: TextStyle(fontSize: 14)))]),
                                     style: ButtonStyle(
                                         foregroundColor:
                                         MaterialStateProperty.all<Color>(
                                             Colors.white),
                                         backgroundColor:
                                         MaterialStateProperty.all<Color>(
-                                            Colors.black),
+                                            Color(0xff6C6CE5)),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                             RoundedRectangleBorder(
                                                 borderRadius:
                                                 BorderRadius.circular(18.0),
                                                 side: BorderSide(
-                                                    color: Colors.black)))),
+                                                    color: Color(0xff6C6CE5))))),
                                     onPressed: () {
                                       setState(() {
                                         all = false;
@@ -856,7 +984,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                             visible: searchdropdown,
                             child: Row(
                               children: [
-                                Padding(
+                               /* Padding(
                                   padding: const EdgeInsets.only(left: 20.0),
                                   child: Row(
                                     children: [
@@ -890,7 +1018,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                       ),
                                     ],
                                   ),
-                                ),
+                                ),*/
                                 Center(
                                     child: Icon(Icons.search)
                                 ),
@@ -1234,6 +1362,28 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                     items[index].endSerialNo.toString();
                                 workorder.status =
                                     items[index].status.toString();
+                                List<WorkorderList> wolst = [];
+
+                                for(int i = 0; i< items[index].woList!.length; i++){
+                                  if(workorder.workorderId == items[index].woList![i].workorder_id ){
+                                    WorkorderList wlist = WorkorderList(
+                                      id: items[index].woList![i].id,
+                                      workorder_id: items[index].woList![i].workorder_id,
+                                      product_id: items[index].woList![i].product_id,
+                                      product_name: items[index].woList![i].product_name,
+                                      quantity:items[index].woList![i].quantity,
+                                      start_serial_no: items[index].woList![i].start_serial_no,
+                                      end_serial_no: items[index].woList![i].end_serial_no,
+                                    );
+                                    wolst.add(wlist);
+                                  }
+
+                                }
+
+                                workorder.woList = wolst;
+                                    //items[index].woList;
+
+                               // productList.productname = items[index].woList[0].
 
                                 AddWorkOrder(workorderModel: workorder);
 
@@ -1244,12 +1394,27 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 chart = false;
                                 _isShow = true;
                                 searchdropdown = false;
+
+                                Helper.editvalue = "passvalue";
                               });
                             },
                             icon: Icon(Icons.edit)),
                         IconButton(
                             onPressed: () {
-                              //  WorkOrder().deleteworkorder(datamodels[index]);
+                              ref.read(updateWorkorderNotifier.notifier).updatetWorkorder({
+                                "workorder_id": items[index].workorderId,
+                                "workorder_code": items[index].workorderCode.toString(),
+                                "quantity": items[index].quantity,
+                                "start_serial_no": items[index].startSerialNo.toString(),
+                                "end_serial_no": items[index].endSerialNo.toString(),
+                                "status": items[index].status.toString(),
+                                "created_by": 1,
+                                "updated_by": 1,
+                                "created_date": null,
+                                "updated_date": null,
+                                "flg": 0,
+                                "remarks": items[index].remarks.toString(),
+                              });
                             },
                             icon: Icon(Icons.delete))
                       ],
@@ -1374,11 +1539,32 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 workorder.status =
                                     createdvalue[index].status.toString();
 
+                                List<WorkorderList> wolst = [];
+
+                                for(int i = 0; i< createdvalue[index].woList!.length; i++){
+                                  if(workorder.workorderId == createdvalue[index].woList![i].workorder_id ){
+                                    WorkorderList wlist = WorkorderList(
+                                      id: createdvalue[index].woList![i].id,
+                                      workorder_id: createdvalue[index].woList![i].workorder_id,
+                                      product_id: createdvalue[index].woList![i].product_id,
+                                      product_name: createdvalue[index].woList![i].product_name,
+                                      quantity:createdvalue[index].woList![i].quantity,
+                                      start_serial_no: createdvalue[index].woList![i].start_serial_no,
+                                      end_serial_no: createdvalue[index].woList![i].end_serial_no,
+                                    );
+                                    wolst.add(wlist);
+                                  }
+
+                                }
+
+                                workorder.woList = wolst;
+
                                 AddWorkOrder(workorderModel: workorder);
 
                                 chart = false;
                                 _isShow = true;
                                 searchdropdown = false;
+                                Helper.editvalue = "passvalue";
                               });
                             },
                             icon: Icon(Icons.edit)),
@@ -1510,11 +1696,33 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 workorder.status =
                                     verifiedvalue[index].status.toString();
 
+                                List<WorkorderList> wolst = [];
+
+                                for(int i = 0; i< verifiedvalue[index].woList!.length; i++){
+                                  if(workorder.workorderId == verifiedvalue[index].woList![i].workorder_id ){
+                                    WorkorderList wlist = WorkorderList(
+                                      id: verifiedvalue[index].woList![i].id,
+                                      workorder_id: verifiedvalue[index].woList![i].workorder_id,
+                                      product_id: verifiedvalue[index].woList![i].product_id,
+                                      product_name: verifiedvalue[index].woList![i].product_name,
+                                      quantity:verifiedvalue[index].woList![i].quantity,
+                                      start_serial_no: verifiedvalue[index].woList![i].start_serial_no,
+                                      end_serial_no: verifiedvalue[index].woList![i].end_serial_no,
+                                    );
+                                    wolst.add(wlist);
+                                  }
+
+                                }
+
+                                workorder.woList = wolst;
+
+
                                 AddWorkOrder(workorderModel: workorder);
 
                                 chart = false;
                                 _isShow = true;
                                 searchdropdown = false;
+                                Helper.editvalue = "passvalue";
                               });
                             },
                             icon: Icon(Icons.edit)),
@@ -1645,11 +1853,32 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 workorder.status =
                                     approvedvalue[index].status.toString();
 
+                                List<WorkorderList> wolst = [];
+
+                                for(int i = 0; i< approvedvalue[index].woList!.length; i++){
+                                  if(workorder.workorderId == approvedvalue[index].woList![i].workorder_id ){
+                                    WorkorderList wlist = WorkorderList(
+                                      id: approvedvalue[index].woList![i].id,
+                                      workorder_id: approvedvalue[index].woList![i].workorder_id,
+                                      product_id: approvedvalue[index].woList![i].product_id,
+                                      product_name: approvedvalue[index].woList![i].product_name,
+                                      quantity:approvedvalue[index].woList![i].quantity,
+                                      start_serial_no: approvedvalue[index].woList![i].start_serial_no,
+                                      end_serial_no: approvedvalue[index].woList![i].end_serial_no,
+                                    );
+                                    wolst.add(wlist);
+                                  }
+
+                                }
+
+                                workorder.woList = wolst;
+
                                 AddWorkOrder(workorderModel: workorder);
 
                                 chart = false;
                                 _isShow = true;
                                 searchdropdown = false;
+                                Helper.editvalue = "passvalue";
                               });
                             },
                             icon: Icon(Icons.edit)),
@@ -1780,10 +2009,31 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 workorder.status =
                                     rejectedvalue[index].status.toString();
 
+                                List<WorkorderList> wolst = [];
+
+                                for(int i = 0; i< rejectedvalue[index].woList!.length; i++){
+                                  if(workorder.workorderId == rejectedvalue[index].woList![i].workorder_id ){
+                                    WorkorderList wlist = WorkorderList(
+                                      id: rejectedvalue[index].woList![i].id,
+                                      workorder_id: rejectedvalue[index].woList![i].workorder_id,
+                                      product_id: rejectedvalue[index].woList![i].product_id,
+                                      product_name: rejectedvalue[index].woList![i].product_name,
+                                      quantity:rejectedvalue[index].woList![i].quantity,
+                                      start_serial_no: rejectedvalue[index].woList![i].start_serial_no,
+                                      end_serial_no: rejectedvalue[index].woList![i].end_serial_no,
+                                    );
+                                    wolst.add(wlist);
+                                  }
+
+                                }
+
+                                workorder.woList = wolst;
+
                                 AddWorkOrder(workorderModel: workorder);
                                 chart = false;
                                 _isShow = true;
                                 searchdropdown = false;
+                                Helper.editvalue = "passvalue";
                               });
                             },
                             icon: Icon(Icons.edit)),

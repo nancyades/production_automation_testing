@@ -7,6 +7,7 @@ import '../Database/Curd_operation/HiveModel/usermanagement.dart';
 import '../Helper/AppClass.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../Helper/helper.dart';
 import '../HomeScreen.dart';
 import '../Provider/excelprovider.dart';
 import '../Provider/general_provider.dart';
@@ -24,7 +25,7 @@ bool conditionfailed = true;
 
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  var selectRole = "Super Admin";
+  var selectRole;
   List<String> roles = ['Super Admin', 'Design Admin', 'Test Admin', 'Design User', 'Test User'];
 
   bool isSelected = false;
@@ -357,10 +358,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                                                           var uservalidation = datum.where((element) => element.empId == controllerEmpId.text ).toList();
                                                                           if(uservalidation[0].flg == 1){
                                                                             if((uservalidation == null) || (uservalidation[0].empId == controllerEmpId.text && uservalidation[0].password == controllerPassword.text)){
-                                                                              Navigator.push(
-                                                                                  context, MaterialPageRoute(builder: (context) => HomeScreenPage()));
-                                                                              //conditionfailed = false;
-                                                                              clearText();
+                                                                              if(uservalidation[0].role == selectRole){
+                                                                                Helper.sharedRoleId = selectRole;
+                                                                                Navigator.push(
+                                                                                    context, MaterialPageRoute(builder: (context) => HomeScreenPage()));
+                                                                                //conditionfailed = false;
+                                                                                clearText();
+                                                                              }else{
+                                                                                getroledialog();
+                                                                              }
+
                                                                             }else
                                                                             {
                                                                               getdialog();
@@ -461,26 +468,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         title: 'Login Failed',
         msg: 'Incorrect employee code or password. Try again!!!',
         context: context);
-
-   /*   showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text("Login Failed"),
-        content: const Text("Incorrect employee code or password. Try again!!!"),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-            },
-            child: Container(
-              color: Colors.green,
-              padding: const EdgeInsets.all(14),
-              child: const Text("okay"),
-            ),
-          ),
-        ],
-      ),
-    );*/
   }
   getinActive() {
     return popDialog(
@@ -488,5 +475,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         msg: 'User is not in Active ',
         context: context);
 
+  }
+  getroledialog() {
+    return popDialog(
+        title: 'Login Failed',
+        msg: 'Role of user is Mismatch select correct role Try again!!!',
+        context: context);
   }
 }

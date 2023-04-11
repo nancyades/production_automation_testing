@@ -9,6 +9,8 @@ import '../../NavigationBar/src/navbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../Provider/excelprovider.dart';
+import '../../Provider/generalProvider.dart';
+import '../../Provider/tcpprovider/tcp_provider_send_data.dart';
 
 
 
@@ -20,11 +22,14 @@ class SecondTaskViewPage extends ConsumerStatefulWidget {
 }
 
 class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
-  List<Testtype>  testtypevale = [];
+  List<FirstTest>  testtypevale = [];
+  List<Testtype>  testvale = [];
   var fontSize, height;
-  bool isSelected = false;
+  bool isallSelected = false;
 
   List<dynamic> testindex = [];
+
+  bool change = false;
 
 
 
@@ -33,7 +38,7 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
 
   @override
   void initState(){
-    ref.read(gettesttypeNotifier);
+    //ref.read(gettesttypeNotifier);
     Helper.classes = "TEST";
 
   }
@@ -44,8 +49,9 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
   Widget build(BuildContext context) {
     fontSize = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height;
-    List<Testtype>? testtype = ref.watch(gettesttypeNotifier).value;
 
+
+/*    List<Testtype>? testtype = ref.watch(getallestNotifier).value;
 
     if(testtype != null){
       for(int i=0; i<testtype.length; i++){
@@ -62,8 +68,37 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
 
         }
       }
+    }*/
+
+
+    List<FirstTest>? alltest = ref.watch(getallestNotifier).value;
+
+    if (alltest == null) {
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    List<FirstTest> ind = [];
+
+
+
+    if(Helper.classes == "TEST"){
+      for (int i = 0; i < alltest.length; i++) {
+        if (alltest[i].testtype != "" && alltest[i].testtype != "Title") {
+
+          FirstTest firstTest = FirstTest(
+              testtype: alltest[i].testtype.toString(),
+              isSelected:  alltest[i].isSelected
+          );
+          ind.add(firstTest);
+          testtypevale = ind;
+        }
+      }
 
     }
+
+
+
+
 
     return Scaffold(
       body: Row(
@@ -336,9 +371,12 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
                                                }
                                              //print("please select atleast one field")
                                             else{
+                                              ref.read(testStartedProvider.notifier).state = false;
                                               Navigator.push(
                                                   context, MaterialPageRoute(builder: (context) => TestScreenPage(testtype: [testindex])));
+
                                             }
+
 
 
                                           }),
@@ -404,16 +442,27 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
                                                     child: Checkbox(
                                                       activeColor: Colors.green,
                                                       checkColor: Colors.black,
-                                                      value:  isSelected,
+                                                      value:  isallSelected,
                                                       //isSelected,
                                                       onChanged: (val) {
                                                         setState(() {
-                                                          isSelected = val!;
+                                                          isallSelected = val!;
                                                           if(val == true){
                                                             Helper.classes = "TESSA";
+                                                            for(int i=0; i<testtypevale.length; i++){
+                                                              Testtype tst = Testtype(
+                                                                testType:  testtypevale[i].testtype
+                                                              );
+                                                              testindex.add(tst.testType);
+                                                            }
+
+
+                                                            print("object------------->${testindex}");
                                                           }
                                                           else{
                                                             Helper.classes = "TEST";
+                                                         //  testindex.remove(testtypevale);
+
                                                           }
 
                                                         });
@@ -438,9 +487,10 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
                                           height: 500,
                                           color: Color(0xFFd9d8d7),
                                           child: ListView.builder(
+                                            controller: ScrollController(),
                                               itemCount: testtypevale.length,
                                               itemBuilder: (BuildContext ctxt, int index) {
-                                                return getProduct(testtypevale,index);
+                                                return getProduct( testtypevale,index);
                                               })),
                                     ],
                                   ),
@@ -473,11 +523,11 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
     );
   }
 
-  getProduct(List<Testtype> mList , int index) {
+  getProduct(List<FirstTest> mList ,int index) {
 
    if(Helper.classes == "TEST"){
      mList[index].isSelected = false;
-     testindex.remove(mList[index].testType);
+     testindex.remove(mList[index].testtype);
    }else if(Helper.classes == "TESSA"){
      mList[index].isSelected = true;
    }
@@ -493,7 +543,7 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
                   height: 20.0,
                   width: 10.0,
                   child: Center(
-                      child: Text(mList[index].testType.toString(),
+                      child: Text(mList[index].testtype.toString(),
                           style: TextStyle(
                               fontWeight: FontWeight.w300,
                               fontSize: 13.0,
@@ -521,27 +571,31 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
                       activeColor: Colors.green,
                       checkColor: Colors.black,
                       value: mList[index].isSelected,
+                      //mList[index].isSelected == null ? false : mList[index].isSelected,
                       //isSelected,
                       onChanged: (val) {
+
 
                         print("${mList[index].isSelected}  ${index}");
                           if(mList[index].isSelected == true){
                             setState(() {
                               mList[index].isSelected = false;
                               Helper.classes = "DEMO";
-                              testindex.remove(mList[index].testType);
+                              testindex.remove(mList[index].testtype);
+
                               print("remove item from list---------------> ${testindex}");
 
                               print("hellllo------------>${mList[index].isSelected}  ${index}");
                             });
 
+
                           }else if(mList[index].isSelected == false){
                             setState(() {
                               Helper.classes = "DEMO";
                               mList[index].isSelected = true;
-                              if(testindex != mList[index].testType ){
-                                if(testindex.contains(mList[index].testType) == false){
-                                  testindex.add(mList[index].testType);
+                              if(testindex != mList[index].testtype ){
+                                if(testindex.contains(mList[index].testtype) == false){
+                                  testindex.add(mList[index].testtype);
                                   Helper.testType = testindex;
                                 }
                                 print("add item from list---------------> ${testindex}");

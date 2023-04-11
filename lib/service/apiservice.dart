@@ -15,6 +15,8 @@ import '../Model/APIModel/workordercount.dart';
 import '../Model/APIModel/workordermodel.dart';
 import 'package:dio/dio.dart';
 
+import '../noofpages/Users/user.dart';
+
 
 
 
@@ -28,9 +30,9 @@ class ApiProider{
   ApiProider(this.ref)
       : _dio = Dio(
     BaseOptions(
-      baseUrl: 'http://192.168.1.69/PAT_API/api/',
+      baseUrl: 'http://192.168.1.47/PAT_API/api/',
       connectTimeout: 10000,
-      receiveTimeout: 20000,
+      receiveTimeout: 35000,
       responseType: ResponseType.json,
     ),
   );
@@ -38,8 +40,7 @@ class ApiProider{
   
   late final Dio _dio;
 
-
-  Future<dynamic> getTestType()async{
+/*  Future<dynamic> getTestType()async{
     List<Testtype> finalData = [];
     final response = await http.get(
         Uri.parse("https://script.google.com/macros/s/AKfycbzNncXFIE8wuT8NQdtb1dE8ZYIrLli_PjFI-wYeM2wr2VnH8noBt9adwUZx_b4VrgDz/exec"),
@@ -53,7 +54,7 @@ class ApiProider{
       finalData.add(sub);
     }
     return finalData;
-  }
+  }*/
 
   Future<dynamic> getFirstTest()async{
     List<FirstTest> finalData = [];
@@ -80,7 +81,6 @@ class ApiProider{
     }
     return finalData;
   }
-
   Future<dynamic> getSecondTest()async{
     List<FirstTest> finalData = [];
     final response = await http.get(
@@ -106,9 +106,6 @@ class ApiProider{
     }
     return finalData;
   }
-
-
-
   Future<dynamic> getThirdTest()async{
     List<FirstTest> finalData = [];
     final response = await http.get(
@@ -134,9 +131,6 @@ class ApiProider{
     }
     return finalData;
   }
-
-
-
   Future<dynamic> getFourthTest()async{
     List<FirstTest> finalData = [];
     final response = await http.get(
@@ -162,8 +156,6 @@ class ApiProider{
     }
     return finalData;
   }
-
-
   Future<dynamic> getFivthTest()async{
     List<FirstTest> finalData = [];
     final response = await http.get(
@@ -189,9 +181,6 @@ class ApiProider{
     }
     return finalData;
   }
-
-
-
   Future<dynamic> getSixthTest()async{
     List<FirstTest> finalData = [];
     final response = await http.get(
@@ -217,9 +206,6 @@ class ApiProider{
     }
     return finalData;
   }
-
-
-
   Future<dynamic> getSeventhTest()async{
     List<FirstTest> finalData = [];
     final response = await http.get(
@@ -252,23 +238,24 @@ class ApiProider{
 
   Future<dynamic> getAllTest()async{
     List<FirstTest> finalData = [];
-    final response = await http.get(
-        Uri.parse("https://script.google.com/macros/s/AKfycbxHbkHBtCNWLYUlDSKpeWR20lcuNMVgob7Dh2wefzCSHjLF-t72JXLh-i2oKhzZgBxQ/exec"),
+    final response = await http.get(Uri.parse('http://192.168.1.47/PAT_API/api/ExcelRead'),
+            //"https://script.google.com/macros/s/AKfycbxHbkHBtCNWLYUlDSKpeWR20lcuNMVgob7Dh2wefzCSHjLF-t72JXLh-i2oKhzZgBxQ/exec"),
         headers: {'Content-Type': 'application/json','Charset': 'utf-8'});
     dynamic result = jsonDecode(response.body);
     for(int i=0;i<result.length;i++){
       FirstTest sub = FirstTest(
-        testnumber: result[i]["Test Number"],
-        testtype: result[i]["Test Type"],
-        testname: result[i]["Test Name"],
+        testnumber: result[i]["test_Number"],
+        testtype: result [i]["test_Type"],
+        testname: result[i]["test_Name"],
         isonline: result[i]["isOnline"],
-        type: result[i]["Type"],
-        packetid: result[i]["PacketID"],
-        packettype: result[i]["Pkt Type"],
-        userentry: result[i]["User Entry"],
-        wifiresult: result[i]["Wifi Result"],
-        passcrieteria: result[i]["Pass Crieteria"],
-        remarks: result[i]["Remarks"],
+        type: result[i]["type"],
+        packetid: result[i]["packetID"],
+        packettype: result[i]["pkt_Type"],
+        userentry: result[i]["user_Entry"],
+        wifiresult: result[i]["wifi_Result"],
+        passcrieteria: result[i]["pass_Crieteria"],
+        remarks: "",
+        isSelected: false
       );
       finalData.add(sub);
     }
@@ -278,7 +265,7 @@ class ApiProider{
 
   Future<dynamic> getUsers() async{
     List<Users> finalData = [];
-    final response = await http.get(Uri.parse("http://192.168.1.69/PAT_API/api/User"));
+    final response = await http.get(Uri.parse(HttpServices.baseUrl + HttpServices.user));
     dynamic result = jsonDecode(response.body);
     for(int i=0;i<result.length;i++){
       Users user = Users(
@@ -295,6 +282,7 @@ class ApiProider{
         createdDate: result[i]['created_date'],
         updatedDate: result[i]['updated_date'],
         flg: result[i]['flg'],
+        isSelecteduser: false,
       );
       finalData.add(user);
     }
@@ -303,9 +291,12 @@ class ApiProider{
 
   Future<dynamic> getWorkOrders() async{
     List<WorkorderModel> finalData = [];
-    final response = await http.get(Uri.parse("http://192.168.1.69/PAT_API/api/workorder"));
+    final response = await http.get(Uri.parse('http://192.168.1.51/PAT_API/api/workorder'));
     dynamic result = jsonDecode(response.body);
+    List<WorkorderList> wo_list = [];
+
     for(int i=0;i<result.length;i++){
+
       WorkorderModel workOrder = WorkorderModel(
         workorderId: result[i]['workorder_id'],
         workorderCode: result[i]['workorder_code'],
@@ -318,16 +309,44 @@ class ApiProider{
         createdDate: result[i]['created_date'],
         updatedDate: result[i]['updated_date'],
         flg: result[i]['flg'],
-        remarks: result[i]['remarks']
+        remarks: result[i]['remarks'],
+        woList: wo_list
+         // woList:
       );
-      finalData.add(workOrder);
+
+    //  if(result[i]['workorder_id'] == result[i]['woList'][0]["workorder_id"]) {
+          finalData.add(workOrder);
+      //  }
+
+
+      var datum = result[i]['woList'];
+
+
+      for(int j=0; j<datum.length; j++){
+        WorkorderList  prolist = WorkorderList(
+          id:  datum[j]['id'],
+          workorder_id: datum[j]['workorder_id'],
+          quantity: datum[j]['quantity'],
+          product_name: datum[j]['product_name'],
+          product_id: datum[j]['product_id'],
+          start_serial_no: datum[j]['start_serial_no'],
+          end_serial_no: datum[j]['end_serial_no'],
+          status: datum[j]['status'],
+          testing_status: datum[j]['testing_status'],
+          start_date: datum[j]['start_date'],
+          end_date: datum[j]['end_date'],
+          flg: datum[j]['flg'],
+        );
+        wo_list.add(prolist);
+
+      }
     }
     return finalData;
   }
 
   Future<dynamic> getProducts() async{
     List<Productmodel> finalData = [];
-    final response = await http.get(Uri.parse("http://192.168.1.69/PAT_API/api/Product"));
+    final response = await http.get(Uri.parse(HttpServices.baseUrl + HttpServices.Products));
     dynamic result = jsonDecode(response.body);
     for(int i=0;i<result.length;i++){
       Productmodel workOrder = Productmodel(
@@ -355,7 +374,7 @@ class ApiProider{
 
   Future<dynamic> getTemplate() async{
     List<Template> finalData = [];
-    final response = await http.get(Uri.parse("http://192.168.1.69/PAT_API/api/Template"));
+    final response = await http.get(Uri.parse(HttpServices.baseUrl + HttpServices.Template));
     dynamic result = jsonDecode(response.body);
     for(int i=0;i<result.length;i++){
       Template template = Template(
@@ -368,6 +387,7 @@ class ApiProider{
         updatedDate: result[i]["updated_date"],
         flg: result[i]["flg"],
         remarks: result[i]["remarks"],
+        productid: result[i]['product_id']
       );
       finalData.add(template);
     }
@@ -377,7 +397,7 @@ class ApiProider{
 
   Future<dynamic> getTask() async{
     List<TaskModel> finalData = [];
-    final response = await http.get(Uri.parse("http://192.168.1.69/PAT_API/api/Task"));
+    final response = await http.get(Uri.parse(HttpServices.baseUrl + HttpServices.Task));
     dynamic result = jsonDecode(response.body);
     for(int i=0;i<result.length;i++){
       TaskModel taskmodel = TaskModel(
@@ -408,7 +428,7 @@ class ApiProider{
   Future<dynamic> getCountUser() async{
     List<UserCountModel> finalData = [];
     List data = [];
-    final response = await http.get(Uri.parse("http://192.168.1.69/PAT_API/api/UserCount"));
+    final response = await http.get(Uri.parse(HttpServices.baseUrl + HttpServices.CountUser));
     dynamic result = jsonDecode(response.body);
     data.add(result);
 
@@ -430,7 +450,7 @@ class ApiProider{
   Future<dynamic> getWorkorderCount() async{
     List<WorkorderCount> finalData = [];
     List data = [];
-    final response = await http.get(Uri.parse("http://192.168.1.69/PAT_API/api/WOCount"));
+    final response = await http.get(Uri.parse(HttpServices.baseUrl + HttpServices.WorkorderCount));
     dynamic result = jsonDecode(response.body);
     data.add(result);
 
@@ -451,7 +471,7 @@ class ApiProider{
   Future<dynamic> getProductCount() async{
     List<ProductCount> finalData = [];
     List data = [];
-    final response = await http.get(Uri.parse("http://192.168.1.69/PAT_API/api/ProductCount"));
+    final response = await http.get(Uri.parse(HttpServices.baseUrl + HttpServices.ProductCount));
     dynamic result = jsonDecode(response.body);
     data.add(result);
 
@@ -472,7 +492,7 @@ class ApiProider{
   Future<dynamic> getTaskCount() async{
     List<TaskCount> finalData = [];
     List data = [];
-    final response = await http.get(Uri.parse("http://192.168.1.69/PAT_API/api/TaskCount"));
+    final response = await http.get(Uri.parse(HttpServices.baseUrl + HttpServices.TaskCount));
     dynamic result = jsonDecode(response.body);
     data.add(result);
 
@@ -492,7 +512,7 @@ class ApiProider{
 
 Future<dynamic> insertUser(var user) async{
     try{
-      final response = await _dio.post('http://192.168.1.69/PAT_API/api/User',
+      final response = await _dio.post(HttpServices.baseUrl + HttpServices.insertUser,
         data:  jsonEncode(user),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -509,7 +529,7 @@ Future<dynamic> insertUser(var user) async{
 
   Future<dynamic> updatetUser(var user) async{
     try{
-      final response = await _dio.post('http://192.168.1.69/PAT_API/api/User/Update',
+      final response = await _dio.post("${HttpServices.baseUrl + HttpServices.user + ('/') + HttpServices.updatetUser}",
         data: jsonEncode(user),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -528,7 +548,10 @@ Future<dynamic> insertUser(var user) async{
 
   Future<dynamic> insertWorkorders(var workorder) async{
     try{
-      final response = await _dio.post('http://192.168.1.69/PAT_API/api/workorder',
+      String json = jsonEncode(workorder);
+
+
+      final response = await _dio.post(HttpServices.baseUrl + HttpServices.insertWorkorders,
         data:  jsonEncode(workorder),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -544,7 +567,7 @@ Future<dynamic> insertUser(var user) async{
 
   Future<dynamic> UpdateWorkorders(var workorder) async{
     try{
-      final response = await _dio.post('http://192.168.1.69/PAT_API/api/workorder/Update',
+      final response = await _dio.post(HttpServices.baseUrl + HttpServices.WorkOrders + ('/') + HttpServices.UpdateWorkorders,
         data:  jsonEncode(workorder),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -563,7 +586,7 @@ Future<dynamic> insertUser(var user) async{
 
   Future<dynamic> insertProduct(var product) async{
     try{
-      final response = await _dio.post('http://192.168.1.69/PAT_API/api/Product',
+      final response = await _dio.post(HttpServices.baseUrl + HttpServices.insertProduct,
         data:  jsonEncode(product),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -579,7 +602,7 @@ Future<dynamic> insertUser(var user) async{
 
   Future<dynamic> UpdateProduct(var product) async{
     try{
-      final response = await _dio.post('http://192.168.1.69/PAT_API/api/Product/Update',
+      final response = await _dio.post(HttpServices.baseUrl  + HttpServices.Products + ('/') + HttpServices.UpdateProduct,
         data:  jsonEncode(product),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -595,15 +618,17 @@ Future<dynamic> insertUser(var user) async{
   //******************************************************post template*****************************************************************
 
   Future<dynamic> insertTemplate(var product) async{
+
+    String json = jsonEncode(product);
     try{
-      final response = await _dio.post('http://192.168.1.69/PAT_API/api/Template',
+      final response = await _dio.post(HttpServices.baseUrl + HttpServices.insertTemplate,
         data:  jsonEncode(product),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
         }),
       );
 
-      return response.toString();
+      return response. toString();
     }
     catch (e){
       return e.toString();
@@ -612,7 +637,7 @@ Future<dynamic> insertUser(var user) async{
 
   Future<dynamic> UpdateTemplate(var product) async{
     try{
-      final response = await _dio.post('http://192.168.1.69/PAT_API/api/Template/Update',
+      final response = await _dio.post(HttpServices.baseUrl + HttpServices.Template + ('/') + HttpServices.UpdateTemplate,
         data:  jsonEncode(product),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -626,5 +651,27 @@ Future<dynamic> insertUser(var user) async{
     }
   }
 
+
+}
+
+class HttpServices {
+  static String baseUrl = 'http://192.168.1.47/PAT_API/api/';
+  static String user = 'User';
+  static String WorkOrders = 'workorder';
+  static String Products = 'Product';
+  static String Template = 'Template';
+  static String Task = 'Task';
+  static String CountUser = 'UserCount';
+  static String WorkorderCount = 'WOCount';
+  static String ProductCount = 'ProductCount';
+  static String TaskCount = 'TaskCount';
+  static String insertUser = 'User';
+  static String updatetUser = 'Update';
+  static String insertWorkorders = 'workorder';
+  static String UpdateWorkorders = 'Update';
+  static String insertProduct = 'Product';
+  static String UpdateProduct = 'Update';
+  static String insertTemplate = 'Template';
+  static String UpdateTemplate = 'Update';
 
 }

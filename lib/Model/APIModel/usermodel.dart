@@ -13,6 +13,8 @@ class Users {
      this.createdDate,
      this.updatedDate,
      this.flg,
+    this.isSelecteduser
+
 
   });
 
@@ -29,6 +31,11 @@ class Users {
   dynamic createdDate;
   dynamic updatedDate;
   int? flg;
+  bool? isSelecteduser = false;
+
+  Selection(bool val) {
+    isSelecteduser = val;
+  }
 
 }
 

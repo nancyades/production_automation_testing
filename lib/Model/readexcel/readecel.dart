@@ -1,7 +1,6 @@
 class Testtype{
   String? testType;
-  bool? isSelected = false;
-
+  bool  ? isSelected = false;
 
   Testtype({
     this.testType,
@@ -25,10 +24,13 @@ class FirstTest{
   String? wifiresult;
   String? passcrieteria;
   String? remarks;
-  String? result = ' ';
+  String? result = '';
   String? radiotype;
   String? displayResult = 'UNDEFINED';
   String? userAckValue ;
+  bool? isSelected = false ;
+
+
 
   FirstTest({
   this.testnumber,
@@ -45,8 +47,13 @@ class FirstTest{
   this.radiotype,
   this.displayResult,
   this.result,
-  this.userAckValue
+  this.userAckValue, this.isSelected,
+
 });
+
+  selectTest(bool val) {
+    isSelected = val;
+  }
 
   selectTest1(String val1) {
     radiotype= val1;

@@ -260,7 +260,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                                 width:168,
                                                 height:36,
                                                 decoration: BoxDecoration(
-                                                    color: Colors.deepOrange.shade300,
+                                                    color: Colors.deepOrange,
                                                     shape: BoxShape.rectangle
                                                 ),
                                                 child:  Padding(
@@ -346,7 +346,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                             width:168,
                                             height:36,
                                             decoration: BoxDecoration(
-                                                color: Colors.green.shade300,
+                                                color: Colors.green,
                                                 shape: BoxShape.rectangle
                                             ),
                                             child:  Padding(
@@ -432,7 +432,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                             width:168,
                                             height:36,
                                             decoration: BoxDecoration(
-                                                color: Colors.amber.shade300,
+                                                color: Colors.amber,
                                                 shape: BoxShape.rectangle
                                             ),
                                             child:  Padding(
@@ -695,6 +695,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                           color: Color(0xFFd9d8d7),
                                           child: ListView.builder(
                                               shrinkWrap: true,
+                                              controller: ScrollController(),
                                               itemCount: datum.length,
                                               itemBuilder: (BuildContext ctxt, int index) {
                                                 return

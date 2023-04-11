@@ -13,12 +13,14 @@ class Templatemodel{
 
 
 class ProductList{
+  double? productid;
   String? productname;
-  String? quantity;
+  double? quantity;
   String? startserial;
   String? endserial;
 
   ProductList({
+    this.productid,
     this.productname,
     this.quantity,
     this.startserial,

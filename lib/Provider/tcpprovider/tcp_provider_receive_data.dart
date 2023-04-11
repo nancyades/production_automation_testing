@@ -118,7 +118,7 @@ class TcpReceiveDataProvider extends StateNotifier<TcpResponseSate> {
                           } else {
                             element.setResult('USERACK');
                             element.setUserAckVal(val);
-                            element.setDisplayResult('UNDEFINED');
+                            element.setDisplayResult('');
                             /* ref.read(serialNoTCPProvider.notifier).state = val;*/
                           }
                         }

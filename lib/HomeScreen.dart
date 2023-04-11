@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:production_automation_testing/Helper/helper.dart';
+import 'package:production_automation_testing/noofpages/Report/Report_screen.dart';
 import 'package:production_automation_testing/noofpages/dashboardscreenpage.dart';
 import 'package:production_automation_testing/noofpages/Task/taskpage.dart';
 import 'package:production_automation_testing/noofpages/WorkOrder/workorderscreenpage.dart';
@@ -28,9 +30,13 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
     TaskPage(),
     UserPage(),
     TestPage(),
-    SettingPage()
-
+    SettingPage(),
+    Reportscreen()
   ];
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,15 +44,11 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
         children: [
           Navigationbar(),
           Expanded(
-              child: Column(
-            children: [
-              Consumer(builder: (context, ref, child) {
+              child: Consumer(builder: (context, ref, child) {
                 final currentIndex = ref.watch(navNotifier);
                 dynamic selectedScreeen = screen[currentIndex];
                 return selectedScreeen;
-              }),
-            ],
-          ))
+              }))
         ],
 
       ),

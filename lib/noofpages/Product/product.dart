@@ -10,8 +10,10 @@ import '../../DashBoard/src/cardcount/productcount.dart';
 import '../../Database/Curd_operation/HiveModel/productmodel.dart';
 import '../../Database/Curd_operation/HiveModel/usermodel.dart';
 import '../../Database/Curd_operation/database.dart';
+import '../../Helper/helper.dart';
 import '../../Model/APIModel/productmodel.dart';
 import '../../Provider/excelprovider.dart';
+import '../../Provider/post_provider/product_provider.dart';
 import 'addproduct.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -45,11 +47,14 @@ class _ProductPageState extends ConsumerState<ProductPage> {
     ref.refresh(getProductNotifier);
   }
 
-  var selectRole = "aa";
+
+
+  var selectRole = "Verified";
   List<String> status = [
-    'aa',
+    'Rejected',
     'Approved',
     'Verified',
+    'Created',
   ];
 
   @override
@@ -110,7 +115,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                   product.productCode = "";
                                   product.productName = "";
                                   product.quantity = 0;
-                                  product.status = "";
+                                  product.status = "Created";
                                   product.timeRequired = 0;
                                   product.description = "";
 
@@ -218,7 +223,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                                                       width:198,
                                                                       height:36,
                                                                       decoration: BoxDecoration(
-                                                                          color: Colors.green.shade300,
+                                                                          color: Colors.green,
                                                                           shape: BoxShape.rectangle
                                                                       ),
                                                                       child:  Padding(
@@ -305,7 +310,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                                                       width:198,
                                                                       height:36,
                                                                       decoration: BoxDecoration(
-                                                                          color: Colors.amber.shade300,
+                                                                          color: Colors.amber,
                                                                           shape: BoxShape.rectangle
                                                                       ),
                                                                       child:  Padding(
@@ -483,7 +488,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                                                   width:198,
                                                                   height:36,
                                                                   decoration: BoxDecoration(
-                                                                      color: Colors.red.shade300,
+                                                                      color: Colors.red,
                                                                       shape: BoxShape.rectangle
                                                                   ),
                                                                   child:  Padding(
@@ -585,37 +590,38 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                                                         Column(
                                                                             children:[
                                                                               Text(
-                                                                                  "${count[0].productCount}%",  style: TextStyle(
+                                                                    datum.length.toString(),  style: TextStyle(
                                                                                 fontWeight: FontWeight.bold,
                                                                                 fontSize: 15.0,
-                                                                                color:  Colors.black,
+                                                                                color:  Colors.white,
                                                                               )),
 
                                                                               Text('All',
                                                                                   style:
                                                                                   TextStyle(
-                                                                                    fontWeight: FontWeight.bold,)),
+                                                                                    fontWeight: FontWeight.bold,
+                                                                                  color: Colors.white)),
 
 
                                                                             ]),
                                                                         Column(
                                                                             children:[
                                                                               Text(
-                                                                                  "${count[0].productCount}%",  style: TextStyle(
+                                                                            activevalue.length.toString(),  style: TextStyle(
                                                                                   fontWeight: FontWeight.bold,
                                                                                   fontSize: 15.0,
-                                                                                  color:  Colors.deepOrange.shade300
+                                                                                  color:  Colors.white
                                                                               )),
-                                                                              Text('Active',style: (TextStyle(fontWeight: FontWeight.bold,)))]),
+                                                                              Text('Active',style: (TextStyle(fontWeight: FontWeight.bold, color: Colors.white)))]),
                                                                         Column(
                                                                             children:[
                                                                               Text(
-                                                                                  "${count[0].productCount}%",  style: TextStyle(
+                                                                                  inactivevalue.length.toString(),  style: TextStyle(
                                                                                   fontWeight: FontWeight.bold,
                                                                                   fontSize: 15.0,
-                                                                                  color:  Colors.deepOrange.shade300
+                                                                                  color:  Colors.white
                                                                               )),
-                                                                              Text('InActive',style: (TextStyle(fontWeight: FontWeight.bold,)))]),
+                                                                              Text('InActive',style: (TextStyle(fontWeight: FontWeight.bold, color: Colors.white)))]),
                                                                       ],
                                                                     ),
                                                                   )),
@@ -649,22 +655,47 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                         child: Row(
                           children: [
                             ElevatedButton(
-                                child: Text("All".toUpperCase(),
-                                    style: TextStyle(fontSize: 14)),
+                        child: Row(
+                        children: [
+                        Row(
+                        children: [
+                        Container(
+                        width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xffFFAAA1E),
+                          ),
+                          child: Center(
+                            child: Text(
+                              datum.length.toString(),
+                              style: TextStyle(color: Colors.black, fontSize: 10),
+                            ),
+                          ),
+                        ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text("All".toUpperCase(),
+                            style: TextStyle(fontSize: 14)),
+                      ),
+                    ],
+                  ),
                                 style: ButtonStyle(
                                     foregroundColor:
                                     MaterialStateProperty.all<Color>(
                                         Colors.white),
                                     backgroundColor:
                                     MaterialStateProperty.all<Color>(
-                                        Colors.black),
+                                        Color(0xff6C6CE5)),
                                     shape: MaterialStateProperty.all<
                                         RoundedRectangleBorder>(
                                         RoundedRectangleBorder(
                                             borderRadius:
                                             BorderRadius.circular(18.0),
                                             side: BorderSide(
-                                                color: Colors.black)))),
+                                                color: Color(0xff6C6CE5))))),
                                 onPressed: () {
                                   setState(() {
                                     all = true;
@@ -676,22 +707,47 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                               width: 15.0,
                             ),
                             ElevatedButton(
-                                child: Text("Active".toUpperCase(),
-                                    style: TextStyle(fontSize: 14)),
+                                child: Row(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Color(0xffFFAAA1E),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              activevalue.length.toString(),
+                                              style: TextStyle(color: Colors.black, fontSize: 10),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Text("ACTIVE".toUpperCase(),
+                                          style: TextStyle(fontSize: 14)),
+                                    ),
+                                  ],
+                                ),
                                 style: ButtonStyle(
                                     foregroundColor:
                                     MaterialStateProperty.all<Color>(
                                         Colors.white),
                                     backgroundColor:
                                     MaterialStateProperty.all<Color>(
-                                        Colors.black),
+                                        Color(0xff6C6CE5)),
                                     shape: MaterialStateProperty.all<
                                         RoundedRectangleBorder>(
                                         RoundedRectangleBorder(
                                             borderRadius:
                                             BorderRadius.circular(18.0),
                                             side: BorderSide(
-                                                color: Colors.black)))),
+                                                color: Color(0xff6C6CE5))))),
                                 onPressed: () {
                                   /* ref.read(ActiveUser.notifier).state =
                               !ref.watch(ActiveUser);*/
@@ -705,22 +761,47 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                               width: 15.0,
                             ),
                             ElevatedButton(
-                                child: Text("In Active".toUpperCase(),
-                                    style: TextStyle(fontSize: 14)),
+                                child: Row(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Color(0xffFFAAA1E),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              inactivevalue.length.toString(),
+                                              style: TextStyle(color: Colors.black, fontSize: 10),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Text("INACTIVE".toUpperCase(),
+                                          style: TextStyle(fontSize: 14)),
+                                    ),
+                                  ],
+                                ),
                                 style: ButtonStyle(
                                     foregroundColor:
                                     MaterialStateProperty.all<Color>(
                                         Colors.white),
                                     backgroundColor:
                                     MaterialStateProperty.all<Color>(
-                                        Colors.black),
+                                        Color(0xff6C6CE5)),
                                     shape: MaterialStateProperty.all<
                                         RoundedRectangleBorder>(
                                         RoundedRectangleBorder(
                                             borderRadius:
                                             BorderRadius.circular(18.0),
                                             side: BorderSide(
-                                                color: Colors.black)))),
+                                                color: Color(0xff6C6CE5))))),
                                 onPressed: () {
                                   setState(() {
                                     all = false;
@@ -1089,6 +1170,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                   _isShow = true;
                                   procount = false;
                                   search = false;
+                                  Helper.editvalue = "editedvalue";
                                 });
                               },
                               icon: Icon(Icons.edit)),
@@ -1096,7 +1178,21 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                         Expanded(
                           child: IconButton(
                               onPressed: () {
-                                // Product().deleteProduct(datamodels[index]);
+                                ref.read(updateProductsNotifier.notifier).updatetProduct({
+                                  "product_Id": items[index].productId,
+                                  "product_name": items[index].productName.toString(),
+                                  "product_code": items[index].productCode.toString(),
+                                  "description": items[index].description.toString(),
+                                  "template_id": 1,
+                                  "quantity": items[index].quantity,
+                                  "status": items[index].status.toString(),
+                                  "updated_by": 1,
+                                  "updated_date": null,
+                                  "flg": 0,
+                                  "remarks": items[index].remarks.toString(),
+                                  "time_required": items[index].timeRequired ,
+                                  "mac_address": null
+                                });
                               },
                               icon: Icon(Icons.delete)),
                         )
@@ -1230,12 +1326,27 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                             _isShow = true;
                             procount = false;
                             search = false;
+                            Helper.editvalue = "editedvalue";
                           });
                         },
                         icon: Icon(Icons.edit)),
                     IconButton(
                         onPressed: () {
-                          //  Product().deleteProduct(activevalue[index]);
+                          ref.read(updateProductsNotifier.notifier).updatetProduct({
+                            "product_Id": activevalue[index].productId,
+                            "product_name": activevalue[index].productName.toString(),
+                            "product_code": activevalue[index].productCode.toString(),
+                            "description": activevalue[index].description.toString(),
+                            "template_id": 1,
+                            "quantity": activevalue[index].quantity,
+                            "status": activevalue[index].status.toString(),
+                            "updated_by": 1,
+                            "updated_date": null,
+                            "flg": 0,
+                            "remarks": activevalue[index].remarks.toString(),
+                            "time_required": activevalue[index].timeRequired ,
+                            "mac_address": null
+                          });
                         },
                         icon: Icon(Icons.delete))
                   ],
@@ -1365,12 +1476,27 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                             _isShow = true;
                             procount = false;
                             search = false;
+                            Helper.editvalue = "editedvalue";
                           });
                         },
                         icon: Icon(Icons.edit)),
                     IconButton(
                         onPressed: () {
-                          // Product().deleteProduct(inactivevalue[index]);
+                          ref.read(updateProductsNotifier.notifier).updatetProduct({
+                            "product_Id": inactivevalue[index].productId,
+                            "product_name": inactivevalue[index].productName.toString(),
+                            "product_code": inactivevalue[index].productCode.toString(),
+                            "description": inactivevalue[index].description.toString(),
+                            "template_id": 1,
+                            "quantity": inactivevalue[index].quantity,
+                            "status": inactivevalue[index].status.toString(),
+                            "updated_by": 1,
+                            "updated_date": null,
+                            "flg": 0,
+                            "remarks": inactivevalue[index].remarks.toString(),
+                            "time_required": inactivevalue[index].timeRequired ,
+                            "mac_address": null
+                          });
                         },
                         icon: Icon(Icons.delete))
                   ],
