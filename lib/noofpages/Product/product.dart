@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:production_automation_testing/DashBoard/src/tabs.dart';
-import 'package:production_automation_testing/Database/Curd_operation/boxes.dart';
-
-import '../../DashBoard/src/ProjectCardOverview.dart';
-import '../../DashBoard/src/cardcount/productcount.dart';
+import 'package:production_automation_testing/Model/APIModel/templatemodel.dart';
 import '../../Database/Curd_operation/HiveModel/productmodel.dart';
-import '../../Database/Curd_operation/HiveModel/usermodel.dart';
-import '../../Database/Curd_operation/database.dart';
+
+
 import '../../Helper/helper.dart';
 import '../../Model/APIModel/productmodel.dart';
 import '../../Provider/excelprovider.dart';
@@ -75,8 +70,9 @@ class _ProductPageState extends ConsumerState<ProductPage> {
         var inactivevalue = items.values
             .where((element) => element.flg == false)
             .toList();*/
-    return ref.watch(getProductNotifier).when(
-        data: (datum) {
+    return ref.watch(getProductNotifier).when(data: (datum) {
+      print(datum.length);
+      print(datum);
           var activevalue = datum.where((element) => element.flg == 1).toList();
           var inactivevalue = datum.where((element) => element.flg == 0)
               .toList();
@@ -107,28 +103,32 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 20.0),
                             ),
-                            MaterialButton(
-                              padding: const EdgeInsets.all(15),
-                              onPressed: () {
-                                setState(() {
-                                  product.productId = 0;
-                                  product.productCode = "";
-                                  product.productName = "";
-                                  product.quantity = 0;
-                                  product.status = "Created";
-                                  product.timeRequired = 0;
-                                  product.description = "";
-
-                                  AddProduct(product: product);
-                                  _isShow = !_isShow;
-                                  procount = !procount;
-                                  search = !search;
-                                });
-                              },
-                              child: const Icon(
-                                Icons.open_in_browser_rounded,
-                                size: 20,
-                                color: Colors.black,
+                            Visibility(
+                              visible: Helper.sharedRoleId == "Design Admin" || Helper.sharedRoleId == "Super Admin" ? false:true ,
+                              child: MaterialButton(
+                                padding: const EdgeInsets.all(15),
+                                onPressed: () {
+                                  setState(() {
+                                    product.productId = 0;
+                                    product.productCode = "";
+                                    product.productName = "";
+                                    product.quantity = 0;
+                                    product.status = "Created";
+                                    product.timeRequired = 0;
+                                    product.description = "";
+                                    product.remarks = "";
+                                    Helper.product_id = null;
+                                    AddProduct(product: product);
+                                    _isShow = !_isShow;
+                                    procount = !procount;
+                                    search = !search;
+                                  });
+                                },
+                                child: const Icon(
+                                  Icons.open_in_browser_rounded,
+                                  size: 20,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
 
@@ -654,6 +654,15 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                         margin: EdgeInsets.only(left: 32.0),
                         child: Row(
                           children: [
+                            IconButton(
+                                highlightColor: Colors.amberAccent,
+                                onPressed: (){
+                                  ref.refresh(getProductNotifier);
+
+                                }, icon: Icon(Icons.refresh,)),
+                            SizedBox(
+                              width: 10.0,
+                            ),
                             ElevatedButton(
                         child: Row(
                         children: [
@@ -976,17 +985,8 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                 height: 500,
                                 color: Color(0xffcbdff2),
 
-                                child: ValueListenableBuilder<
-                                    Box<ProductModel>>(
-                                    valueListenable: Products.getProducts()
-                                        .listenable(),
-                                    builder: (context, Box<ProductModel> items,
-                                        _) {
-                                      List<int> keys;
-                                      keys = items.keys.cast<int>().toList();
-                                      datamodels = items.values.toList().cast<
-                                          ProductModel>();
-                                      return ListView.builder
+                                child:
+                                       ListView.builder
                                         (
                                           itemCount: () {
                                             if (all == true) {
@@ -1015,9 +1015,8 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                               }
                                             }();
                                           }
-                                      );
-                                    }
-                                ),
+                                      )
+
                               ),
 
                             ],
@@ -1049,7 +1048,9 @@ class _ProductPageState extends ConsumerState<ProductPage> {
             ],
           );
         }, error: (e, s) {
+          print(e);
       return Text(e.toString());
+
     }, loading: () {
       return CircularProgressIndicator();
     });
@@ -1058,454 +1059,559 @@ class _ProductPageState extends ConsumerState<ProductPage> {
   }
 
   getProduct(List<Productmodel> items, int index) {
-    return Card(
-        color: Colors.white,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                        color: items[index].flg == 1
-                            ? Colors.green
-                            : Colors.red,
-                        shape: BoxShape.circle),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text((index + 1).toString(),
-                        style: TextStyle(fontWeight: FontWeight.w300,
-                            fontSize: 13.0,
-                            color: Colors.black))),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text(items[index].productCode.toString(),
-                        style: TextStyle(fontWeight: FontWeight.w300,
-                            fontSize: 13.0,
-                            color: Colors.black))),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text(items[index].productName.toString(),
-                        style: TextStyle(fontWeight: FontWeight.w300,
-                            fontSize: 13.0,
-                            color: Colors.black))),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text(items[index].quantity.toString(),
-                        style: TextStyle(fontWeight: FontWeight.w300,
-                            fontSize: 13.0,
-                            color: Colors.black))),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text(items[index].status.toString(),
-                        style: TextStyle(fontWeight: FontWeight.w300,
-                            fontSize: 13.0,
-                            color: Colors.black))),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text(items[index].timeRequired.toString(),
-                        style: TextStyle(fontWeight: FontWeight.w300,
-                            fontSize: 13.0,
-                            color: Colors.black))),
-                  ),
-                ),
-
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  product.productId = int.parse(items[index].productId
-                                      .toString());
-                                  product.productCode = items[index].productCode
-                                      .toString();
-                                  product.productName = items[index].productName
-                                      .toString();
-                                  product.quantity = int.parse(items[index].quantity
-                                      .toString());
-                                  product.status = items[index].status.toString();
-                                  product.timeRequired = int.parse(items[index]
-                                      .timeRequired.toString());
-                                  product.description = items[index].description
-                                      .toString();
-                                  product.templateId = int.parse(items[index]
-                                      .templateId.toString());
-                                  product.flg = items[index].flg;
-
-                                  AddProduct(product: product);
-
-                                  _isShow = true;
-                                  procount = false;
-                                  search = false;
-                                  Helper.editvalue = "editedvalue";
-                                });
-                              },
-                              icon: Icon(Icons.edit)),
-                        ),
-                        Expanded(
-                          child: IconButton(
-                              onPressed: () {
-                                ref.read(updateProductsNotifier.notifier).updatetProduct({
-                                  "product_Id": items[index].productId,
-                                  "product_name": items[index].productName.toString(),
-                                  "product_code": items[index].productCode.toString(),
-                                  "description": items[index].description.toString(),
-                                  "template_id": 1,
-                                  "quantity": items[index].quantity,
-                                  "status": items[index].status.toString(),
-                                  "updated_by": 1,
-                                  "updated_date": null,
-                                  "flg": 0,
-                                  "remarks": items[index].remarks.toString(),
-                                  "time_required": items[index].timeRequired ,
-                                  "mac_address": null
-                                });
-                              },
-                              icon: Icon(Icons.delete)),
-                        )
-                      ],
+    return Visibility(
+      visible: (){
+        if(Helper.sharedRoleId == "Super Admin" && items[index].status.toString() == "Rejected"){
+          return false;
+        }else if(Helper.sharedRoleId == "Super Admin" && items[index].status.toString() == "Created"){
+          return false;
+        }else{
+          return true;
+        }
+      }(),
+      child: Card(
+          color: Colors.white,
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                          color: items[index].flg == 1
+                              ? Colors.green
+                              : Colors.red,
+                          shape: BoxShape.circle),
                     ),
                   ),
-                ),
+                  Expanded(
+                    child: Container(
+                      height: 20.0,
+                      width: 10.0,
+                      child: Center(child: Text((index + 1).toString(),
+                          style: TextStyle(fontWeight: FontWeight.w300,
+                              fontSize: 13.0,
+                              color: Colors.black))),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 20.0,
+                      width: 10.0,
+                      child: Center(child: Text(items[index].productCode.toString(),
+                          style: TextStyle(fontWeight: FontWeight.w300,
+                              fontSize: 13.0,
+                              color: Colors.black))),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 20.0,
+                      width: 10.0,
+                      child: Center(child: Text(items[index].productName.toString(),
+                          style: TextStyle(fontWeight: FontWeight.w300,
+                              fontSize: 13.0,
+                              color: Colors.black))),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 20.0,
+                      width: 10.0,
+                      child: Center(child: Text(items[index].quantity.toString(),
+                          style: TextStyle(fontWeight: FontWeight.w300,
+                              fontSize: 13.0,
+                              color: Colors.black))),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 20.0,
+                      width: 10.0,
+                      child: Center(child: Text(items[index].status.toString(),
+                          style: TextStyle(fontWeight: FontWeight.w300,
+                              fontSize: 13.0,
+                              color: Colors.black))),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 20.0,
+                      width: 10.0,
+                      child: Center(child: Text(items[index].timeRequired.toString(),
+                          style: TextStyle(fontWeight: FontWeight.w300,
+                              fontSize: 13.0,
+                              color: Colors.black))),
+                    ),
+                  ),
 
-              ],
-            ),
-          ],
-        ));
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    product.productId = int.parse(items[index].productId
+                                        .toString());
+                                    product.productCode = items[index].productCode
+                                        .toString();
+                                    product.productName = items[index].productName
+                                        .toString();
+                                    product.quantity = int.parse(items[index].quantity
+                                        .toString());
+                                    product.status = items[index].status.toString();
+                                    product.timeRequired = int.parse(items[index]
+                                        .timeRequired.toString());
+                                    product.description = items[index].description.toString();
+                                    product.remarks = items[index].remarks.toString();
+                                    product.templateId = int.parse(items[index]
+                                        .templateId.toString());
+                                    product.flg = items[index].flg;
+                                    List<Template> temp = [];
+
+                                    for(int i = 0; i< items[index].template!.length; i++){
+                                      if(product.productId == int.parse(items[index].template![i].productid.toString()) ){
+                                        Template wlist = Template(
+                                          templateId:items[index].template![i].templateId,
+                                          templateName: items[index].template![i].templateName,
+                                          filePath: items[index].template![i].filePath,
+                                          createdBy: items[index].template![i].createdBy,
+                                          updatedBy: items[index].template![i].updatedBy,
+                                          createdDate: items[index].template![i].createdDate,
+                                          updatedDate: items[index].template![i].updatedDate,
+                                          flg: items[index].template![i].flg,
+                                          remarks: items[index].template![i].remarks,
+                                          productid: items[index].template![i].productid,
+
+                                        );
+                                        temp.add(wlist);
+                                      }
+
+                                    }
+                                    product.template = temp;
+
+                                    AddProduct(product: product);
+
+                                    _isShow = true;
+                                    procount = false;
+                                    search = false;
+                                    Helper.editvalue = "editedvalue";
+                                  });
+                                },
+                                icon: Icon(Icons.edit)),
+                          ),
+                          Expanded(
+                            child: IconButton(
+                                onPressed: () {
+                                  ref.read(updateProductsNotifier.notifier).updatetProduct({
+                                    "product_Id": items[index].productId,
+                                    "product_name": items[index].productName.toString(),
+                                    "product_code": items[index].productCode.toString(),
+                                    "description": items[index].description.toString(),
+                                    "template_id": 1,
+                                    "quantity": items[index].quantity,
+                                    "status": items[index].status.toString(),
+                                    "updated_by": 1,
+                                    "updated_date": null,
+                                    "flg": 0,
+                                    "remarks": items[index].remarks.toString(),
+                                    "time_required": items[index].timeRequired ,
+                                    "mac_address": null
+                                  });
+                                },
+                                icon: Icon(Icons.delete)),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+
+                ],
+              ),
+            ],
+          )),
+    );
   }
 
   getActiveItems(List<Productmodel> items, int index) {
     var activevalue = items.where((element) => element.flg == 1).toList();
-    return Card(
-        color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0),
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                    color: activevalue[index].flg == 1
-                        ? Colors.green
-                        : Colors.red,
-                    shape: BoxShape.circle),
+    return Visibility(
+      visible: (){
+        if(Helper.sharedRoleId == "Super Admin" && activevalue[index].status.toString() == "Rejected"){
+          return false;
+        }else if(Helper.sharedRoleId == "Super Admin" && activevalue[index].status.toString() == "Created"){
+          return false;
+        }else{
+          return true;
+        }
+      }(),
+      child: Card(
+          color: Colors.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0),
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                      color: activevalue[index].flg == 1
+                          ? Colors.green
+                          : Colors.red,
+                      shape: BoxShape.circle),
+                ),
               ),
-            ),
 
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text((index + 1).toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(child: Text((index + 1).toString(),
+                      style: TextStyle(fontWeight: FontWeight.w300,
+                          fontSize: 13.0,
+                          color: Colors.black))),
+                ),
               ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(
-                    activevalue[index].productCode.toString(), style: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 13.0,
-                    color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(
-                    activevalue[index].productName.toString(), style: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 13.0,
-                    color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(
-                    activevalue[index].quantity.toString(), style: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 13.0,
-                    color: Colors.black))),
-              ),
-            ),
-            Expanded(
+              Expanded(
                 child: Container(
                   height: 20.0,
                   width: 10.0,
                   child: Center(child: Text(
-                      activevalue[index].status.toString(), style: TextStyle(
+                      activevalue[index].productCode.toString(), style: TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 13.0,
                       color: Colors.black))),
-                )
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(
-                    activevalue[index].timeRequired.toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
-              ),
-            ),
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          setState(() {
-                            product.productId = int.parse(activevalue[index]
-                                .productId.toString());
-                            product.productCode = activevalue[index].productCode
-                                .toString();
-                            product.productName = activevalue[index].productName
-                                .toString();
-                            product.quantity = int.parse(activevalue[index]
-                                .quantity.toString());
-                            product.status = activevalue[index].status
-                                .toString();
-                            product.timeRequired = int.parse(activevalue[index]
-                                .timeRequired.toString());
-                            product.description = activevalue[index].description
-                                .toString();
-                            product.templateId = int.parse(activevalue[index]
-                                .templateId.toString());
-                            product.flg = activevalue[index].flg;
-
-                            AddProduct(product: product);
-
-
-                            _isShow = true;
-                            procount = false;
-                            search = false;
-                            Helper.editvalue = "editedvalue";
-                          });
-                        },
-                        icon: Icon(Icons.edit)),
-                    IconButton(
-                        onPressed: () {
-                          ref.read(updateProductsNotifier.notifier).updatetProduct({
-                            "product_Id": activevalue[index].productId,
-                            "product_name": activevalue[index].productName.toString(),
-                            "product_code": activevalue[index].productCode.toString(),
-                            "description": activevalue[index].description.toString(),
-                            "template_id": 1,
-                            "quantity": activevalue[index].quantity,
-                            "status": activevalue[index].status.toString(),
-                            "updated_by": 1,
-                            "updated_date": null,
-                            "flg": 0,
-                            "remarks": activevalue[index].remarks.toString(),
-                            "time_required": activevalue[index].timeRequired ,
-                            "mac_address": null
-                          });
-                        },
-                        icon: Icon(Icons.delete))
-                  ],
                 ),
               ),
-            ),
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(child: Text(
+                      activevalue[index].productName.toString(), style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 13.0,
+                      color: Colors.black))),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(child: Text(
+                      activevalue[index].quantity.toString(), style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 13.0,
+                      color: Colors.black))),
+                ),
+              ),
+              Expanded(
+                  child: Container(
+                    height: 20.0,
+                    width: 10.0,
+                    child: Center(child: Text(
+                        activevalue[index].status.toString(), style: TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 13.0,
+                        color: Colors.black))),
+                  )
+              ),
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(child: Text(
+                      activevalue[index].timeRequired.toString(),
+                      style: TextStyle(fontWeight: FontWeight.w300,
+                          fontSize: 13.0,
+                          color: Colors.black))),
+                ),
+              ),
 
-          ],
-        ));
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            setState(() {
+                              product.productId = int.parse(activevalue[index]
+                                  .productId.toString());
+                              product.productCode = activevalue[index].productCode
+                                  .toString();
+                              product.productName = activevalue[index].productName
+                                  .toString();
+                              product.quantity = int.parse(activevalue[index]
+                                  .quantity.toString());
+                              product.status = activevalue[index].status
+                                  .toString();
+                              product.timeRequired = int.parse(activevalue[index]
+                                  .timeRequired.toString());
+                              product.description = activevalue[index].description
+                                  .toString();
+                              product.remarks = activevalue[index].remarks.toString();
+                              product.templateId = int.parse(activevalue[index]
+                                  .templateId.toString());
+                              product.flg = activevalue[index].flg;
+
+                              List<Template> temp = [];
+
+                              for(int i = 0; i< activevalue[index].template!.length; i++){
+                                if(product.productId == int.parse(activevalue[index].template![i].productid.toString())){
+                                  Template wlist = Template(
+                                    templateId:activevalue[index].template![i].templateId,
+                                    templateName: activevalue[index].template![i].templateName,
+                                    filePath: activevalue[index].template![i].filePath,
+                                    createdBy: activevalue[index].template![i].createdBy,
+                                    updatedBy: activevalue[index].template![i].updatedBy,
+                                    createdDate: activevalue[index].template![i].createdDate,
+                                    updatedDate: activevalue[index].template![i].updatedDate,
+                                    flg: activevalue[index].template![i].flg,
+                                    remarks: activevalue[index].template![i].remarks,
+                                    productid: activevalue[index].template![i].productid,
+
+                                  );
+                                  temp.add(wlist);
+                                }
+
+                              }
+                              product.template = temp;
+
+
+                              AddProduct(product: product);
+
+
+                              _isShow = true;
+                              procount = false;
+                              search = false;
+                              Helper.editvalue = "editedvalue";
+                            });
+                          },
+                          icon: Icon(Icons.edit)),
+                      IconButton(
+                          onPressed: () {
+                            ref.read(updateProductsNotifier.notifier).updatetProduct({
+                              "product_Id": activevalue[index].productId,
+                              "product_name": activevalue[index].productName.toString(),
+                              "product_code": activevalue[index].productCode.toString(),
+                              "description": activevalue[index].description.toString(),
+                              "template_id": 1,
+                              "quantity": activevalue[index].quantity,
+                              "status": activevalue[index].status.toString(),
+                              "updated_by": 1,
+                              "updated_date": null,
+                              "flg": 0,
+                              "remarks": activevalue[index].remarks.toString(),
+                              "time_required": activevalue[index].timeRequired ,
+                              "mac_address": null
+                            });
+                          },
+                          icon: Icon(Icons.delete))
+                    ],
+                  ),
+                ),
+              ),
+
+            ],
+          )),
+    );
   }
 
   getInActiveItems(List<Productmodel> items, int index) {
     var inactivevalue = items.where((element) => element.flg == 0).toList();
-    return Card(
-        color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0),
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                    color: inactivevalue[index].flg == 1
-                        ? Colors.green
-                        : Colors.red,
-                    shape: BoxShape.circle),
-              ),
-            ),
-
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text((index + 1).toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(
-                    inactivevalue[index].productCode.toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(
-                    inactivevalue[index].productName.toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(
-                    inactivevalue[index].quantity.toString(), style: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 13.0,
-                    color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(
-                    inactivevalue[index].status.toString(), style: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 13.0,
-                    color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(
-                    inactivevalue[index].timeRequired.toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black))),
-              ),
-            ),
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          setState(() {
-                            product.productId = int.parse(inactivevalue[index]
-                                .productId.toString());
-                            product.productCode = inactivevalue[index]
-                                .productCode.toString();
-                            product.productName = inactivevalue[index]
-                                .productName.toString();
-                            product.quantity = int.parse(inactivevalue[index]
-                                .quantity.toString());
-                            product.status = inactivevalue[index].status
-                                .toString();
-                            product.timeRequired = int.parse(
-                                inactivevalue[index].timeRequired.toString());
-                            product.description = inactivevalue[index]
-                                .description.toString();
-                            product.templateId = int.parse(inactivevalue[index]
-                                .templateId.toString());
-                            product.flg = inactivevalue[index].flg;
-
-
-                            AddProduct(product: product);
-                            _isShow = true;
-                            procount = false;
-                            search = false;
-                            Helper.editvalue = "editedvalue";
-                          });
-                        },
-                        icon: Icon(Icons.edit)),
-                    IconButton(
-                        onPressed: () {
-                          ref.read(updateProductsNotifier.notifier).updatetProduct({
-                            "product_Id": inactivevalue[index].productId,
-                            "product_name": inactivevalue[index].productName.toString(),
-                            "product_code": inactivevalue[index].productCode.toString(),
-                            "description": inactivevalue[index].description.toString(),
-                            "template_id": 1,
-                            "quantity": inactivevalue[index].quantity,
-                            "status": inactivevalue[index].status.toString(),
-                            "updated_by": 1,
-                            "updated_date": null,
-                            "flg": 0,
-                            "remarks": inactivevalue[index].remarks.toString(),
-                            "time_required": inactivevalue[index].timeRequired ,
-                            "mac_address": null
-                          });
-                        },
-                        icon: Icon(Icons.delete))
-                  ],
+    return Visibility(
+      visible: (){
+        if(Helper.sharedRoleId == "Super Admin" && inactivevalue[index].status.toString() == "Rejected"){
+          return false;
+        }else if(Helper.sharedRoleId == "Super Admin" && inactivevalue[index].status.toString() == "Created"){
+          return false;
+        }else{
+          return true;
+        }
+      }(),
+      child: Card(
+          color: Colors.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0),
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                      color: inactivevalue[index].flg == 1
+                          ? Colors.green
+                          : Colors.red,
+                      shape: BoxShape.circle),
                 ),
               ),
-            ),
 
-          ],
-        ));
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(child: Text((index + 1).toString(),
+                      style: TextStyle(fontWeight: FontWeight.w300,
+                          fontSize: 13.0,
+                          color: Colors.black))),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(child: Text(
+                      inactivevalue[index].productCode.toString(),
+                      style: TextStyle(fontWeight: FontWeight.w300,
+                          fontSize: 13.0,
+                          color: Colors.black))),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(child: Text(
+                      inactivevalue[index].productName.toString(),
+                      style: TextStyle(fontWeight: FontWeight.w300,
+                          fontSize: 13.0,
+                          color: Colors.black))),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(child: Text(
+                      inactivevalue[index].quantity.toString(), style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 13.0,
+                      color: Colors.black))),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(child: Text(
+                      inactivevalue[index].status.toString(), style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 13.0,
+                      color: Colors.black))),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(child: Text(
+                      inactivevalue[index].timeRequired.toString(),
+                      style: TextStyle(fontWeight: FontWeight.w300,
+                          fontSize: 13.0,
+                          color: Colors.black))),
+                ),
+              ),
+
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            setState(() {
+                              product.productId = int.parse(inactivevalue[index]
+                                  .productId.toString());
+                              product.productCode = inactivevalue[index]
+                                  .productCode.toString();
+                              product.productName = inactivevalue[index]
+                                  .productName.toString();
+                              product.quantity = int.parse(inactivevalue[index]
+                                  .quantity.toString());
+                              product.status = inactivevalue[index].status
+                                  .toString();
+                              product.timeRequired = int.parse(
+                                  inactivevalue[index].timeRequired.toString());
+                              product.description = inactivevalue[index]
+                                  .description.toString();
+                              product.remarks = inactivevalue[index].remarks.toString();
+                              product.templateId = int.parse(inactivevalue[index]
+                                  .templateId.toString());
+                              product.flg = inactivevalue[index].flg;
+
+                              List<Template> temp = [];
+
+                              for(int i = 0; i< inactivevalue[index].template!.length; i++){
+                                if(product.productId == int.parse(inactivevalue[index].template![i].productid.toString())){
+                                  Template wlist = Template(
+                                    templateId:inactivevalue[index].template![i].templateId,
+                                    templateName: inactivevalue[index].template![i].templateName,
+                                    filePath: inactivevalue[index].template![i].filePath,
+                                    createdBy: inactivevalue[index].template![i].createdBy,
+                                    updatedBy: inactivevalue[index].template![i].updatedBy,
+                                    createdDate: inactivevalue[index].template![i].createdDate,
+                                    updatedDate: inactivevalue[index].template![i].updatedDate,
+                                    flg: inactivevalue[index].template![i].flg,
+                                    remarks: inactivevalue[index].template![i].remarks,
+                                    productid: inactivevalue[index].template![i].productid,
+
+                                  );
+                                  temp.add(wlist);
+                                }
+
+                              }
+                              product.template = temp;
+
+
+
+                              AddProduct(product: product);
+                              _isShow = true;
+                              procount = false;
+                              search = false;
+                              Helper.editvalue = "editedvalue";
+                            });
+                          },
+                          icon: Icon(Icons.edit)),
+                      IconButton(
+                          onPressed: () {
+                            ref.read(updateProductsNotifier.notifier).updatetProduct({
+                              "product_Id": inactivevalue[index].productId,
+                              "product_name": inactivevalue[index].productName.toString(),
+                              "product_code": inactivevalue[index].productCode.toString(),
+                              "description": inactivevalue[index].description.toString(),
+                              "template_id": 1,
+                              "quantity": inactivevalue[index].quantity,
+                              "status": inactivevalue[index].status.toString(),
+                              "updated_by": 1,
+                              "updated_date": null,
+                              "flg": 0,
+                              "remarks": inactivevalue[index].remarks.toString(),
+                              "time_required": inactivevalue[index].timeRequired ,
+                              "mac_address": null
+                            });
+                          },
+                          icon: Icon(Icons.delete))
+                    ],
+                  ),
+                ),
+              ),
+
+            ],
+          )),
+    );
   }
 }
 

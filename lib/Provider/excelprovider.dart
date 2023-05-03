@@ -2,12 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:production_automation_testing/Model/APIModel/templatemodel.dart';
 import '../Model/APIModel/productcount.dart';
 import '../Model/APIModel/productmodel.dart';
+import '../Model/APIModel/productreport.dart';
 import '../Model/APIModel/taskcount.dart';
 import '../Model/APIModel/taskmodel.dart';
 import '../Model/APIModel/usercountmodel.dart';
 import '../Model/APIModel/usermodel.dart';
 import '../Model/APIModel/workordercount.dart';
 import '../Model/APIModel/workordermodel.dart';
+import '../Model/APIModel/workorderprogressreport.dart';
 import '../Model/readexcel/readecel.dart';
 import '../service/apiservice.dart';
 
@@ -80,6 +82,11 @@ final getTaskNotifier = FutureProvider<List<TaskModel>>((ref) async {
 });
 
 
+
+final getNewTaskNotifier = FutureProvider<List<TaskNewModel>>((ref) async {
+  return await ref.read(apiProvider).getNewTask();
+});
+
 final getUserCountNotifier = FutureProvider<List<UserCountModel>>((ref) async {
   return await ref.read(apiProvider).getCountUser();
 });
@@ -98,3 +105,13 @@ final getProductCountNotifier = FutureProvider<List<ProductCount>>((ref) async {
 final getTaskCountNotifier = FutureProvider<List<TaskCount>>((ref) async {
   return await ref.read(apiProvider).getTaskCount();
 });
+
+
+final getProductReportNotifier = FutureProvider<List<ProductReportmodel>>((ref) async {
+  return await ref.read(apiProvider).getProductsreport();
+});
+
+
+
+
+

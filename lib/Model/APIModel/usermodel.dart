@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Users {
   Users({
      this.userId,
@@ -13,7 +15,8 @@ class Users {
      this.createdDate,
      this.updatedDate,
      this.flg,
-    this.isSelecteduser
+    this.isSelecteduser,
+
 
 
   });
@@ -32,6 +35,7 @@ class Users {
   dynamic updatedDate;
   int? flg;
   bool? isSelecteduser = false;
+
 
   Selection(bool val) {
     isSelecteduser = val;

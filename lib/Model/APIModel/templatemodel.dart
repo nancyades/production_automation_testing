@@ -1,3 +1,5 @@
+import 'package:production_automation_testing/Model/readexcelmodel.dart';
+
 class Template {
   Template({
     this.templateId,
@@ -9,6 +11,7 @@ class Template {
     this.updatedDate,
     this.flg,
     this.remarks,
+    this.excelread,
     this.productid,
   });
 
@@ -21,6 +24,28 @@ class Template {
   dynamic updatedDate;
   int? flg;
   String? remarks;
+  List<ExcelRead>? excelread;
   String? productid;
 
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['template_id'] = templateId;
+    data['template_name'] = templateName;
+    data['file_path'] = filePath;
+    data['created_by'] = createdBy;
+    data['updated_by'] = updatedBy;
+    data['created_date'] = createdDate;
+    data['updated_date'] = updatedDate;
+    data['flg'] = flg;
+    data['remarks'] = remarks;
+    data['product_id'] = productid;
+
+    return data;
+  }
+
 }
+
+
+
+

@@ -11,3 +11,18 @@ class ChangeState extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+
+final widgetDateNotifier = StateNotifierProvider<WidgetDateProvider, int>((ref) {
+  return WidgetDateProvider(ref);
+});
+
+class  WidgetDateProvider extends StateNotifier<int> {
+  final Ref ref;
+
+  WidgetDateProvider(this.ref) : super(-1);
+
+  void currentIndex(int index) {
+    state = index;
+  }
+}

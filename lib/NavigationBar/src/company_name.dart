@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:production_automation_testing/Helper/helper.dart';
 
 class CompanyName extends StatefulWidget {
   const CompanyName({Key? key}) : super(key: key);
@@ -16,20 +17,34 @@ class _CompanyNameState extends State<CompanyName> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'R',
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, top: 10, right: 10),
+              child: CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.white,
+                child: Text(
+                  Helper.sharedRoleId.toString().split(" ").first[0] + Helper.sharedRoleId.toString().split(" ").last[0],
+                  style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff333951),
+                ),
+              ),
+            ))
+          /*  Text(
+              Helper.sharedRoleId.toString().split(' ').first ,
               style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 11.0,
+                  fontWeight: FontWeight.w300,
                   color: Colors.white),
             ),
             Text(
-              'ax',
+               Helper.sharedRoleId.toString().split(' ').last,
               style: TextStyle(
-                  fontSize: 16.0,
+                  fontSize: 11.0,
                   fontWeight: FontWeight.w300,
                   color: Colors.white),
-            )
+            )*/
           ],
         ),
       ),

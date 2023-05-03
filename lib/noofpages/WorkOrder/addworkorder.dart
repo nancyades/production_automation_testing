@@ -59,13 +59,14 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
   late Box<WorkOrderModel> dataBox;
   int? index;
   var selectedProduct;
+  var updatepoduct = "";
   int? workorder_id;
   bool searchdropdown = true;
 
   // var selectRole = "Created";
   List<String> status = [
-    'Created',
-    'Verified',
+   // 'Created',
+   // 'Verified',
     'Approved',
     'Rejected',
   ];
@@ -113,6 +114,13 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
         controllerEndserial.text = widget.workorderModel.endSerialNo!;
         controllerStatus.text = widget.workorderModel.status!;
         isSelected = widget.workorderModel.flg == 0 ? false : true;
+
+        if(controllerStatus.text == "Created"){
+          widget.workorderModel.status = "Approved";
+        }else{
+          widget.workorderModel.status = controllerStatus.text;
+        }
+
 
       }
     }
@@ -336,7 +344,24 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                       ],
                     ),
                   ),
+
+
+                  Helper.sharedRoleId == "Test Admin" ?
                   Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                 : Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Row(
                       children: [
@@ -399,7 +424,7 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                                                 //   });
                                                 // },
                                                 value: widget
-                                                    .workorderModel.status,
+                                                     .workorderModel.status,
                                                 onChanged: (item) {
                                                   ref
                                                       .read(counterModelProvider
@@ -508,6 +533,10 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                 // print("product value2====> ${products}");
                 child: Consumer(builder: (context, ref, child) {
                   return ref.watch(getProductNotifier).when(data: (data) {
+                   /* for(int i=0; i<data.length; i++){
+                      if(data[i].status ==)
+                    }*/
+
                     if (isValue == true) {
                       selectedProduct = data[0].productName.toString();
                     }
@@ -515,9 +544,20 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                       for (int i = 0; i < data.length; i++) {
                         Productmodel val = Productmodel(
                             productName: data[i].productName,
-                            quantity: data[i].quantity);
+                            quantity: data[i].quantity,
+                          status: data[i].status
+                        );
+                        if(val.status == "Approved"){
+                          products.add(val.productName.toString());
+                          selectedProduct = products[0];
 
-                        products.add(val.productName.toString());
+                        }
+
+
+
+
+
+
                       }
                     }
                     for (var i in data) {
@@ -534,7 +574,8 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                           flex: 2,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 8.0),
-                            child: DropdownButton(
+                            child:  widget.workorderModel.workorderCode == ""
+                            ? DropdownButton(
                               icon: Icon(Icons.keyboard_arrow_down),
                               items: products.map<DropdownMenuItem<String>>(
                                   (String setlist) {
@@ -562,7 +603,8 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
 
                                 print("ITEM.TOSTRING =====>$item");
                               },
-                            ),
+                            )
+                                : Center(child: Text(updatepoduct))
                           ),
                         ),
                         Expanded(
@@ -890,7 +932,8 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                                     onTap: (){
                                      setState((){
                                         val = index;
-                                        selectedProduct = widget.workorderModel.woList![index].product_name.toString();
+                                        updatepoduct = widget.workorderModel.woList![index].product_name.toString();
+                                        print("product---------> $updatepoduct");
                                         controllerProductQuantity.text = widget.workorderModel.woList![index].quantity.toString();
                                         controllerProductStartserial.text = widget.workorderModel.woList![index].start_serial_no.toString();
                                         controllerProductEndserial.text = widget.workorderModel.woList![index].end_serial_no.toString();

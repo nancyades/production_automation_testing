@@ -58,6 +58,8 @@ class _AddUsersState extends ConsumerState<AddUsers> {
 
   int? userid;
 
+  DateTime? date = DateTime.now();
+
 
   _selectFile(bool imageFrom) async {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
@@ -534,25 +536,77 @@ class _AddUsersState extends ConsumerState<AddUsers> {
                         ),
                       ],
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                    (){
+                    if(Helper.sharedRoleId == "Design Admin" || Helper.sharedRoleId == "Test Admin" ){
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+
+                              ],
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 18.0),
-                                    child: Text("Role",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 11.0,
-                                            color: Colors.blueAccent)),
-                                  ),
-                                ],
+                              Padding(
+                                padding:
+                                const EdgeInsets.only(left: 30.0, right: 30.0),
+                                child: Row(
+                                  children: [
+                                    Center(
+                                        child: Text("Is Active",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15.0,
+                                                color: Colors.black))),
+
+                                    Consumer(builder: (context, ref, child) {
+                                      ref.watch(counterModelProvider);
+                                      return Checkbox(
+                                        checkColor: AppColors.white,
+                                        activeColor: Colors.blue,
+                                        value: isSelected,
+                                        onChanged: (value) {
+                                          ref
+                                              .read(counterModelProvider
+                                              .notifier)
+                                              .press();
+                                          isSelected = value!;
+                                          widget.user.flg = isSelected == false ? 0 : 1;
+                                        },
+                                      );
+                                    }),
+                                  ],
+                                ),
                               ),
-                              (widget.user.name == "")?
+                            ],
+                          ),
+                        ],
+                      );
+                    }else{
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 18.0),
+                                      child: Text("Role",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11.0,
+                                              color: Colors.blueAccent)),
+                                    ),
+                                  ],
+                                ),
+
+                                (widget.user.name == "")?
                                 Consumer(builder: (context, ref, child) {
                                   ref.watch(counterModelProvider);
                                   return Padding(
@@ -600,84 +654,90 @@ class _AddUsersState extends ConsumerState<AddUsers> {
                                     ),
                                   );
                                 })
-                                  : Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
+                                    : Padding(
+                                  padding: const EdgeInsets.only(left: 20.0),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            right: 15.0, top: 10),
+                                        child: Text(widget.user.role.toString(),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15.0,
+                                                color: Colors.black)),
+                                      ),
+                                    ],
+                                  ),
+                                )
+
+                              ],
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding:
+                                const EdgeInsets.only(left: 30.0, right: 30.0),
                                 child: Row(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 15.0, top: 10),
-                                      child: Text(widget.user.role.toString(),
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15.0,
-                                              color: Colors.black)),
-                                    ),
+                                    Center(
+                                        child: Text("Is Active",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15.0,
+                                                color: Colors.black))),
+
+                                    // Center(
+                                    //     child: Checkbox(
+                                    //
+                                    //   value: isSelected,
+                                    //   onChanged: (val) {
+                                    //      setState(() {
+                                    //       /* this.isSelected = val!;
+                                    //           if(isSelected == true ? false : true){
+                                    //
+                                    //           }*/
+                                    //       isSelected = val!;
+                                    //       widget.user.flg = isSelected == false ? 0 : 1;
+                                    //
+                                    //      // Allvalues.isActive = isSelected;
+                                    //      });
+                                    //   },
+                                    // )),
+                                    Consumer(builder: (context, ref, child) {
+                                      ref.watch(counterModelProvider);
+                                      return Checkbox(
+                                        checkColor: AppColors.white,
+                                        activeColor: Colors.blue,
+                                        value: isSelected,
+                                        onChanged: (value) {
+                                          ref
+                                              .read(counterModelProvider
+                                              .notifier)
+                                              .press();
+                                          isSelected = value!;
+                                          widget.user.flg = isSelected == false ? 0 : 1;
+                                        },
+                                      );
+                                    }),
                                   ],
                                 ),
-                              )
+                              ),
                             ],
                           ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 30.0, right: 30.0),
-                              child: Row(
-                                children: [
-                                  Center(
-                                      child: Text("Is Active",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15.0,
-                                              color: Colors.black))),
+                        ],
+                      );
+                    }
 
-                                  // Center(
-                                  //     child: Checkbox(
-                                  //
-                                  //   value: isSelected,
-                                  //   onChanged: (val) {
-                                  //      setState(() {
-                                  //       /* this.isSelected = val!;
-                                  //           if(isSelected == true ? false : true){
-                                  //
-                                  //           }*/
-                                  //       isSelected = val!;
-                                  //       widget.user.flg = isSelected == false ? 0 : 1;
-                                  //
-                                  //      // Allvalues.isActive = isSelected;
-                                  //      });
-                                  //   },
-                                  // )),
-                                  Consumer(builder: (context, ref, child) {
-                                    ref.watch(counterModelProvider);
-                                    return Checkbox(
-                                      checkColor: AppColors.white,
-                                      activeColor: Colors.blue,
-                                      value: isSelected,
-                                      onChanged: (value) {
-                                        ref
-                                            .read(counterModelProvider
-                                            .notifier)
-                                            .press();
-                                        isSelected = value!;
-                                        widget.user.flg = isSelected == false ? 0 : 1;
-                                      },
-                                    );
-                                  }),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                    }(),
+
                   ],
                 ),
               ),
             ),
+
             (widget.user.name == "")?
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
@@ -698,39 +758,64 @@ class _AddUsersState extends ConsumerState<AddUsers> {
                               borderRadius: BorderRadius.circular(8.0),
                               side: BorderSide(color: Colors.red)))),
                   onPressed: () {
+                    setState(() {
+                      if (validateFields()) {
+                        if(Helper.sharedRoleId == "Design Admin"){
+                          ref.read(addUserNotifier.notifier).addUser({
+                            "emp_id": controllerEmpId.text,
+                            "name": controllerUsername.text,
+                            "password": controllerPassword.text,
+                            "avatar_id": "",
+                            "emailid": controllerEmail.text,
+                            "phoneno": controllerContactNo.text,
+                            "role": "Design User",
+                            "created_by": Helper.shareduserid,
+                            "updated_by": 0,
+                            "created_date": date.toString().split(' ')[0],
+                            "updated_date": null,
+                            "flg": isSelected ? 1 : 0,
+                          });
+                        }else if(Helper.sharedRoleId == "Test Admin"){
+                          ref.read(addUserNotifier.notifier).addUser({
+                            "emp_id": controllerEmpId.text,
+                            "name": controllerUsername.text,
+                            "password": controllerPassword.text,
+                            "avatar_id": "",
+                            "emailid": controllerEmail.text,
+                            "phoneno": controllerContactNo.text,
+                            "role": "Test User",
+                            "created_by": Helper.shareduserid,
+                            "updated_by": 0,
+                            "created_date": date.toString().split(' ')[0],
+                            "updated_date": null,
+                            "flg": isSelected ? 1 : 0,
+                          });
+                        }
 
-                    if (validateFields()) {
-                      ref.read(addUserNotifier.notifier).addUser({
-                        "name": controllerUsername.text,
-                        "password": controllerPassword.text,
-                        "avatar_id": "",
-                        "emailid": controllerEmail.text,
-                        "phoneno": controllerContactNo.text,
-                        "role": selectRole,
-                        "created_by": 0,
-                        "updated_by": 0,
-                        "created_date": null,
-                        "updated_date": null,
-                        "flg": isSelected ? 1 : 0,
-                      });
+                        else{
+                          ref.read(addUserNotifier.notifier).addUser({
+                            "emp_id": controllerEmpId.text,
+                            "name": controllerUsername.text,
+                            "password": controllerPassword.text,
+                            "avatar_id": "",
+                            "emailid": controllerEmail.text,
+                            "phoneno": controllerContactNo.text,
+                            "role": selectRole,
+                            "created_by": Helper.shareduserid,
+                            "updated_by": 0,
+                            "created_date": date.toString().split(' ')[0],
+                            "updated_date": null,
+                            "flg": isSelected ? 1 : 0,
+                          });
 
-                      /*User().addUsers(
-                              "",
-                              controllerEmpId.text,
-                              controllerUsername.text,
-                              controllerPassword.text,
-                              "",
-                              controllerEmail.text,
-                              controllerContactNo.text,
-                              "",
-                              "",
-                              "",
-                              "",
-                              "",
-                              isSelected,
-                            );*/
-                      clearText();
-                    }
+                        }
+
+
+
+                        clearText();
+                      }
+                    });
+
 
                     Helper.isadd = true;
                   }),
@@ -754,21 +839,56 @@ class _AddUsersState extends ConsumerState<AddUsers> {
                               borderRadius: BorderRadius.circular(8.0),
                               side: BorderSide(color: Colors.red)))),
                   onPressed: () async {
-                    ref.read(updateUserNotifier.notifier).updatetUser({
-                      "user_id": userid,
-                      "emp_id": controllerEmpId.text,
-                      "name": controllerUsername.text,
-                      "password": controllerPassword.text,
-                      "avatar_id": null,
-                      "emailid": controllerEmail.text,
-                      "phoneno": controllerContactNo.text,
-                      "role": selectRole,
-                      "created_by": 0,
-                      "updated_by": 0,
-                      "created_date": null,
-                      "updated_date": null,
-                      "flg": widget.user.flg
-                    });
+                    if(Helper.sharedRoleId == "Design Admin"){
+                      ref.read(updateUserNotifier.notifier).updatetUser({
+                        "user_id": userid,
+                        "emp_id": controllerEmpId.text,
+                        "name": controllerUsername.text,
+                        "password": controllerPassword.text,
+                        "avatar_id": null,
+                        "emailid": controllerEmail.text,
+                        "phoneno": controllerContactNo.text,
+                        "role": Helper.shareduserid,
+                        "created_by": Helper.shareduserid,
+                        "updated_by": Helper.shareduserid,
+                        "created_date": null,
+                        "updated_date": date.toString().split(' ')[0],
+                        "flg": widget.user.flg
+                      });
+                    }else if(Helper.sharedRoleId == "Test Admin"){
+                      ref.read(updateUserNotifier.notifier).updatetUser({
+                        "user_id": userid,
+                        "emp_id": controllerEmpId.text,
+                        "name": controllerUsername.text,
+                        "password": controllerPassword.text,
+                        "avatar_id": null,
+                        "emailid": controllerEmail.text,
+                        "phoneno": controllerContactNo.text,
+                        "role": Helper.shareduserid,
+                        "created_by": Helper.shareduserid,
+                        "updated_by": Helper.shareduserid,
+                        "created_date": null,
+                        "updated_date": date.toString().split(' ')[0],
+                        "flg": widget.user.flg
+                      });
+                    }else{
+                      ref.read(updateUserNotifier.notifier).updatetUser({
+                        "user_id": userid,
+                        "emp_id": controllerEmpId.text,
+                        "name": controllerUsername.text,
+                        "password": controllerPassword.text,
+                        "avatar_id": null,
+                        "emailid": controllerEmail.text,
+                        "phoneno": controllerContactNo.text,
+                        "role": selectRole,
+                        "created_by": Helper.shareduserid,
+                        "updated_by": Helper.shareduserid,
+                        "created_date": null,
+                        "updated_date": date.toString().split(' ')[0],
+                        "flg": widget.user.flg
+                      });
+                    }
+
                     clearText();
                   }),
             ),

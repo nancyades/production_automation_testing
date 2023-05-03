@@ -9,6 +9,7 @@ import 'package:production_automation_testing/Provider/tcpprovider/tcp_provider_
 import 'package:production_automation_testing/Provider/testProvider.dart';
 import 'package:production_automation_testing/noofpages/Test/firsrtaskviewpage.dart';
 import 'package:production_automation_testing/noofpages/Test/secondtaskviewpage.dart';
+import 'package:production_automation_testing/noofpages/TestCompleted/test_completed.dart';
 import 'package:production_automation_testing/noofpages/dashboardscreenpage.dart';
 import 'package:production_automation_testing/noofpages/Task/taskpage.dart';
 import 'package:production_automation_testing/noofpages/WorkOrder/workorderscreenpage.dart';
@@ -994,7 +995,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      SecondTaskViewPage()));
+                                                      TestCompleted()));
                                           Helper.classes = "TEST";
                                         }
 
@@ -1092,8 +1093,8 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       radio[index].setDisplayResult('FAIL');
                     }
                   }else {
-                    radio[index].setResult("PASS");
-                    radio[index].setDisplayResult('PASS');
+                    radio[index].setResult("FAIL");
+                    radio[index].setDisplayResult('FAIL');
 
 
 
@@ -1141,8 +1142,8 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
                     }
                   }else {
-                    radio[index].setResult("FAIL");
-                    radio[index].setDisplayResult('FAIL');
+                    radio[index].setResult("PASS");
+                    radio[index].setDisplayResult('PASS');
                   }
 
 

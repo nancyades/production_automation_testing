@@ -57,7 +57,8 @@ class _NavigationbarState extends State<Navigationbar> {
                   active: false,
                   touched: (){
                     setState(() {
-                      Navigator.of(context).pop();
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
+                     // Navigator.of(context).pop();
                     });
                   },
                 )),

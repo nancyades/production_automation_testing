@@ -360,6 +360,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                                                             if((uservalidation == null) || (uservalidation[0].empId == controllerEmpId.text && uservalidation[0].password == controllerPassword.text)){
                                                                               if(uservalidation[0].role == selectRole){
                                                                                 Helper.sharedRoleId = selectRole;
+                                                                                Helper.sharedUsername = uservalidation[0].name;
+                                                                                Helper.sharedpassword = uservalidation[0].password;
+                                                                                Helper.sharedemail = uservalidation[0].emailid;
+                                                                                Helper.sharedempid = uservalidation[0].empId;
+                                                                                Helper.sharedmobileno = uservalidation[0].phoneno;
+                                                                                Helper.shareduserid = uservalidation[0].userId;
+
+                                                                                print("helpername---->${ Helper.sharedUsername}");
+                                                                                print("helpername---->${ Helper.sharedpassword}");
+                                                                                print("helpername---->${ Helper.sharedemail}");
+                                                                                print("helpername---->${ Helper.sharedempid}");
+                                                                                print("helpername---->${ Helper.sharedRoleId}");
+                                                                                print("helpername---->${ Helper.shareduserid}");
+
                                                                                 Navigator.push(
                                                                                     context, MaterialPageRoute(builder: (context) => HomeScreenPage()));
                                                                                 //conditionfailed = false;

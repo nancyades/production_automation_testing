@@ -150,24 +150,27 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 20.0),
                             ),
-                            MaterialButton(
-                              padding: const EdgeInsets.all(15),
-                              onPressed: () {
-                                setState(() {
-                                  workorder.workorderCode = "";
-                                  workorder.quantity = 0;
-                                  workorder.startSerialNo = "";
-                                  workorder.endSerialNo = "";
-                                  workorder.status = "Created";
-                                  _isShow = !_isShow;
-                                  chart = !chart;
-                                  searchdropdown = !searchdropdown;
-                                });
-                              },
-                              child: const Icon(
-                                Icons.open_in_browser_rounded,
-                                size: 20,
-                                color: Colors.black,
+                            Visibility(
+                              visible: Helper.sharedRoleId == "Super Admin" ? false:true ,
+                              child: MaterialButton(
+                                padding: const EdgeInsets.all(15),
+                                onPressed: () {
+                                  setState(() {
+                                    workorder.workorderCode = "";
+                                    workorder.quantity = 0;
+                                    workorder.startSerialNo = "";
+                                    workorder.endSerialNo = "";
+                                    workorder.status = "Created";
+                                    _isShow = !_isShow;
+                                    chart = !chart;
+                                    searchdropdown = !searchdropdown;
+                                  });
+                                },
+                                child: const Icon(
+                                  Icons.open_in_browser_rounded,
+                                  size: 20,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
 
@@ -708,6 +711,15 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
+                                IconButton(
+                                    highlightColor: Colors.amberAccent,
+                                    onPressed: (){
+                                      ref.refresh(getWorkorderNotifier);
+
+                                    }, icon: Icon(Icons.refresh,)),
+                                SizedBox(
+                                  width: 10.0,
+                                ),
                                 ElevatedButton(
                             child: Row(
                             children: [

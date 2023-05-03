@@ -282,7 +282,8 @@ class _TestPageState extends ConsumerState<TestPage> {
                                     itemCount: 3,
                                     itemBuilder: (BuildContext ctxt, int index) {
                                       return getProduct();
-                                    })),
+                                    })
+                            ),
                           ],
                         ),
                       ),

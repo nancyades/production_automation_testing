@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:production_automation_testing/Helper/helper.dart';
 import '../../service/apiservice.dart';
 
 
@@ -13,12 +14,13 @@ class AddProductProvider extends StateNotifier<AddProductState> {
   AddProductProvider(this.ref)
       : super(AddProductState(false, const AsyncLoading(), 'initial'));
 
-  addProducts(var products) async {
+  addProducts (var products) async {
     state = _loading();
     final data = await ref.read(apiProvider).insertProduct(products);
 
     if (data != null) {
-      state = _dataState(data.toString());
+      state = _dataState(data);
+
     } else if (data == null) {
       state = _errorState('Timeout');
     }

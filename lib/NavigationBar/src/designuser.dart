@@ -11,10 +11,10 @@ class DesignuserNavBar extends ConsumerStatefulWidget {
 }
 
 class _DesignuserNavBarState extends ConsumerState<DesignuserNavBar> {
-  List<bool> selected = [false, false, false, false];
+  List<bool> selected = [false, false, false];
 
   void select(int n) {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 2; i++) {
       if (i != n) {
         selected[i] = false;
       } else {
@@ -55,26 +55,15 @@ class _DesignuserNavBarState extends ConsumerState<DesignuserNavBar> {
                 },
               ),
 
-              DesignuserNavBarItem(
-                active: selected[2],
-                icon: Icons.contacts,
-                name: '   User  ',
-                touched: () {
-                  ref.read(navNotifier.notifier).currentIndex(4);
-                  setState(() {
-                    select(2);
-                  });
-                },
-              ),
 
               DesignuserNavBarItem(
-                active: selected[3],
+                active: selected[2],
                 icon: Icons.settings,
                 name: ' setting ',
                 touched: () {
                   ref.read(navNotifier.notifier).currentIndex(6);
                   setState(() {
-                    select(3);
+                    select(2);
                   });
                 },
               ),

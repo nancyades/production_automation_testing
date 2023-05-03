@@ -8,6 +8,7 @@ class TaskListItems extends StatefulWidget {
   final String? quantity;
   final String? startserial;
   final String? endserial;
+  final String? status;
 
   TaskListItems({
     this.username,
@@ -15,7 +16,8 @@ class TaskListItems extends StatefulWidget {
     this.workorder,
     this.quantity,
     this.startserial,
-    this.endserial
+    this.endserial,
+    this.status
   });
 
 
@@ -41,8 +43,8 @@ class _TaskListItemsState extends State<TaskListItems> {
       },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 275),
-        margin: EdgeInsets.all( 8.0),
-        padding: EdgeInsets.all(10.0),
+        margin: EdgeInsets.all( 1.0),
+        padding: EdgeInsets.all(9.0),
 
         decoration: BoxDecoration(
             color: Colors.white,
@@ -56,81 +58,87 @@ class _TaskListItemsState extends State<TaskListItems> {
               )
             ]
                 :[]),
-        child: Expanded(
-          child: Container(
-            child:  Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(' '),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text(widget.username.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10.0,
-                            color: Colors.black))),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text(widget.product.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10.0,
-                            color: Colors.black))),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text(widget.workorder.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10.0,
-                            color: Colors.black))),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text(widget.quantity.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10.0,
-                            color: Colors.black))),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text(widget.startserial.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10.0,
-                            color: Colors.black))),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 20.0,
-                    width: 10.0,
-                    child: Center(child: Text(widget.endserial.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10.0,
-                            color: Colors.black))),
-                  ),
-                ),
-              ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: Container(
+                height: 20.0,
+                width: 10.0,
+                child: Center(child: Text(widget.username.toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10.0,
+                        color: Colors.black))),
+              ),
             ),
-          ),
+            Expanded(
+              child: Container(
+                height: 20.0,
+                width: 10.0,
+                child: Center(child: Text(widget.product.toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10.0,
+                        color: Colors.black))),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                height: 20.0,
+                width: 10.0,
+                child: Center(child: Text(widget.workorder.toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10.0,
+                        color: Colors.black))),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                height: 20.0,
+                width: 10.0,
+                child: Center(child: Text(widget.quantity.toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10.0,
+                        color: Colors.black))),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                height: 20.0,
+                width: 10.0,
+                child: Center(child: Text(widget.startserial.toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10.0,
+                        color: Colors.black))),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                height: 20.0,
+                width: 10.0,
+                child: Center(child: Text(widget.endserial.toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10.0,
+                        color: Colors.black))),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                height: 20.0,
+                width: 10.0,
+                child: Center(child: Text(widget.status.toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10.0,
+                        color: Colors.black))),
+              ),
+            ),
+          ],
         ),
       ),
 

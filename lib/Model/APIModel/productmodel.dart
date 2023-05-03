@@ -1,4 +1,6 @@
 
+import 'package:production_automation_testing/Model/APIModel/templatemodel.dart';
+
 class Productmodel {
   Productmodel({
      this.productId,
@@ -16,6 +18,7 @@ class Productmodel {
      this.remarks,
      this.timeRequired,
      this.macAddress,
+    this.template
   });
 
   int? productId;
@@ -33,5 +36,6 @@ class Productmodel {
   String? remarks;
   int? timeRequired;
   String? macAddress;
+  List<Template>? template;
 
 }

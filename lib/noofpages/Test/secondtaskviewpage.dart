@@ -8,6 +8,7 @@ import '../../NavigationBar/src/company_name.dart';
 import '../../NavigationBar/src/navbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../NavigationBar/src/testuser.dart';
 import '../../Provider/excelprovider.dart';
 import '../../Provider/generalProvider.dart';
 import '../../Provider/tcpprovider/tcp_provider_send_data.dart';
@@ -51,24 +52,7 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
     height = MediaQuery.of(context).size.height;
 
 
-/*    List<Testtype>? testtype = ref.watch(getallestNotifier).value;
 
-    if(testtype != null){
-      for(int i=0; i<testtype.length; i++){
-        if(testtype[i].testType == ""|| testtype[i].testType == "Title" ){
-        }else{
-          Testtype tst = Testtype(
-              testType: testtype[i].testType
-          );
-          if(testtypevale.isEmpty || testtypevale.length <= 6){
-            if(Helper.classes == "TEST" ){
-              testtypevale.add(tst);
-            }
-          }
-
-        }
-      }
-    }*/
 
 
     List<FirstTest>? alltest = ref.watch(getallestNotifier).value;
@@ -114,7 +98,7 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
               CompanyName(),
               Align(
                   alignment: Alignment.center,
-                  child: NavBar()
+                  child: TestuserNavBar()
               ),
             ],
           ),

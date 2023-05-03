@@ -62,7 +62,7 @@ class _UserPageState extends ConsumerState<UserPage> {
   @override
   void initState(){
     Helper.classes ='userlist';
-   // ref.refresh(getUserNotifier);
+   //ref.refresh(getUserNotifier);
 
   }
 
@@ -113,34 +113,36 @@ class _UserPageState extends ConsumerState<UserPage> {
      );
    }
 
+   var designUser;
+
 
 
   @override
   Widget build(BuildContext context) {
 
 
-
-
-  /*  return ValueListenableBuilder<Box<UserManagementmodel>>(
-        valueListenable: Usersvalue.getUsers().listenable(),
-        builder: (context, Box<UserManagementmodel> items, _) {
-          List<int> keys;
-          keys = items.keys.cast<int>().toList();
-          datamodels = items.values.toList().cast<UserManagementmodel>();
-
-          var activevalue = items.values
-              .where((element) => element.flg == true)
-              .toList();
-
-          var inactivevalue = items.values
-              .where((element) => element.flg == false)
-              .toList();
-*/
          return ref.watch(getUserNotifier).when(data: (datum){
             var activevalue = datum.where((element) => element.flg == 1).toList();
 
             var inactivevalue = datum.where((element) => element.flg == 0).toList();
+            if(Helper.sharedRoleId == "Design Admin"){
+              designUser = datum.where((element) => element.role == "Design User").toList();
+              var activedesignuser = designUser.where((element) => element.flg == 1).toList();
+              var inactivedesignuser = designUser.where((element) => element.flg == 0).toList();
 
+              activevalue = activedesignuser;
+              inactivevalue = inactivedesignuser;
+              datum = designUser;
+            }else if(Helper.sharedRoleId == "Test Admin"){
+             var testUser = datum.where((element) => element.role == "Test User").toList();
+              var activetestuser = testUser.where((element) => element.flg == 1).toList();
+              var inactivetestuser = testUser.where((element) => element.flg == 0).toList();
+
+              activevalue = activetestuser;
+              inactivevalue = inactivetestuser;
+              datum = testUser;
+            }
+           
 
             return Row(
               children: [
@@ -804,6 +806,15 @@ class _UserPageState extends ConsumerState<UserPage> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   children: [
+                                    IconButton(
+                                        highlightColor: Colors.amberAccent,
+                                        onPressed: (){
+                                          ref.refresh(getUserNotifier);
+
+                                    }, icon: Icon(Icons.refresh,)),
+                                    SizedBox(
+                                      width: 15.0,
+                                    ),
                                     ElevatedButton(
                                         child: Row(
                                           children: [
