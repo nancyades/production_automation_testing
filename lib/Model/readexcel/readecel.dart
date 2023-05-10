@@ -51,13 +51,7 @@ class FirstTest{
 
 });
 
-  selectTest(bool val) {
-    isSelected = val;
-  }
 
-  selectTest1(String val1) {
-    radiotype= val1;
-  }
 
   setDisplayResult(var value){
     displayResult = value;

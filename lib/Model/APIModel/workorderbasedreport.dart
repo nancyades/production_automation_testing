@@ -16,6 +16,7 @@ class WorkorderbasedReport {
     required this.testedBy,
     required this.testedDate,
     required this.testResult,
+    required this.testName,
   });
 
   int workorderId;
@@ -32,5 +33,6 @@ class WorkorderbasedReport {
   String testedBy;
   dynamic testedDate;
   String testResult;
+  String testName;
 
 }

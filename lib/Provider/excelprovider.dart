@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:production_automation_testing/Model/APIModel/templatemodel.dart';
+import 'package:production_automation_testing/Model/resultmodel.dart';
 import '../Model/APIModel/productcount.dart';
 import '../Model/APIModel/productmodel.dart';
 import '../Model/APIModel/productreport.dart';
@@ -75,6 +76,10 @@ final getProductNotifier = FutureProvider<List<Productmodel>>((ref) async {
 
 final getTemplateNotifier = FutureProvider<List<Template>>((ref) async {
   return await ref.read(apiProvider).getTemplate();
+});
+
+final getResultNotifier = FutureProvider<List<Results>>((ref) async {
+  return await ref.read(apiProvider).getResult();
 });
 
 final getTaskNotifier = FutureProvider<List<TaskModel>>((ref) async {

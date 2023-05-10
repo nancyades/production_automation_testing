@@ -20,10 +20,12 @@ class TaskModel {
      this.updatedDate,
      this.flg,
      this.rating,
+    this.product,
+    this.workorderCode,
     this.testing
   });
 
-  int? taskId;
+  var taskId;
   int? userId;
   int? assignId;
   int? wolId;
@@ -43,10 +45,82 @@ class TaskModel {
   int? workorderid;
   int? productid;
   String? username;
+  dynamic workorderCode;
+  Productvalue? product;
   List<Testing>? testing;
 
 
 }
+
+class Productvalue {
+  int? productId;
+  String? productName;
+  String? productCode;
+  String? description;
+  int? templateId;
+  int? quantity;
+  String? status;
+  int? createdBy;
+  int? updatedBy;
+  dynamic createdDate;
+  dynamic updatedDate;
+  int? flg;
+  String? remarks;
+  int? timeRequired;
+  String? macAddress;
+  List<TemplateValue>? template;
+
+  Productvalue({
+    this.productId,
+    this.productName,
+    this.productCode,
+    this.description,
+    this.templateId,
+    this.quantity,
+    this.status,
+    this.createdBy,
+    this.updatedBy,
+    this.createdDate,
+    this.updatedDate,
+    this.flg,
+    this.remarks,
+    this.timeRequired,
+    this.macAddress,
+    this.template,
+  });
+
+}
+
+class TemplateValue {
+  int? templateId;
+  String? templateName;
+  String? filePath;
+  int? createdBy;
+  int? updatedBy;
+  dynamic createdDate;
+  dynamic updatedDate;
+  int? flg;
+  String? remarks;
+  dynamic excelRead;
+  String? productId;
+
+  TemplateValue({
+    this.templateId,
+    this.templateName,
+    this.filePath,
+    this.createdBy,
+    this.updatedBy,
+    this.createdDate,
+    this.updatedDate,
+    this.flg,
+    this.remarks,
+    this.excelRead,
+    this.productId,
+  });
+}
+
+
+
 
 class Testing {
   int? testId;
@@ -63,6 +137,20 @@ class Testing {
   int? hoursTaken;
   String? testNumber;
   bool? isSelected = false;
+  String? radiotype;
+  String? testName;
+  String? isOnline;
+  String? type;
+  String? packetId;
+  String? pktType;
+  String? userEntry;
+  String? wifiResult;
+  String? passCrieteria;
+  String? remarks;
+  String? result;
+  String? displayResult = 'UNDEFINED';
+  String? userAckValue ;
+
 
   Testing({
     this.testId,
@@ -79,8 +167,35 @@ class Testing {
     this.hoursTaken,
     this.testNumber,
     this.isSelected,
+    this.testName,
+    this.isOnline,
+    this.type,
+    this.packetId,
+    this.pktType,
+    this.userEntry,
+    this.wifiResult,
+    this.passCrieteria,
+    this.remarks,
+    this.radiotype,
+
   });
 
+
+  setDisplayResult(var value){
+    displayResult = value;
+  }
+
+  setResult(var value){
+    result = value;
+  }
+
+  setRemarks(var values){
+    remarks = values;
+  }
+
+  setUserAckVal (var val) {
+    userAckValue = val;
+  }
 
   Testing.fromJson(Map<String, dynamic> json)
   : testId = json['testId'],
@@ -95,7 +210,16 @@ class Testing {
         testType = json['testType'],
         testDate = json['testDate'],
         hoursTaken = json['hoursTaken'],
-        testNumber = json['testNumber'];
+        testNumber = json['testNumber'],
+  testName = json['testName'],
+  isOnline = json['isOnline'],
+  type = json['type'],
+  packetId = json['packetId'],
+  pktType = json['pktType'],
+  userEntry = json['userEntry'],
+  wifiResult = json['wifiResult ='],
+  passCrieteria = json['passCrieteria'],
+  remarks = json['remarks'];
 
 
   Map<String, dynamic> toJson() {
@@ -113,6 +237,16 @@ class Testing {
    'testDate':  testDate,
    'hoursTaken':  hoursTaken,
    'testNumber':  testNumber,
+   'testName' :  testName,
+   'isOnline' :  isOnline,
+   'type' :  type,
+   'packetId' :  packetId,
+   'pktType' :  pktType,
+   'userEntry' :  userEntry,
+   'wifiResult' :  wifiResult,
+   'passCrieteria' :  passCrieteria,
+   'remarks' :  remarks,
+
 
     };
   }

@@ -1,3 +1,5 @@
+import 'package:production_automation_testing/Model/APIModel/taskmodel.dart';
+
 import '../Model/readexcel/readecel.dart';
 
 class Helper{
@@ -8,11 +10,12 @@ static bool isadd = false;
 static List<dynamic> testType = [];
 static bool cleartemplate = true;
 
-static List<List<FirstTest>> selectedTest = [];
-static FirstTest ? firstTest;
+static List<List<Testing>> selectedTest = [];
+static Testing ? firstTest;
 static String tcpResponse = "";
 static String dropDown = "";
 static String ischecked = "";
+static String furious = "";
 
 
 static String editvalue = "";

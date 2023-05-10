@@ -76,7 +76,9 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
 
   @override
   void initState() {
-    ref.refresh(getWorkorderNotifier);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.refresh(getWorkorderNotifier);
+    });
   }
 
   @override
@@ -155,6 +157,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                               child: MaterialButton(
                                 padding: const EdgeInsets.all(15),
                                 onPressed: () {
+                                  ref.refresh(getProductNotifier);
                                   setState(() {
                                     workorder.workorderCode = "";
                                     workorder.quantity = 0;
@@ -164,6 +167,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                     _isShow = !_isShow;
                                     chart = !chart;
                                     searchdropdown = !searchdropdown;
+                                    Helper.furious = "";
                                   });
                                 },
                                 child: const Icon(
@@ -1402,7 +1406,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 print("workorder id----------> ${int.parse(
                                     items[index].workorderId.toString())}");
 
-
+                               Helper.furious = "ADMIN";
                                 chart = false;
                                 _isShow = true;
                                 searchdropdown = false;

@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:production_automation_testing/Helper/application_class.dart';
 import 'package:production_automation_testing/Helper/packet_control.dart';
+import 'package:production_automation_testing/Model/resultmodel.dart';
 import 'package:production_automation_testing/Model/testmodel.dart';
+import 'package:production_automation_testing/Provider/post_provider/test_provider.dart';
 import 'package:production_automation_testing/Provider/tcpprovider/tcp_provider_receive_data.dart';
 import 'package:production_automation_testing/Provider/testProvider.dart';
 import 'package:production_automation_testing/noofpages/Test/firsrtaskviewpage.dart';
 import 'package:production_automation_testing/noofpages/Test/secondtaskviewpage.dart';
+import 'package:production_automation_testing/noofpages/Test/tasklistscreen.dart';
 import 'package:production_automation_testing/noofpages/TestCompleted/test_completed.dart';
 import 'package:production_automation_testing/noofpages/dashboardscreenpage.dart';
 import 'package:production_automation_testing/noofpages/Task/taskpage.dart';
@@ -18,11 +21,14 @@ import 'package:production_automation_testing/noofpages/setting/settingpage.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../Helper/AppClass.dart';
 import '../../Helper/helper.dart';
+import '../../HomeScreen.dart';
+import '../../Model/APIModel/taskmodel.dart';
 import '../../Model/readexcel/readecel.dart';
 import '../../NavigationBar/src/company_name.dart';
 import '../../NavigationBar/src/navbar.dart';
 import '../../Provider/excelprovider.dart';
 import '../../Provider/generalProvider.dart';
+import '../../Provider/post_provider/result_provider.dart';
 import '../../Provider/tcpprovider/tcp_provider_send_data.dart';
 import '../../service/tcpclient.dart';
 import '../Users/user.dart';
@@ -31,8 +37,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class TestScreenPage extends ConsumerStatefulWidget {
   dynamic testtype;
+  List<Testing>? testlist;
+  TaskModel? tsk;
 
-  TestScreenPage({Key? key, this.testtype}) : super(key: key);
+  TestScreenPage({Key? key, this.testtype, this.testlist, this.tsk}) : super(key: key);
 
   @override
   ConsumerState<TestScreenPage> createState() => _TestScreenPageState();
@@ -75,10 +83,11 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
   String? choice;
 
   bool isEast = false;
+  var userEntry;
 
   bool isCommunicate = false;
 
-  List<List<FirstTest>> test = [];
+  List<List<Testing>> test = [];
 
   int k = 0;
   bool isOnlineTestStarted = false;
@@ -86,9 +95,20 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
   List<OnlineTestModel> testList = [];
   int i = 0;
 
-  List<FirstTest>? testlist = [];
+  List<Testing>? testlist = [];
 
   bool value = true;
+
+   var displayTime;
+
+   List<Results> reslt = [];
+
+  List<Results> ted = [];
+  int jk = 0;
+
+  List<Results> uniquelist =[];
+
+  int? totalSeconds;
 
   @override
   void initState() {
@@ -101,9 +121,11 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       stopWatchTimer.onExecute.add(StopWatchExecute.start);
 
+
       jigaddresscontroller.text =
           await ApplicationClass().getStringFormSharePreferences('Jig') ?? '';
     });
+
 
     super.initState();
   }
@@ -113,6 +135,8 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    producttitlecontroller.text = widget.tsk!.product!.productName.toString();
     fontSize = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height;
     List<FirstTest>? alltest = ref.watch(getallestNotifier).value;
@@ -128,39 +152,51 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
     }
 
     List<int> ind = [];
-    List<List<FirstTest>> ind2 = [];
-    List<List<FirstTest>> ind3 = [];
-    List<FirstTest> ss = <FirstTest>[];
+    List<List<Testing>> ind2 = [];
+    List<List<Testing>> ind3 = [];
+    List<Testing> ss = <Testing>[];
     int j = 0;
+    
+    
+    for(int i=0; i<widget.testtype[0].length; i++){
+      for(int j=0; j<widget.testlist!.length; j++){
+        if (widget.testtype[0][i] == widget.testlist![j].testStatus){
+          ss.add(widget.testlist![j]);
+          ss.sort((a, b) => a.testNumber!.compareTo(b.testNumber!));
+        }
+      }
+      ind2.add(ss);
+      //uniquelist.sort((a, b) => a.testNumber!.compareTo(b.testNumber!));
+      ss = [];
+    }
 
-    for (int i = 0; i < alltest.length; i++) {
+
+
+   /* for (int i = 0; i < widget.testlist!.length; i++) {
       if (widget.testtype[0].length > j) {
-        if (alltest[i].testtype != "" && alltest[i].testtype != "Title"
-            //&& widget.testtype[0][j].toString() == alltest![i].testtype.toString()
-            ) {
-          ind.add(i);
-          //j++;
+        for(int m = 0; m<widget.testtype[0].length; m++)
+        if (widget.testlist![i].testStage == widget.testtype[0][m]) {
+
 
           if (ss.length != 0) {
             ind2.add(ss);
-            ss = <FirstTest>[];
+            ss = <Testing>[];
           }
-          ss.add(alltest[i]);
-        } else if (alltest[i].testtype != "Title") {
-          ss.add(alltest[i]);
+          ss.add(widget.testlist![i]);
         }
       }
     }
 
-    ind2.add(ss);
+    ind2.add(ss);*/
 
     for (int i = 0; i < ind2.length; i++) {
-      List<FirstTest> list1 = <FirstTest>[];
+      List<Testing> list1 = <Testing>[];
       list1 = ind2[i].toList();
 
       if (widget.testtype[0].length > j) {
-        if (widget.testtype[0][j].toString() == list1[0].testtype.toString()) {
+        if (widget.testtype[0][j].toString() == list1[0].testStatus.toString()) {
           ind3.add(list1);
+
           j++;
         }
       }
@@ -521,13 +557,20 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                   builder: (context, snapshot) {
                                                     final value =
                                                         snapshot.data!;
-                                                    final displayTime =
+                                              displayTime =
                                                         StopWatchTimer
                                                             .getDisplayTime(
                                                                 value,
                                                                 hours: true,
                                                                 milliSecond:
                                                                     false);
+
+                                                    List<String> timeParts = displayTime.split(':'); // split the raw time value into its individual parts
+                                                    int hours = int.parse(timeParts[0]); // parse the hours part as an integer
+                                                    int minutes = int.parse(timeParts[1]); // parse the minutes part as an integer
+                                                    int seconds = int.parse(timeParts[2]); // parse the seconds part as an integer
+                                                     totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+
                                                     return Text(
                                                       displayTime,
                                                       style: TextStyle(
@@ -560,7 +603,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          ind3[k][0].testtype.toString(),
+                                          ind3[k][0].testStatus.toString(),
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 20.0),
@@ -579,7 +622,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                           bool status =
                                               ref.watch(testStartedProvider);
 
-                                          if (ind3[k][0].isonline == "1" && isPressed == true) {
+                                          if (ind3[k][0].isOnline == "1" && isPressed == true) {
                                             value = true;
                                           }else{
                                             value = false;
@@ -801,19 +844,19 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                       switch (ind3[k][i].type.toString()) {
                                                         case 'FAILACK':
                                                           onlineTestIds[i] = OnlineTestModel(
-                                                              PacketControl.startPacket + ind3[k][i].packettype!.toString() +
+                                                              PacketControl.startPacket + ind3[k][i].pktType!.toString() +
                                                                   PacketControl.splitChar +
-                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetid!.toString())! +
+                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetId!.toString())! +
                                                                   PacketControl.endPacket,
-                                                              ind3[k][i].testnumber);
+                                                              ind3[k][i].testNumber);
                                                           break;
                                                         case 'SERIALNO':
                                                           onlineTestIds[i] = OnlineTestModel(
-                                                              PacketControl.startPacket + ind3[k][i].packettype.toString() +
+                                                              PacketControl.startPacket + ind3[k][i].pktType.toString() +
                                                                   PacketControl.splitChar +
-                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetid!.toString())! +
+                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetId!.toString())! +
                                                                   PacketControl.endPacket,
-                                                              ind3[k][i].testnumber);
+                                                              ind3[k][i].testNumber);
                                                           break;
                                                         case 'MAC':
                                                           Future.delayed(
@@ -821,11 +864,11 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                                   milliseconds:
                                                                       25), () {
                                                             onlineTestIds[i] = OnlineTestModel(
-                                                                PacketControl.startPacket + ind3[k][i].packettype.toString() +
+                                                                PacketControl.startPacket + ind3[k][i].pktType.toString() +
                                                                     PacketControl.splitChar +
-                                                                    ApplicationClass().formDigits(3, ind3[k][i].packetid!.toString())! +
+                                                                    ApplicationClass().formDigits(3, ind3[k][i].packetId!.toString())! +
                                                                     PacketControl.endPacket,
-                                                                ind3[k][i].testnumber);
+                                                                ind3[k][i].testNumber);
                                                           });
                                                           break;
                                                         case 'UNIT':
@@ -834,42 +877,42 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                                   milliseconds:
                                                                       20), () {
                                                             onlineTestIds[i] = OnlineTestModel(
-                                                                PacketControl.startPacket + ind3[k][i].packettype.toString() +
+                                                                PacketControl.startPacket + ind3[k][i].pktType.toString() +
                                                                     PacketControl.splitChar +
-                                                                    ApplicationClass().formDigits(3, ind3[k][i].packetid!.toString())! +
+                                                                    ApplicationClass().formDigits(3, ind3[k][i].packetId!.toString())! +
                                                                     PacketControl.endPacket,
-                                                                ind3[k][i].testnumber);
+                                                                ind3[k][i].testNumber);
                                                           });
                                                           break;
                                                         case 'UNITCAL':
                                                           onlineTestIds[i] = OnlineTestModel(
                                                               PacketControl.startPacket + PacketControl.readPacket +
                                                                   PacketControl.splitChar +
-                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetid.toString())! +
+                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetId.toString())! +
                                                                   PacketControl.endPacket,
-                                                              ind3[k][i].testnumber);
+                                                              ind3[k][i].testNumber);
                                                           break;
                                                         case 'UNITACK':
                                                           onlineTestIds[i] = OnlineTestModel(
-                                                              PacketControl.startPacket + ind3[k][i].packettype.toString() +
+                                                              PacketControl.startPacket + ind3[k][i].pktType.toString() +
                                                                   PacketControl.splitChar +
-                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetid.toString())! +
+                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetId.toString())! +
                                                                   PacketControl.endPacket,
-                                                              ind3[k][i].testnumber);
+                                                              ind3[k][i].testNumber);
                                                           break;
                                                           case 'UNITREMARK':
-                                                          if (ind3[k][i].isonline == "0"? false : true) {
+                                                          if (ind3[k][i].isOnline == "0"? false : true) {
                                                                 onlineTestIds[index] = OnlineTestModel(
-                                                                PacketControl.startPacket + ind3[k][i].packettype + PacketControl.splitChar +
-                                                                ApplicationClass().formDigits(3, ind3[k][i].packetid)! + PacketControl.endPacket,
-                                                                ind3[k][i].testnumber!);
+                                                                PacketControl.startPacket + ind3[k][i].pktType.toString() + PacketControl.splitChar +
+                                                                ApplicationClass().formDigits(3, ind3[k][i].packetId.toString())! + PacketControl.endPacket,
+                                                                ind3[k][i].testNumber!);
                                                                 }
                                                                 break;
                                                           case 'USERACK':
                                                             onlineTestIds[index] = OnlineTestModel(
-                                                                PacketControl.startPacket + ind3[k][i].packettype + PacketControl.splitChar +
-                                                                    ApplicationClass().formDigits(3, ind3[k][i].packetid!)! + PacketControl.endPacket,
-                                                                ind3[k][i].testnumber!
+                                                                PacketControl.startPacket + ind3[k][i].pktType.toString() + PacketControl.splitChar +
+                                                                    ApplicationClass().formDigits(3, ind3[k][i].packetId!)! + PacketControl.endPacket,
+                                                                ind3[k][i].testNumber!
                                                             );
                                                             break;
 
@@ -910,23 +953,41 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
                                         if (test.isNotEmpty) {
                                           print("print test k-----------------> ${test}");
-                                          for(var ele in test[0]){
-                                            if(ele.isonline == "0"){
-                                              if(ele.result == null && ele.displayResult == null ){
-                                                return showfailedTest();
-                                              }
-                                              else if(ele.result == "" && ele.displayResult == ""){
-                                                return showfailedTest();
-                                              }
-                                              else if(ele.remarks == "" && ele.displayResult == "FAIL"){
-                                                return showRemarks();
-                                              }
-                                            }else{
-                                              if(ele.remarks == "" && ele.displayResult == "FAIL"){
-                                                return showRemarks();
-                                              }
+                                          for(int i=0;i<test[0].length; i++){
+                                            ref.read(updateTestNotifier.notifier).updatetTest({
+                                              "test_id": test[0][i].testId,
+                                              "task_id": test[0][i].taskId,
+                                              "test_stage": test[0][i].testStage,
+                                              "test_status": test[0][i].testStatus,
+                                              "pass": test[0][i].displayResult == "PASS" ? 1 : 0,//pass
+                                              "fail": test[0][i].displayResult == "FAIL" ? 1 : 0,//fail
+                                              "status": test[0][i].displayResult == "PASS" ? "PASS": "FAIL",//satuts
+                                              "flg": 1,
+                                              "mac_address": null,
+                                              "test_type": test[0][i].testType ,
+                                              "test_date": test[0][i].testDate,
+                                              "hours_taken": totalSeconds,
+                                              "test_number": test[0][i].testNumber,
+                                              "test_Name": test[0][i].testName,
+                                              "isOnline": test[0][i].isOnline,
+                                              "type": test[0][i].type,
+                                              "packetID": test[0][i].packetId,
+                                              "pkt_Type": test[0][i].pktType,
+                                              "user_Entry": test[0][i].userEntry,
+                                              "wifi_Result": test[0][i].wifiResult,
+                                              "pass_Crieteria": test[0][i].passCrieteria,
+                                              "remarks": test[0][i].remarks,
+                                            });
+                                          }
 
-                                            }
+                                          for(var ele in test[0]){
+
+                                              if(ele.result == null && ele.displayResult == "UNDEFINED" ){
+                                                return showfailedTest();
+                                              }
+                                              else if(ele.remarks == null && ele.displayResult == "FAIL"){
+                                                return showRemarks();
+                                              }
 
 
 
@@ -956,37 +1017,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                           }
 
 
-                                       /*   if(ind3[k][0].isonline == "1" ){
-                                            if (ref.read(serialNoTestProvider.notifier).state.isEmpty) {
-                                              final snackBar = SnackBar(
-                                                content: const Text(
-                                                    'Please Enter the Test Serial No'),
-                                                backgroundColor:
-                                                (Colors.black),
-                                              );
-                                              ScaffoldMessenger.of(
-                                                  context)
-                                                  .showSnackBar(snackBar);
 
-                                            }
-
-                                            else {
-                                                Future.delayed(const Duration(microseconds: 1000), () {
-                                                  splitExcelOnlineTestData(
-                                                      onlineTestIds);
-                                                });
-                                                ref.read(testStartedProvider.notifier).state = true;
-                                            }
-                                           *//* Future.delayed(
-                                                const Duration(
-                                                    milliseconds: 1000), () {
-                                              splitExcelOnlineTestData(
-                                                  onlineTestIds);
-                                            });*//*
-
-                                          }
-
-*/
 
 
 
@@ -995,7 +1026,8 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      TestCompleted()));
+                                                      TestCompleted(tasks: widget.tsk,)));
+                                          stopWatchTimer.onExecute.add(StopWatchExecute.stop);
                                           Helper.classes = "TEST";
                                         }
 
@@ -1006,6 +1038,16 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                         }
                                         isEast = false;
                                       });
+
+
+                                        for(int i=0; i< uniquelist.length; i++){
+                                          ref.read(addResultNotifier.notifier).addResult( {
+                                            "test_id": uniquelist[i].testId,
+                                            "spend_time": uniquelist[i].spendTime,
+                                            "status": uniquelist[i].status.toString(),
+                                            "flg": 1
+                                          });
+                                        }
                                       /* Navigator.push(
                                               context, MaterialPageRoute(builder: (context) => TestScreenPage()));*/
                                     }),
@@ -1036,7 +1078,33 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
     );
   }
 
-  getAllTest(List<FirstTest> radio, int index) {
+  getAllTest(List<Testing> radio, int index) {
+   print("nanades");
+
+
+
+
+    Results tt = Results(
+      testId: radio[index].testId,
+      status: radio[index].displayResult.toString(),
+      flg: radio[index].flg,
+      spendTime: totalSeconds
+
+    );
+    if(radio[index].displayResult.toString() != "UNDEFINED"){
+      ted.add(tt);
+    }
+
+
+    var seen = Set<String>();
+
+     uniquelist = ted.where((student) => seen.add(student.testId.toString())).toList();
+
+
+
+    print("ted---------------> ${uniquelist.toString()}");
+
+
 
 /*
     if( Helper.isRemarks == "Lol")
@@ -1084,21 +1152,87 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
               groupValue: radio[index].radiotype,
               onChanged: (value) {
                 setState(() {
-                  if(radio[index].testtype == 'FLAG'){
-                    if(radio[index].userentry == "OK/NOK" ){
+                  print("first---------> ${radio[index].userEntry!.split('/')[0]}");
+                  print("second---------> ${radio[index].userEntry!.split('/')[1]}");
+
+
+
+
+                     if(radio[index].userEntry!.split("/")[0].toString() == "YES ")
+                       {
+                         userEntry = "YES";
+                         if(userEntry == radio[index].passCrieteria){
+                           radio[index].setResult("PASS");
+                           radio[index].setDisplayResult('PASS');
+
+                         }
+                         else {
+                           radio[index].setResult("FAIL");
+                           radio[index].setDisplayResult('FAIL');
+                         }
+                       }else if(radio[index].userEntry!.split("/")[0].toString()   == "OK")
+                       {
+                         userEntry = "OK";
+
+                         if(userEntry == radio[index].passCrieteria)
+                         {
+                           radio[index].setResult("PASS");
+                           radio[index].setDisplayResult('PASS');
+                         }  else {
+                           radio[index].setResult("FAIL");
+                           radio[index].setDisplayResult('FAIL');
+                         }
+
+                        }else if(radio[index].userEntry!.split("/")[0].toString()   == "SHORT")
+                     {
+                       userEntry = "SHORT";
+
+                       if(userEntry == radio[index].passCrieteria)
+                       {
+                         radio[index].setResult("PASS");
+                         radio[index].setDisplayResult('PASS');
+                       }  else {
+                         radio[index].setResult("FAIL");
+                         radio[index].setDisplayResult('FAIL');
+                       }
+
+                     }
+                     else if(radio[index].userEntry!.split("/")[0].toString()   == "PASS")
+                     {
+                       userEntry = "PASS";
+
+                       if(userEntry == radio[index].passCrieteria)
+                       {
+                         radio[index].setResult("PASS");
+                         radio[index].setDisplayResult('PASS');
+                       }  else {
+                         radio[index].setResult("FAIL");
+                         radio[index].setDisplayResult('FAIL');
+                       }
+
+                     }else if(radio[index].userEntry!.split("/")[0].toString() == "YES")
+                  {
+                    userEntry = "YES";
+                    if(userEntry == radio[index].passCrieteria){
                       radio[index].setResult("PASS");
                       radio[index].setDisplayResult('PASS');
-                    }else{
+
+                    }
+                    else {
                       radio[index].setResult("FAIL");
                       radio[index].setDisplayResult('FAIL');
                     }
-                  }else {
-                    radio[index].setResult("FAIL");
-                    radio[index].setDisplayResult('FAIL');
-
-
-
                   }
+
+                  if(uniquelist.isNotEmpty){
+                    for(int i=0; i<uniquelist.length; i++){
+                      uniquelist[i].status = radio[index].displayResult.toString();
+                    }
+                  }
+
+
+
+
 
                   radio[index].radiotype = value.toString();
                   switch (value) {
@@ -1113,13 +1247,16 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     default:
                       choice = null;
                   }
+
                   debugPrint(choice); //Debug the choice in console
 
                   Helper.classes = "DEMO";
+
+
                 });
               },
             ),
-            Text(radio[index].userentry!.split('/')[0],
+            Text(radio[index].userEntry!.split('/')[0],
                 style: TextStyle(
                     fontWeight: FontWeight.w300,
                     fontSize: 13.0,
@@ -1132,18 +1269,79 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
               groupValue: radio[index].radiotype,
               onChanged: (value) {
                 setState(() {
-                  if(radio[index].testtype == 'FLAG'){
-                    if(radio[index].userentry == "OK/NOK"){
-                      radio[index].setResult("FAIL");
-                      radio[index].setDisplayResult('FAIL');
-                    }else{
+                  print("first---------> ${radio[index].userEntry!.split('/')[0]}");
+                  print("second---------> ${radio[index].userEntry!.split('/')[1]}");
+
+                  if(radio[index].userEntry!.split("/")[0].toString() == "YES ")
+                  {
+                    userEntry = "NO";
+                    if(userEntry == radio[index].passCrieteria){
                       radio[index].setResult("PASS");
                       radio[index].setDisplayResult('PASS');
 
                     }
-                  }else {
-                    radio[index].setResult("PASS");
-                    radio[index].setDisplayResult('PASS');
+                    else {
+                      radio[index].setResult("FAIL");
+                      radio[index].setDisplayResult('FAIL');
+                    }
+                  }else  if(radio[index].userEntry!.split("/")[0].toString() == "OK" )
+                  {
+                    userEntry = "NOK";
+
+                    if(userEntry == radio[index].passCrieteria)
+                    {
+                      radio[index].setResult("PASS");
+                      radio[index].setDisplayResult('PASS');
+                    }  else {
+                      radio[index].setResult("FAIL");
+                      radio[index].setDisplayResult('FAIL');
+                    }
+
+                  }else  if(radio[index].userEntry!.split("/")[0].toString() == "SHORT")
+                  {
+                    userEntry = "NO SHORT";
+
+                    if(userEntry == radio[index].passCrieteria)
+                    {
+                      radio[index].setResult("PASS");
+                      radio[index].setDisplayResult('PASS');
+                    }  else {
+                      radio[index].setResult("FAIL");
+                      radio[index].setDisplayResult('FAIL');
+                    }
+
+                  }
+                  else if(radio[index].userEntry!.split("/")[0].toString()   == "PASS")
+                  {
+                    userEntry = "FAIL";
+
+                    if(userEntry == radio[index].passCrieteria)
+                    {
+                      radio[index].setResult("PASS");
+                      radio[index].setDisplayResult('PASS');
+                    }  else {
+                      radio[index].setResult("FAIL");
+                      radio[index].setDisplayResult('FAIL');
+                    }
+
+                  }else if(radio[index].userEntry!.split("/")[0].toString() == "YES")
+                  {
+                    userEntry = "NO";
+                    if(userEntry == radio[index].passCrieteria){
+                      radio[index].setResult("PASS");
+                      radio[index].setDisplayResult('PASS');
+
+                    }
+                    else {
+                      radio[index].setResult("FAIL");
+                      radio[index].setDisplayResult('FAIL');
+                    }
+                  }
+
+                  if(uniquelist.isNotEmpty){
+                    for(int i=0; i<uniquelist.length; i++){
+                      uniquelist[i].status = radio[index].displayResult.toString();
+                    }
                   }
 
 
@@ -1167,7 +1365,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 });
               },
             ),
-            Text(radio[index].userentry!.split('/')[1],
+            Text(radio[index].userEntry!.split('/')[1],
                 style: TextStyle(
                     fontWeight: FontWeight.w300,
                     fontSize: 13.0,
@@ -1197,17 +1395,17 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   maxLength: 20,
                   onChanged: (val) {
                     print("print val------> ${val}");
-                    print("print val------> ${radio[index].passcrieteria}");
+                    print("print val------> ${radio[index].passCrieteria}");
 
                     setState(() {
                       if (val.isEmpty) {
                         radio[index].setDisplayResult('UNDEFINED');
                       }
-                      if (radio[index].passcrieteria!.contains('-')) {
+                      if (radio[index].passCrieteria!.contains('-')) {
                         List<String> arr =
-                            radio[index].passcrieteria!.split('-'); // 115 < 125
+                            radio[index].passCrieteria!.split('-'); // 115 < 125
                         num value, leftExpValue, rightExpValue;
-                        if (radio[index].passcrieteria!.contains('.')) {
+                        if (radio[index].passCrieteria!.contains('.')) {
                           value = double.parse(val.trim());
                           leftExpValue = double.parse(arr[0].trim());
                           rightExpValue = double.parse(arr[1].trim());
@@ -1222,12 +1420,13 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                         } else {
                           radio[index].setDisplayResult('FAIL');
                         }
-                      } else if (radio[index].passcrieteria!.contains('-')) {
+                      }
+                      else if (radio[index].passCrieteria!.contains('-')) {
                         List<String> arr =
-                            radio[index].passcrieteria!.split('-'); // 115 > 125
+                            radio[index].passCrieteria!.split('-'); // 115 > 125
 
                         num value, leftExpValue, rightExpValue;
-                        if (radio[index].passcrieteria!.contains('.')) {
+                        if (radio[index].passCrieteria!.contains('.')) {
                           value = double.parse(val.trim());
                           leftExpValue = double.parse(arr[0].trim());
                           rightExpValue = double.parse(arr[1].trim());
@@ -1243,7 +1442,9 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                           radio[index].setDisplayResult('FAIL');
                         }
                       }
+
                     });
+
                   },
                   decoration: const InputDecoration(
                       fillColor: Colors.black12,
@@ -1282,7 +1483,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           radio[index].setRemarks("Failed");
           Future.delayed(const Duration(milliseconds: 1), () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SecondTaskViewPage()));
+                MaterialPageRoute(builder: (context) => HomeScreenPage()));
           });
           Future.delayed(const Duration(milliseconds: 3), () {
             popDialog(
@@ -1290,24 +1491,57 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 msg: 'Connection error please restart your testJig',
                 context: context);
           });
-        } else {
+        }
+        else {
           if (ref.read(testStartedProvider.notifier).state) {
             if (ref.read(lastTestSentProvider.notifier).state ==
-                radio[index].testnumber) {
+                radio[index].testNumber) {
               boxColor = Colors.yellow;
               statusText = 'TESTING';
               progressVisibility = true;
+
             } else {
               boxColor = Colors.orange;
               statusText = 'IN QUEUE';
               progressVisibility = true;
+
+
             }
           } else {
             boxColor = Colors.yellow;
             statusText = 'Yet Stared';
             progressVisibility = false;
           }
+
         }
+      /*  print("GOOGLE LOOPED");
+
+        if(radio[index].displayResult != "UNDEFINED"){
+          ted.add(radio[index].testId.toString());
+          print(ted.toString());
+          var seen = Set<String>();
+          List<String> uniquelist = ted.where((student) => seen.add(student.toString())).toList();
+          print("uniqu ----> ${uniquelist}");
+
+          for(var ff in uniquelist){
+            ref.read(addResultNotifier.notifier).addResult({
+              "test_id": int.parse(ff.toString()),
+              "spend_time": 0,
+              "status": radio[index].displayResult.toString(),
+              "flg": 1
+            });
+
+          }
+
+
+          print(ted.length);
+          print("ted----------> ${ted.toString()}");
+
+
+
+        }
+        */
+
         /*switch (radio[index].result) {
               case 'PASS':
                 boxColor = Colors.green;
@@ -1555,6 +1789,8 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       radio[index].setResult("PASS");
                       radio[index].setDisplayResult('PASS');
 
+
+
                       radio[index].radiotype = value.toString();
                       switch (value) {
                         case '01':
@@ -1571,10 +1807,11 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       debugPrint(choice); //Debug the choice in console
 
                       Helper.classes = "DEMO";
+
                     });
                   },
                 ),
-                Text(radio[index].userentry!.split('/')[0],
+                Text(radio[index].userEntry!.split('/')[0],
                     style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 13.0,
@@ -1631,7 +1868,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     });
                   },
                 ),
-                Text(radio[index].userentry!.split('/')[1],
+                Text(radio[index].userEntry!.split('/')[1],
                     style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 13.0,
@@ -1731,7 +1968,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           default:
             if (ref.read(testStartedProvider.notifier).state) {
               if (ref.read(lastTestSentProvider.notifier).state ==
-                  radio[index].testnumber) {
+                  radio[index].testNumber) {
                 boxColor = Colors.yellow;
                 statusText = 'TESTING';
                 progressVisibility = true;
@@ -1841,10 +2078,11 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       debugPrint(choice); //Debug the choice in console
 
                       Helper.classes = "DEMO";
+
                     });
                   },
                 ),
-                Text(radio[index].userentry!.split('/')[0],
+                Text(radio[index].userEntry!.split('/')[0],
                     style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 13.0,
@@ -1872,10 +2110,11 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       }
                       debugPrint(choice);
                       Helper.classes = "DEMO";
+
                     });
                   },
                 ),
-                Text(radio[index].userentry!.split('/')[1],
+                Text(radio[index].userEntry!.split('/')[1],
                     style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 13.0,
@@ -1887,7 +2126,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           default:
             if (ref.read(testStartedProvider.notifier).state) {
               if (ref.read(lastTestSentProvider.notifier).state ==
-                  radio[index].testnumber) {
+                  radio[index].testNumber) {
                 boxColor = Colors.yellow;
                 statusText = 'TESTING';
                 progressVisibility = true;
@@ -1895,6 +2134,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 boxColor = Colors.orange;
                 statusText = 'IN QUEUE';
                 progressVisibility = true;
+
               }
             } else {
               boxColor = Colors.yellow;
@@ -2001,6 +2241,8 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
             statusText = 'COMPLETED';
             progressVisibility = false;
             /*canContinueTest = true;*/
+
+
             testType = Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
@@ -2174,7 +2416,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           default:
             if (ref.read(testStartedProvider.notifier).state) {
               if (ref.read(lastTestSentProvider.notifier).state ==
-                  radio[index].testnumber) {
+                  radio[index].testNumber) {
                 boxColor = Colors.yellow;
                 statusText = 'TESTING';
                 progressVisibility = true;
@@ -2334,7 +2576,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           default:
             if (ref.read(testStartedProvider.notifier).state) {
               if (ref.read(lastTestSentProvider.notifier).state ==
-                  radio[index].testnumber) {
+                  radio[index].testNumber) {
                 boxColor = Colors.yellow;
                 statusText = 'TESTING';
                 progressVisibility = true;
@@ -2523,7 +2765,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     });
                   },
                 ),
-                Text(radio[index].userentry!.split('/')[0],
+                Text(radio[index].userEntry!.split('/')[0],
                     style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 13.0,
@@ -2554,7 +2796,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     });
                   },
                 ),
-                Text(radio[index].userentry!.split('/')[1],
+                Text(radio[index].userEntry!.split('/')[1],
                     style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 13.0,
@@ -2566,7 +2808,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           default:
             if (ref.read(testStartedProvider.notifier).state) {
               if (ref.read(lastTestSentProvider.notifier).state ==
-                  radio[index].testnumber) {
+                  radio[index].testNumber) {
                 boxColor = Colors.yellow;
                 statusText = 'TESTING';
                 progressVisibility = true;
@@ -2627,7 +2869,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
         var boxColor = Colors.yellow;
         var statusText = 'InQueue';
         var progressVisibility = true;
-        if (radio[index].isonline == "0" ? false : true) {
+        if (radio[index].isOnline == "0" ? false : true) {
           switch (radio[index].result) {
             case 'TimeOut':
               boxColor = Colors.indigo;
@@ -2655,7 +2897,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 if (ref
                     .read(lastTestSentProvider.notifier)
                     .state ==
-                    radio[index].testnumber) {
+                    radio[index].testNumber) {
                   boxColor = Colors.yellow;
                   statusText = 'TESTING';
                   progressVisibility = true;
@@ -2742,7 +2984,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   });
                 },
               ),
-              Text(radio[index].userentry!.split('/')[0],
+              Text(radio[index].userEntry!.split('/')[0],
                   style: TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 13.0,
@@ -2775,7 +3017,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   });
                 },
               ),
-              Text(radio[index].userentry!.split('/')[1],
+              Text(radio[index].userEntry!.split('/')[1],
                   style: TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 13.0,
@@ -2802,7 +3044,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   height: 20.0,
                   width: 10.0,
                   child: Center(
-                      child: Text(radio[index].testnumber.toString(),
+                      child: Text(radio[index].testNumber.toString(),
                           style: TextStyle(
                               fontWeight: FontWeight.w300,
                               fontSize: 13.0,
@@ -2815,7 +3057,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   height: 20.0,
                   width: 10.0,
                   child: Center(
-                      child: Text(radio[index].testname.toString(),
+                      child: Text(radio[index].testName.toString(),
                           style: TextStyle(
                               fontWeight: FontWeight.w300,
                               fontSize: 13.0,
@@ -2838,7 +3080,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 child: (){
                   return  Container(
                       child: (radio[index].displayResult.toString() == "PASS" ||
-                          radio[index].displayResult.toString() == "null" ||
+                          radio[index].displayResult.toString() == "UNDEFINED" ||
                           radio[index].displayResult.toString() == "") ?
                       Text("")
                           : TextField(
@@ -2863,6 +3105,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                           });
                           print("value is ${values}");
                         },
+
                       )
                   );
                 }()
@@ -2953,8 +3196,46 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       }
                     }*/
 
+
+/*
+                        if(radio[index].isOnline == '1'){
+                            if(radio[index].displayResult.toString() != "UNDEFINED" ){
+                              Results tst = Results(
+                                resultId: 0,
+                                testId:  radio[index].testId,
+                                spendTime:  0,
+                                status:  radio[index].displayResult,
+                                flg:  1,
+                              );
+                              if(reslt.isEmpty){
+                                reslt.add(tst);
+                              }
+                              else{
+                                for(int i=0; i<reslt.length; i++){
+                                  if(reslt[i].testId !=  radio[index].testId){
+                                    reslt.add(tst);
+                                  }
+                                }
+                              }
+                              print(reslt);
+                            }
+
+                        }*/
+
+
+
+
+
+
+
+                       /* ref.read(addResultNotifier.notifier).addResult( {
+                          "test_id": radio[index].testId.toString(),
+                          "spend_time": displayTime,
+                          "status": radio[index].displayResult.toString(),
+                          "flg": 1
+                        });*/
                         return Text(
-                            radio[index].displayResult.toString() == "null"
+                            radio[index].displayResult.toString() == "UNDEFINED"
                                 ? ""
                                 : radio[index].displayResult.toString(),
                             style: TextStyle(

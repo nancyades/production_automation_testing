@@ -6,12 +6,15 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:production_automation_testing/DashBoard/src/ProjectCardOverview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:production_automation_testing/Helper/helper.dart';
+import 'package:production_automation_testing/Model/APIModel/usermodel.dart';
+import 'package:production_automation_testing/Model/APIModel/workordermodel.dart';
 import 'package:production_automation_testing/Provider/post_provider/task_provider.dart';
 import 'package:production_automation_testing/Provider/post_provider/taskdetails_provider.dart';
 import 'package:production_automation_testing/noofpages/Task/src/tasklistitem.dart';
 import 'package:production_automation_testing/noofpages/WorkOrder/workorderscreenpage.dart';
 import '../../DashBoard/src/cardcount/taskcount.dart';
 import '../../DashBoard/src/tabs.dart';
+import '../../Model/APIModel/productmodel.dart';
 import '../../Model/APIModel/taskmodel.dart';
 import '../../Provider/excelprovider.dart';
 import 'assignpage.dart';
@@ -26,16 +29,15 @@ class TaskPage extends ConsumerStatefulWidget {
 class _TaskPageState extends ConsumerState<TaskPage> {
   bool _isShow = false;
 
-  var selectUsers = "Sriram";
-  List<String> users = ['Sriram', 'Muthu', 'Issac', 'Nancy'];
+  var selectUsers = "";
 
-  var selectProduct = "PSBE";
-  List<String> products = ['PSBE', '16 Zone', 'PSBE-E', '32 Zone'];
+  var selectProduct = "";
+
 
   var selectStatus = "open";
   List<String> Status = ['open', 'in progress', 'complete',];
 
-  var selectWorkorder = "PSBEWorkorder";
+  var selectWorkorder = "";
   List<String> workorders = [
     'PSBEWorkorder',
     '16ZoneWorkorder',
@@ -107,6 +109,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                         MaterialButton(
                           padding: const EdgeInsets.all(15),
                           onPressed: () {
+                            ref.refresh(getWorkorderNotifier);
                             setState(() {
                               _isShow = !_isShow;
                               Helper.cleartemplate = false;
@@ -585,76 +588,126 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                             width: 10.0,
                                           ),
                                           Text("Username",style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11.0,color: Colors.blueAccent )),
-                                          DropdownButton(
-                                            icon: Padding(
-                                              padding: const EdgeInsets.only(left: 8.0),
-                                              child: Icon(Icons.keyboard_arrow_down),
-                                            ),
-                                            items: users.map<DropdownMenuItem<String>>(
-                                                    (String setlist) {
-                                                  return DropdownMenuItem<String>(
-                                                    value: setlist,
-                                                    child: Text(setlist.toString()),
-                                                  );
-                                                }).toList(),
-                                            value: selectUsers,
-                                            onChanged: (item) {
+                                          Consumer(
+                                            builder: (context, ref, child) {
+                                             return ref.watch(getUserNotifier).when(data: (data){
+                                               List<Users> testuser = data.where((element) => element.role == "Test User").toList();
 
-                                              setState(() {
-                                                selectUsers = item.toString();
-                                                print("Index==>"+selectUsers);
-                                                //List<FirstClass> emptylist = [];
 
+                                               selectUsers =testuser.isEmpty? "": testuser[0].name.toString();
+                                                return DropdownButton(
+                                                  icon: Padding(
+                                                    padding: const EdgeInsets.only(left: 8.0),
+                                                    child: Icon(Icons.keyboard_arrow_down),
+                                                  ),
+                                                  items: testuser.map<DropdownMenuItem<String>>(
+                                                          (Users setlist) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: setlist.name,
+                                                          child: Text(setlist.name.toString()),
+                                                        );
+                                                      }).toList(),
+                                                  value: selectUsers,
+                                                  onChanged: (item) {
+
+                                                    setState(() {
+                                                      selectUsers = item.toString();
+                                                      print("Index==>"+selectUsers);
+                                                      //List<FirstClass> emptylist = [];
+
+                                                    });
+                                                  },
+                                                );
+
+                                              }, error: (e,s){
+                                               return Text(e.toString());
+                                              }, loading: (){
+                                                return Center(child: CircularProgressIndicator());
                                               });
-                                            },
+
+                                            }
                                           ),
                                           Text("workorder",style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11.0,color: Colors.blueAccent )),
-                                          DropdownButton(
-                                            icon: Padding(
-                                              padding: const EdgeInsets.only(left: 8.0),
-                                              child: Icon(Icons.keyboard_arrow_down),
-                                            ),
-                                            items: workorders.map<DropdownMenuItem<String>>(
-                                                    (String setlist) {
-                                                  return DropdownMenuItem<String>(
-                                                    value: setlist,
-                                                    child: Text(setlist.toString()),
-                                                  );
-                                                }).toList(),
-                                            value: selectWorkorder,
-                                            onChanged: (item) {
+                                          Consumer(
+                                            builder: (context, ref, child) {
+                                             return ref.watch(getWorkorderNotifier).when(data: (data){
+                                               List<WorkorderModel> workorder = data.where((element) => element.status == "Approved").toList();
 
-                                              setState(() {
-                                                selectWorkorder = item.toString();
-                                                print("Index==>"+selectWorkorder);
-                                                //List<FirstClass> emptylist = [];
 
+                                               //selectWorkorder = workorder[0].workorderCode.toString();
+                                               selectWorkorder = data.isEmpty ? "" :data[0].workorderCode.toString();
+
+                                               return DropdownButton(
+                                                 icon: Padding(
+                                                   padding: const EdgeInsets.only(left: 8.0),
+                                                   child: Icon(Icons.keyboard_arrow_down),
+                                                 ),
+                                                 items: data.map<DropdownMenuItem<String>>(
+                                                         (WorkorderModel setlist) {
+                                                       return DropdownMenuItem<String>(
+                                                         value: setlist.workorderCode,
+                                                         child: Text(setlist.workorderCode.toString()),
+                                                       );
+                                                     }).toList(),
+                                                 value: selectWorkorder,
+                                                 onChanged: (item) {
+
+                                                   setState(() {
+                                                     selectWorkorder = item.toString();
+                                                     print("Index==>"+selectWorkorder);
+                                                     //List<FirstClass> emptylist = [];
+
+                                                   });
+                                                 },
+                                               );
+
+                                              }, error: (e,s){
+                                                return Text(e.toString());
+                                              }, loading: (){
+                                                return Center(child: CircularProgressIndicator());
                                               });
-                                            },
+
+                                            }
                                           ),
                                           Text("product",style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11.0,color: Colors.blueAccent )),
-                                          DropdownButton(
-                                            icon: Padding(
-                                              padding: const EdgeInsets.only(left: 8.0),
-                                              child: Icon(Icons.keyboard_arrow_down),
-                                            ),
-                                            items: products.map<DropdownMenuItem<String>>(
-                                                    (String setlist) {
-                                                  return DropdownMenuItem<String>(
-                                                    value: setlist,
-                                                    child: Text(setlist.toString()),
-                                                  );
-                                                }).toList(),
-                                            value: selectProduct,
-                                            onChanged: (item) {
+                                          Consumer(
 
-                                              setState(() {
-                                                selectProduct = item.toString();
-                                                print("Index==>"+selectProduct);
-                                                //List<FirstClass> emptylist = [];
+                                            builder: (context, ref, child) {
+                                              return ref.watch(getProductNotifier).when(data: (data){
 
+                                                selectProduct = data.isEmpty ? "":data[0].productName.toString();
+
+                                                return DropdownButton(
+                                                  icon: Padding(
+                                                    padding: const EdgeInsets.only(left: 8.0),
+                                                    child: Icon(Icons.keyboard_arrow_down),
+                                                  ),
+                                                  items: data.map<DropdownMenuItem<String>>(
+                                                          (Productmodel setlist) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: setlist.productName,
+                                                          child: Text(setlist.productName.toString()),
+                                                        );
+                                                      }).toList(),
+                                                  value: selectProduct,
+                                                  onChanged: (item) {
+
+                                                    setState(() {
+                                                      selectProduct = item.toString();
+                                                      print("Index==>"+selectProduct);
+                                                      //List<FirstClass> emptylist = [];
+
+                                                    });
+                                                  },
+                                                );
+                                              }, error: (e,s){
+                                                return Text(e.toString());
+                                              }, loading: (){
+                                                return Center(child: CircularProgressIndicator());
                                               });
-                                            },
+
+
+                                            }
                                           ),
                                           Text("status",style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11.0,color: Colors.blueAccent )),
                                           DropdownButton(

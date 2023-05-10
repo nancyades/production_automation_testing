@@ -62,6 +62,8 @@ class _AddProductState extends ConsumerState<AddProduct> {
   bool searchdropdown = true;
 
   bool refresh = false;
+
+  bool saveAndTemp = false;
   int i = 0;
 
   //widget.product.status = "";
@@ -1205,8 +1207,8 @@ class _AddProductState extends ConsumerState<AddProduct> {
                 (widget.product.productName == "")
                     ? Padding(
                   padding: const EdgeInsets.all(15.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  child: saveAndTemp == false ?  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
                           style: ButtonStyle(
@@ -1295,7 +1297,11 @@ class _AddProductState extends ConsumerState<AddProduct> {
 
                               print("helper class---------> ${Helper.product_id.toString()}");
 
+
+
+
                               if(Helper.product_id != null){
+
                                 if(Helper.product_id.toString() == "Product Code is Already Exsist"){
                                   final snackBar = SnackBar(
                                     content:  Text(
@@ -1304,9 +1310,25 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                     (Colors.black),
                                   );
                                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                }else if(Helper.product_id.toString().split('-')[1].toString() == " Inserted Successfully!") {
+                                  setState(() {
+                                    saveAndTemp = true;
+                                  });
+                                  print("helper ---------> ${Helper.product_id.toString().split('-')[1].toString() }");
+                                  final snackBar = SnackBar(
+                                    content: const Text(
+                                        'Product added successfully! Now add template for product'),
+                                    backgroundColor:
+                                    (Colors.black),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  clearText();
                                 }
                               }
-                              else if(Helper.product_id == null){
+                              else if(Helper.product_id == null ){
+                                setState(() {
+                                  saveAndTemp = true;
+                                });
                                 final snackBar = SnackBar(
                                   content: const Text(
                                       'Product added successfully! Now add template for product'),
@@ -1332,6 +1354,11 @@ class _AddProductState extends ConsumerState<AddProduct> {
                             child: Text("Save".toUpperCase(),
                                 style: TextStyle(fontSize: 14)),
                           )),
+
+                    ],
+                  ):Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       ElevatedButton(
                           style: ButtonStyle(
                               foregroundColor: MaterialStateProperty.all<Color>(
@@ -1348,286 +1375,291 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                 context: context,
                                 builder: (c) =>
                                     StatefulBuilder(
-                                      builder: (context, setState) {
-                                        return AlertDialog(
-                                          title: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('Template'),
-                                              IconButton(onPressed: (){
-                                                Navigator.pop(context);
-                                                listoftemplate.clear();
-                                                clearTemplate();
-                                              }, icon: Icon(Icons.close))
-
-                                            ],
-                                          ),
-                                          //content: Text("msg"),
-                                          actions: [
-                                            Column(
+                                        builder: (context, setState) {
+                                          return AlertDialog(
+                                            title: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Container(
-                                                  width: 660,
-                                                  height: 350,
-                                                  child: SingleChildScrollView(
-                                                    child: Column(
-                                                      children: [
-                                                        Card(
-                                                          color: Color(0xffd7e7fa),
-                                                          elevation: 10,
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius: BorderRadius
-                                                                .circular(5.0),
-                                                          ),
-                                                          child: Column(
-                                                            children: [
-                                                              Padding(
-                                                                padding: const EdgeInsets.all(
-                                                                    10.0),
-                                                                child: Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Column(
-                                                                        children: [
-                                                                          Padding(
-                                                                            padding: const EdgeInsets
-                                                                                .only(
-                                                                                left: 18.0),
-                                                                            child: Row(
-                                                                              children: [
-                                                                                Text(
-                                                                                    "Template Name",
-                                                                                    style: TextStyle(
-                                                                                        fontWeight: FontWeight
-                                                                                            .w600,
-                                                                                        fontSize: 11.0,
-                                                                                        color: Colors
-                                                                                            .blueAccent)),
-                                                                                Text('*',
-                                                                                    style:
-                                                                                    TextStyle(
-                                                                                        color: Colors
-                                                                                            .red)),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                          Padding(
-                                                                            padding: const EdgeInsets
-                                                                                .only(
-                                                                                left: 15.0,
-                                                                                right: 22.0),
-                                                                            child: SizedBox(
-                                                                              height: 35,
-                                                                              child: TextField(
-                                                                                controller: controllerTemplate,
-                                                                                decoration: InputDecoration(
-                                                                                    filled: true,
-                                                                                    hintStyle: TextStyle(
-                                                                                        color: Colors
-                                                                                            .grey[800],
-                                                                                        fontSize: 13),
-                                                                                    //hintText: "Status",
-                                                                                    fillColor: Colors
-                                                                                        .white70),
-                                                                                style: TextStyle(
-                                                                                    fontWeight: FontWeight
-                                                                                        .w400,
-                                                                                    fontSize: 13.0,
-                                                                                    color: Colors
-                                                                                        .black),
+                                                Text('Template'),
+                                                IconButton(onPressed: (){
+                                                  Navigator.pop(context);
+                                                  listoftemplate.clear();
+                                                  clearTemplate();
+
+
+
+
+
+                                                }, icon: Icon(Icons.close))
+
+                                              ],
+                                            ),
+                                            //content: Text("msg"),
+                                            actions: [
+                                              Column(
+                                                children: [
+                                                  Container(
+                                                    width: 660,
+                                                    height: 350,
+                                                    child: SingleChildScrollView(
+                                                      child: Column(
+                                                        children: [
+                                                          Card(
+                                                            color: Color(0xffd7e7fa),
+                                                            elevation: 10,
+                                                            shape: RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius
+                                                                  .circular(5.0),
+                                                            ),
+                                                            child: Column(
+                                                              children: [
+                                                                Padding(
+                                                                  padding: const EdgeInsets.all(
+                                                                      10.0),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child: Column(
+                                                                          children: [
+                                                                            Padding(
+                                                                              padding: const EdgeInsets
+                                                                                  .only(
+                                                                                  left: 18.0),
+                                                                              child: Row(
+                                                                                children: [
+                                                                                  Text(
+                                                                                      "Template Name",
+                                                                                      style: TextStyle(
+                                                                                          fontWeight: FontWeight
+                                                                                              .w600,
+                                                                                          fontSize: 11.0,
+                                                                                          color: Colors
+                                                                                              .blueAccent)),
+                                                                                  Text('*',
+                                                                                      style:
+                                                                                      TextStyle(
+                                                                                          color: Colors
+                                                                                              .red)),
+                                                                                ],
                                                                               ),
                                                                             ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              Padding(
-                                                                padding: const EdgeInsets.all(
-                                                                    10.0),
-                                                                child: Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Column(
-                                                                        children: [
-                                                                          Padding(
-                                                                            padding: const EdgeInsets
-                                                                                .only(
-                                                                                left: 18.0),
-                                                                            child: Row(
-                                                                              children: [
-                                                                                Text(
-                                                                                    "File Path",
-                                                                                    style: TextStyle(
-                                                                                        fontWeight: FontWeight
-                                                                                            .w600,
-                                                                                        fontSize: 11.0,
-                                                                                        color: Colors
-                                                                                            .blueAccent)),
-                                                                                Text('*',
-                                                                                    style:
-                                                                                    TextStyle(
-                                                                                        color: Colors
-                                                                                            .red)),
-                                                                                Container(
-                                                                                  height: 30.0,
-                                                                                  width: 30.0,
-                                                                                  child: GestureDetector(
-                                                                                    onTap: () async {
-                                                                                      uploadFile();
-                                                                                    },
-                                                                                    child: Icon(
-                                                                                      Icons
-                                                                                          .folder,
-                                                                                      size: 15.0,
+                                                                            Padding(
+                                                                              padding: const EdgeInsets
+                                                                                  .only(
+                                                                                  left: 15.0,
+                                                                                  right: 22.0),
+                                                                              child: SizedBox(
+                                                                                height: 35,
+                                                                                child: TextField(
+                                                                                  controller: controllerTemplate,
+                                                                                  decoration: InputDecoration(
+                                                                                      filled: true,
+                                                                                      hintStyle: TextStyle(
+                                                                                          color: Colors
+                                                                                              .grey[800],
+                                                                                          fontSize: 13),
+                                                                                      //hintText: "Status",
+                                                                                      fillColor: Colors
+                                                                                          .white70),
+                                                                                  style: TextStyle(
+                                                                                      fontWeight: FontWeight
+                                                                                          .w400,
+                                                                                      fontSize: 13.0,
                                                                                       color: Colors
-                                                                                          .orangeAccent,
+                                                                                          .black),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets.all(
+                                                                      10.0),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child: Column(
+                                                                          children: [
+                                                                            Padding(
+                                                                              padding: const EdgeInsets
+                                                                                  .only(
+                                                                                  left: 18.0),
+                                                                              child: Row(
+                                                                                children: [
+                                                                                  Text(
+                                                                                      "File Path",
+                                                                                      style: TextStyle(
+                                                                                          fontWeight: FontWeight
+                                                                                              .w600,
+                                                                                          fontSize: 11.0,
+                                                                                          color: Colors
+                                                                                              .blueAccent)),
+                                                                                  Text('*',
+                                                                                      style:
+                                                                                      TextStyle(
+                                                                                          color: Colors
+                                                                                              .red)),
+                                                                                  Container(
+                                                                                    height: 30.0,
+                                                                                    width: 30.0,
+                                                                                    child: GestureDetector(
+                                                                                      onTap: () async {
+                                                                                        uploadFile();
+                                                                                      },
+                                                                                      child: Icon(
+                                                                                        Icons
+                                                                                            .folder,
+                                                                                        size: 15.0,
+                                                                                        color: Colors
+                                                                                            .orangeAccent,
+                                                                                      ),
                                                                                     ),
                                                                                   ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                            Padding(
+                                                                              padding: const EdgeInsets
+                                                                                  .only(
+                                                                                  left: 15.0,
+                                                                                  right: 22.0),
+                                                                              child: SizedBox(
+                                                                                height: 35,
+                                                                                child: TextField(
+                                                                                  controller: controllerFilepath,
+                                                                                  decoration: InputDecoration(
+                                                                                      filled: true,
+                                                                                      hintStyle: TextStyle(
+                                                                                          color: Colors
+                                                                                              .grey[800],
+                                                                                          fontSize: 13),
+                                                                                      //hintText: "Status",
+                                                                                      fillColor: Colors
+                                                                                          .white70),
+                                                                                  style: TextStyle(
+                                                                                      fontWeight: FontWeight
+                                                                                          .w400,
+                                                                                      fontSize: 13.0,
+                                                                                      color: Colors
+                                                                                          .black),
                                                                                 ),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                          Padding(
-                                                                            padding: const EdgeInsets
-                                                                                .only(
-                                                                                left: 15.0,
-                                                                                right: 22.0),
-                                                                            child: SizedBox(
-                                                                              height: 35,
-                                                                              child: TextField(
-                                                                                controller: controllerFilepath,
-                                                                                decoration: InputDecoration(
-                                                                                    filled: true,
-                                                                                    hintStyle: TextStyle(
-                                                                                        color: Colors
-                                                                                            .grey[800],
-                                                                                        fontSize: 13),
-                                                                                    //hintText: "Status",
-                                                                                    fillColor: Colors
-                                                                                        .white70),
-                                                                                style: TextStyle(
-                                                                                    fontWeight: FontWeight
-                                                                                        .w400,
-                                                                                    fontSize: 13.0,
-                                                                                    color: Colors
-                                                                                        .black),
                                                                               ),
                                                                             ),
-                                                                          ),
-                                                                        ],
+                                                                          ],
+                                                                        ),
                                                                       ),
-                                                                    ),
-                                                                  ],
+                                                                    ],
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              Padding(
-                                                                padding: const EdgeInsets.all(
-                                                                    10.0),
-                                                                child: Row(
+                                                                Padding(
+                                                                  padding: const EdgeInsets.all(
+                                                                      10.0),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child: Column(
+                                                                          children: [
+                                                                            Padding(
+                                                                              padding: const EdgeInsets
+                                                                                  .only(
+                                                                                  left: 18.0),
+                                                                              child: Row(
+                                                                                children: [
+                                                                                  Text(
+                                                                                      "Remarks",
+                                                                                      style: TextStyle(
+                                                                                          fontWeight: FontWeight
+                                                                                              .w600,
+                                                                                          fontSize: 11.0,
+                                                                                          color: Colors
+                                                                                              .blueAccent)),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                            Padding(
+                                                                              padding: const EdgeInsets
+                                                                                  .only(
+                                                                                  left: 15.0,
+                                                                                  right: 22.0),
+                                                                              child: SizedBox(
+                                                                                height: 35,
+                                                                                child: TextField(
+                                                                                  controller: controllerTemplateremarks,
+                                                                                  decoration: InputDecoration(
+                                                                                      filled: true,
+                                                                                      hintStyle: TextStyle(
+                                                                                          color: Colors
+                                                                                              .grey[800],
+                                                                                          fontSize: 13),
+                                                                                      //hintText: "Status",
+                                                                                      fillColor: Colors
+                                                                                          .white70),
+                                                                                  style: TextStyle(
+                                                                                      fontWeight: FontWeight
+                                                                                          .w400,
+                                                                                      fontSize: 13.0,
+                                                                                      color: Colors
+                                                                                          .black),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                                Row(
+                                                                  mainAxisAlignment: MainAxisAlignment
+                                                                      .end,
                                                                   children: [
-                                                                    Expanded(
-                                                                      child: Column(
-                                                                        children: [
-                                                                          Padding(
-                                                                            padding: const EdgeInsets
-                                                                                .only(
-                                                                                left: 18.0),
-                                                                            child: Row(
-                                                                              children: [
-                                                                                Text(
-                                                                                    "Remarks",
-                                                                                    style: TextStyle(
-                                                                                        fontWeight: FontWeight
-                                                                                            .w600,
-                                                                                        fontSize: 11.0,
-                                                                                        color: Colors
-                                                                                            .blueAccent)),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                          Padding(
-                                                                            padding: const EdgeInsets
-                                                                                .only(
-                                                                                left: 15.0,
-                                                                                right: 22.0),
-                                                                            child: SizedBox(
-                                                                              height: 35,
-                                                                              child: TextField(
-                                                                                controller: controllerTemplateremarks,
-                                                                                decoration: InputDecoration(
-                                                                                    filled: true,
-                                                                                    hintStyle: TextStyle(
-                                                                                        color: Colors
-                                                                                            .grey[800],
-                                                                                        fontSize: 13),
-                                                                                    //hintText: "Status",
-                                                                                    fillColor: Colors
-                                                                                        .white70),
-                                                                                style: TextStyle(
-                                                                                    fontWeight: FontWeight
-                                                                                        .w400,
-                                                                                    fontSize: 13.0,
-                                                                                    color: Colors
-                                                                                        .black),
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment: MainAxisAlignment
-                                                                    .end,
-                                                                children: [
-                                                                  MaterialButton(
-                                                                    shape: const CircleBorder(),
-                                                                    color: Colors.black,
-                                                                    padding: const EdgeInsets
-                                                                        .all(10),
-                                                                    onPressed: () {
-                                                                      setState(() {
-                                                                        refresh = true;
-                                                                        if (templatevalidateFields()) {
+                                                                    MaterialButton(
+                                                                      shape: const CircleBorder(),
+                                                                      color: Colors.black,
+                                                                      padding: const EdgeInsets
+                                                                          .all(10),
+                                                                      onPressed: () {
+                                                                        setState(() {
+                                                                          refresh = true;
+                                                                          if (templatevalidateFields()) {
 
-                                                                          var template = temp
-                                                                              .where((
-                                                                              element) =>
-                                                                          element
-                                                                              .templateName ==
-                                                                              controllerTemplate
-                                                                                  .text)
-                                                                              .toList();
-                                                                          print(
-                                                                              "tem----------> $template");
-                                                                          if (template
-                                                                              .isEmpty) {
-                                                                            ref
-                                                                                .read(
-                                                                                addTemplateNotifier
-                                                                                    .notifier)
-                                                                                .addTemplate({
-                                                                              "template_id": 0,
-                                                                              "template_name": controllerTemplate
-                                                                                  .text,
-                                                                              "file_path": controllerFilepath
-                                                                                  .text,
-                                                                              "created_by": 1,
-                                                                              "updated_by": 1,
-                                                                              "created_date": "2023-04-20",
-                                                                              "updated_date": "2023-04-20",
-                                                                              "flg": 1,
-                                                                              "remarks": controllerTemplateremarks
-                                                                                  .text,
-                                                                              "product_id": Helper.product_id.toString().split('-')[0].toString(),
-                                                                            });
-                                                                          }
-                                                                           /* if (template[0].templateName == controllerTemplate.text) {
+                                                                            var template = temp
+                                                                                .where((
+                                                                                element) =>
+                                                                            element
+                                                                                .templateName ==
+                                                                                controllerTemplate
+                                                                                    .text)
+                                                                                .toList();
+                                                                            print(
+                                                                                "tem----------> $template");
+                                                                            if (template
+                                                                                .isEmpty) {
+                                                                              ref
+                                                                                  .read(
+                                                                                  addTemplateNotifier
+                                                                                      .notifier)
+                                                                                  .addTemplate({
+                                                                                "template_id": 0,
+                                                                                "template_name": controllerTemplate
+                                                                                    .text,
+                                                                                "file_path": controllerFilepath
+                                                                                    .text,
+                                                                                "created_by": 1,
+                                                                                "updated_by": 1,
+                                                                                "created_date": "2023-04-20",
+                                                                                "updated_date": "2023-04-20",
+                                                                                "flg": 1,
+                                                                                "remarks": controllerTemplateremarks
+                                                                                    .text,
+                                                                                "product_id": Helper.product_id.toString().split('-')[0].toString(),
+                                                                              });
+                                                                            }
+                                                                            /* if (template[0].templateName == controllerTemplate.text) {
                                                                             showDialog(
                                                                                 context: context,
                                                                                 builder: (
@@ -1651,136 +1683,136 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                                     ));
                                                                           } */
                                                                             else {
-                                                                            ref
-                                                                                .read(
-                                                                                addTemplateNotifier
-                                                                                    .notifier)
-                                                                                .addTemplate({
-                                                                              "template_id": 0,
-                                                                              "template_name": controllerTemplate
-                                                                                  .text,
-                                                                              "file_path": controllerFilepath
-                                                                                  .text,
-                                                                              "created_by": 1,
-                                                                              "updated_by": 1,
-                                                                              "created_date": "2023-04-20",
-                                                                              "updated_date": "2023-04-20",
-                                                                              "flg": 1,
-                                                                              "remarks": controllerTemplateremarks
-                                                                                  .text,
-                                                                              "product_id": Helper.product_id.toString().split('-')[0].toString(),
-                                                                            });
+                                                                              ref
+                                                                                  .read(
+                                                                                  addTemplateNotifier
+                                                                                      .notifier)
+                                                                                  .addTemplate({
+                                                                                "template_id": 0,
+                                                                                "template_name": controllerTemplate
+                                                                                    .text,
+                                                                                "file_path": controllerFilepath
+                                                                                    .text,
+                                                                                "created_by": 1,
+                                                                                "updated_by": 1,
+                                                                                "created_date": "2023-04-20",
+                                                                                "updated_date": "2023-04-20",
+                                                                                "flg": 1,
+                                                                                "remarks": controllerTemplateremarks
+                                                                                    .text,
+                                                                                "product_id": Helper.product_id.toString().split('-')[0].toString(),
+                                                                              });
+                                                                            }
+                                                                            // ref.refresh(getTemplateNotifier);
+
+                                                                            Helper.editvalue = "notpassvalue";
+                                                                            Template pro = Template(
+                                                                              templateId: 0,
+                                                                              templateName: controllerTemplate.text,
+                                                                              filePath: controllerFilepath.text,
+                                                                              createdBy: 1,
+                                                                              updatedBy: 1,
+                                                                              createdDate: "2023-04-20",
+                                                                              updatedDate: "2023-04-20",
+                                                                              flg: 1,
+                                                                              remarks: controllerTemplateremarks.text,
+                                                                              productid: Helper.product_id.toString().split('-')[0].toString().toString(),
+
+                                                                            );
+
+                                                                            listoftemplate.add(pro);
+
+
+                                                                            clearTemplate();
+                                                                            clearText();
                                                                           }
-                                                                          // ref.refresh(getTemplateNotifier);
-
-                                                                          Helper.editvalue = "notpassvalue";
-                                                                          Template pro = Template(
-                                                                            templateId: 0,
-                                                                            templateName: controllerTemplate.text,
-                                                                            filePath: controllerFilepath.text,
-                                                                            createdBy: 1,
-                                                                            updatedBy: 1,
-                                                                            createdDate: "2023-04-20",
-                                                                            updatedDate: "2023-04-20",
-                                                                            flg: 1,
-                                                                            remarks: controllerTemplateremarks.text,
-                                                                            productid: Helper.product_id.toString().split('-')[0].toString().toString(),
-
-                                                                          );
-
-                                                                          listoftemplate.add(pro);
-
-
-                                                                          clearTemplate();
-                                                                          clearText();
-                                                                        }
-                                                                      });
-                                                                    },
-                                                                    child: const Icon(
-                                                                      Icons.add,
-                                                                      size: 15,
-                                                                      color: Colors.white,
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 50,
-                                                          child: Card(
-                                                            color: Color(0xff8fcceb),
-                                                            child: Row(
-                                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                              children: [
-                                                                Expanded(
-                                                                  child: Padding(
-                                                                    padding: const EdgeInsets.all(8.0),
-                                                                    child: Center(
-                                                                        child: Text("Template Name",
-                                                                            style: TextStyle(
-                                                                                fontWeight: FontWeight.bold,
-                                                                                fontSize: 15.0,
-                                                                                color: Colors.black))),
-                                                                  ),
-                                                                ),
-                                                                Expanded(
-                                                                  child: Padding(
-                                                                    padding: const EdgeInsets.all(8.0),
-                                                                    child: Center(
-                                                                        child: Text("File path",
-                                                                            style: TextStyle(
-                                                                                fontWeight: FontWeight.bold,
-                                                                                fontSize: 15.0,
-                                                                                color: Colors.black))),
-                                                                  ),
-                                                                ),
-                                                                IconButton(
-                                                                    highlightColor: Colors.amberAccent,
-                                                                    onPressed: () {
-                                                                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                                                                        ref.refresh(getTemplateNotifier);
-                                                                      });
-                                                                    },
-                                                                    icon: Icon(
-                                                                      Icons.refresh,
-                                                                    )),
-                                                                SizedBox(
-                                                                  width: 10.0,
-                                                                ),
+                                                                        });
+                                                                      },
+                                                                      child: const Icon(
+                                                                        Icons.add,
+                                                                        size: 15,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                )
                                                               ],
                                                             ),
                                                           ),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 250,
-                                                          child: Card(
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(15.0),
+                                                          SizedBox(
+                                                            height: 50,
+                                                            child: Card(
+                                                              color: Color(0xff8fcceb),
+                                                              child: Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                children: [
+                                                                  Expanded(
+                                                                    child: Padding(
+                                                                      padding: const EdgeInsets.all(8.0),
+                                                                      child: Center(
+                                                                          child: Text("Template Name",
+                                                                              style: TextStyle(
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 15.0,
+                                                                                  color: Colors.black))),
+                                                                    ),
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Padding(
+                                                                      padding: const EdgeInsets.all(8.0),
+                                                                      child: Center(
+                                                                          child: Text("File path",
+                                                                              style: TextStyle(
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 15.0,
+                                                                                  color: Colors.black))),
+                                                                    ),
+                                                                  ),
+                                                                  IconButton(
+                                                                      highlightColor: Colors.amberAccent,
+                                                                      onPressed: () {
+                                                                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                                          ref.refresh(getTemplateNotifier);
+                                                                        });
+                                                                      },
+                                                                      icon: Icon(
+                                                                        Icons.refresh,
+                                                                      )),
+                                                                  SizedBox(
+                                                                    width: 10.0,
+                                                                  ),
+                                                                ],
+                                                              ),
                                                             ),
-                                                            color: Color(0xffcbdff2),
-                                                            elevation: 20,
-                                                            child: Consumer(builder: (context, ref, child) {
-                                                              return ref.watch(getTemplateNotifier).when(data: (data) {
-                                                                temp = data;
-                                                                lasttempid = temp.last;
-                                                                return ListView.builder(
-                                                                    itemCount:
-                                                                    //data.length,
-                                                                    listoftemplate.length,
+                                                          ),
+                                                          SizedBox(
+                                                            height: 250,
+                                                            child: Card(
+                                                              shape: RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius.circular(15.0),
+                                                              ),
+                                                              color: Color(0xffcbdff2),
+                                                              elevation: 20,
+                                                              child: Consumer(builder: (context, ref, child) {
+                                                                return ref.watch(getTemplateNotifier).when(data: (data) {
+                                                                  temp = data;
+                                                                  lasttempid = temp.last;
+                                                                  return ListView.builder(
+                                                                      itemCount:
+                                                                      //data.length,
+                                                                      listoftemplate.length,
 
-                                                                    //Templatelist.length,
-                                                                    itemBuilder: (BuildContext ctxt, int index) {
+                                                                      //Templatelist.length,
+                                                                      itemBuilder: (BuildContext ctxt, int index) {
 
-                                                                      /*   for(var space in data){
+                                                                        /*   for(var space in data){
                                 if(space.templateName == listoftemplate[index].templateName){
                                   listoftemplate[index].templateId = space.templateId;
                                 }
                               }*/
-                                                                      return InkWell(
-                                                                        onTap: () {
-                                                                         /* controllerTemplate.text =
+                                                                        return InkWell(
+                                                                          onTap: () {
+                                                                            /* controllerTemplate.text =
                                                                               listoftemplate[index].templateName
                                                                                   .toString();
 
@@ -1790,51 +1822,51 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                           controllerTemplateremarks.text =
                                                                               listoftemplate[index].remarks.toString();*/
 
-                                                                        },
-                                                                        child: Visibility(
-                                                                          visible: data[index].flg == 1 ? true : false,
-                                                                          child: Card(
-                                                                              child: Padding(
-                                                                                padding: const EdgeInsets.only(
-                                                                                    left: 15.0),
-                                                                                child: Row(
-                                                                                  mainAxisAlignment: MainAxisAlignment
-                                                                                      .start,
-                                                                                  children: [
-                                                                                    Expanded(
-                                                                                      child: Padding(
-                                                                                        padding: const EdgeInsets.all(
-                                                                                            8.0),
-                                                                                        child: Text(
-                                                                                          //data[index].templateName.toString(),
-                                                                                            listoftemplate[index]
-                                                                                                .templateName
-                                                                                                .toString(),
-                                                                                            style: const TextStyle(
-                                                                                                fontWeight: FontWeight
-                                                                                                    .w300,
-                                                                                                fontSize: 10.0,
-                                                                                                color: Colors.black)),
+                                                                          },
+                                                                          child: Visibility(
+                                                                            visible: data[index].flg == 1 ? true : false,
+                                                                            child: Card(
+                                                                                child: Padding(
+                                                                                  padding: const EdgeInsets.only(
+                                                                                      left: 15.0),
+                                                                                  child: Row(
+                                                                                    mainAxisAlignment: MainAxisAlignment
+                                                                                        .start,
+                                                                                    children: [
+                                                                                      Expanded(
+                                                                                        child: Padding(
+                                                                                          padding: const EdgeInsets.all(
+                                                                                              8.0),
+                                                                                          child: Text(
+                                                                                            //data[index].templateName.toString(),
+                                                                                              listoftemplate[index]
+                                                                                                  .templateName
+                                                                                                  .toString(),
+                                                                                              style: const TextStyle(
+                                                                                                  fontWeight: FontWeight
+                                                                                                      .w300,
+                                                                                                  fontSize: 10.0,
+                                                                                                  color: Colors.black)),
+                                                                                        ),
                                                                                       ),
-                                                                                    ),
-                                                                                    Expanded(
-                                                                                      child: Padding(
-                                                                                        padding: const EdgeInsets.all(
-                                                                                            8.0),
-                                                                                        child: Text(
-                                                                                          //data[index].filePath.toString(),
-                                                                                            listoftemplate[index]
-                                                                                                .filePath.toString(),
-                                                                                            style: const TextStyle(
-                                                                                                fontWeight: FontWeight
-                                                                                                    .w300,
-                                                                                                fontSize: 10.0,
-                                                                                                color: Colors.black)),
+                                                                                      Expanded(
+                                                                                        child: Padding(
+                                                                                          padding: const EdgeInsets.all(
+                                                                                              8.0),
+                                                                                          child: Text(
+                                                                                            //data[index].filePath.toString(),
+                                                                                              listoftemplate[index]
+                                                                                                  .filePath.toString(),
+                                                                                              style: const TextStyle(
+                                                                                                  fontWeight: FontWeight
+                                                                                                      .w300,
+                                                                                                  fontSize: 10.0,
+                                                                                                  color: Colors.black)),
+                                                                                        ),
                                                                                       ),
-                                                                                    ),
-                                                                                    IconButton(
-                                                                                        onPressed: () {
-                                                                                          /* ref.read(updateTemplateNotifier.notifier).updatetTemplate({
+                                                                                      IconButton(
+                                                                                          onPressed: () {
+                                                                                            /* ref.read(updateTemplateNotifier.notifier).updatetTemplate({
                                                           "template_id":
                                                           data[index].templateId,
                                                           "template_name": data[index]
@@ -1868,71 +1900,71 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                             .showSnackBar(snackBar);
 */
 
-                                                                                          ref.read(
-                                                                                              updateTemplateNotifier
-                                                                                                  .notifier)
-                                                                                              .updatetTemplate({
-                                                                                            "template_id":
-                                                                                            listoftemplate[index]
-                                                                                                .templateId,
-                                                                                            "template_name": listoftemplate[index]
-                                                                                                .templateName
-                                                                                                .toString(),
-                                                                                            "file_path": listoftemplate[index]
-                                                                                                .filePath
-                                                                                                .toString(),
-                                                                                            "created_by":
-                                                                                            listoftemplate[index]
-                                                                                                .createdBy,
-                                                                                            "updated_by":
-                                                                                            listoftemplate[index]
-                                                                                                .updatedBy,
-                                                                                            "created_date": listoftemplate[index]
-                                                                                                .createdDate
-                                                                                                .toString(),
-                                                                                            "updated_date": listoftemplate[index]
-                                                                                                .updatedDate
-                                                                                                .toString(),
-                                                                                            "flg": 0,
-                                                                                            "remarks": listoftemplate[index]
-                                                                                                .remarks
-                                                                                                .toString(),
-                                                                                            "product_id": product_id,
-                                                                                          });
-                                                                                          final snackBar = SnackBar(
-                                                                                            content: const Text(
-                                                                                                'Template deleted successfully'),
-                                                                                            backgroundColor: (Colors
-                                                                                                .black),
-                                                                                          );
-                                                                                          ScaffoldMessenger.of(context)
-                                                                                              .showSnackBar(snackBar);
-                                                                                        },
-                                                                                        icon: Icon(Icons.delete))
-                                                                                  ],
-                                                                                ),
-                                                                              )),
-                                                                        ),
-                                                                      );
-                                                                    });
-                                                              }, error: (e, s) {
-                                                                return Text(e.toString());
-                                                              }, loading: () {
-                                                                return Center(child: CircularProgressIndicator());
-                                                              });
-                                                            }),
+                                                                                            ref.read(
+                                                                                                updateTemplateNotifier
+                                                                                                    .notifier)
+                                                                                                .updatetTemplate({
+                                                                                              "template_id":
+                                                                                              listoftemplate[index]
+                                                                                                  .templateId,
+                                                                                              "template_name": listoftemplate[index]
+                                                                                                  .templateName
+                                                                                                  .toString(),
+                                                                                              "file_path": listoftemplate[index]
+                                                                                                  .filePath
+                                                                                                  .toString(),
+                                                                                              "created_by":
+                                                                                              listoftemplate[index]
+                                                                                                  .createdBy,
+                                                                                              "updated_by":
+                                                                                              listoftemplate[index]
+                                                                                                  .updatedBy,
+                                                                                              "created_date": listoftemplate[index]
+                                                                                                  .createdDate
+                                                                                                  .toString(),
+                                                                                              "updated_date": listoftemplate[index]
+                                                                                                  .updatedDate
+                                                                                                  .toString(),
+                                                                                              "flg": 0,
+                                                                                              "remarks": listoftemplate[index]
+                                                                                                  .remarks
+                                                                                                  .toString(),
+                                                                                              "product_id": product_id,
+                                                                                            });
+                                                                                            final snackBar = SnackBar(
+                                                                                              content: const Text(
+                                                                                                  'Template deleted successfully'),
+                                                                                              backgroundColor: (Colors
+                                                                                                  .black),
+                                                                                            );
+                                                                                            ScaffoldMessenger.of(context)
+                                                                                                .showSnackBar(snackBar);
+                                                                                          },
+                                                                                          icon: Icon(Icons.delete))
+                                                                                    ],
+                                                                                  ),
+                                                                                )),
+                                                                          ),
+                                                                        );
+                                                                      });
+                                                                }, error: (e, s) {
+                                                                  return Text(e.toString());
+                                                                }, loading: () {
+                                                                  return Center(child: CircularProgressIndicator());
+                                                                });
+                                                              }),
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
 
-                                              ],
-                                            ),
-                                          ],
-                                        );
-                                      }
+                                                ],
+                                              ),
+                                            ],
+                                          );
+                                        }
                                     ));
                           },
                           child: Padding(
@@ -1941,7 +1973,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                 style: TextStyle(fontSize: 14)),
                           )),
                     ],
-                  ),
+                  )
                 )
                     : Padding(
                   padding: const EdgeInsets.all(15.0),

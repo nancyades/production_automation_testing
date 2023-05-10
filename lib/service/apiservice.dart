@@ -9,6 +9,8 @@ import 'package:production_automation_testing/Model/APIModel/workorderbasedrepor
 import 'package:production_automation_testing/Model/APIModel/workorderprogressreport.dart';
 import 'package:production_automation_testing/Model/readexcel/readecel.dart';
 import 'package:production_automation_testing/Model/readexcelmodel.dart';
+import 'package:production_automation_testing/Model/resultmodel.dart';
+import 'package:production_automation_testing/Model/testlistmodel.dart';
 
 import 'package:production_automation_testing/Provider/post_provider/template_provider.dart';
 import 'package:riverpod/riverpod.dart';
@@ -279,7 +281,7 @@ class ApiProider {
   Future<dynamic> getUsers() async {
     List<Users> finalData = [];
     final response =
-        await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/User"));
+        await http.get(Uri.parse("http://192.168.1.47/PAT_API/api/User"));
     dynamic result = jsonDecode(response.body);
     for (int i = 0; i < result.length; i++) {
       Users user = Users(
@@ -464,6 +466,25 @@ class ApiProider {
         finalData.add(template);
       }
     }
+
+    return finalData;
+  }
+
+  Future<dynamic> getResult() async {
+    List<Results> finalData = [];
+    final response =
+    await http.get(Uri.parse("http://192.168.1.47/PAT_API/api/Result"));
+    dynamic result = jsonDecode(response.body);
+      for (int i = 0; i < result.length; i++) {
+        Results template = Results(
+            resultId: result[i]["result_id"],
+            testId: result[i]["test_id"],
+            spendTime: result[i]["spend_time"],
+            status: result[i]["status"],
+            flg: result[i]["flg"],
+            );
+        finalData.add(template);
+      }
 
     return finalData;
   }
@@ -708,6 +729,7 @@ class ApiProider {
 
   Future<dynamic> insertUser(var user) async {
     try {
+      String json = jsonEncode(user);
       final response = await _dio.post(
         "http://192.168.1.55/PAT_API/api/User",
         data: jsonEncode(user),
@@ -916,6 +938,43 @@ class ApiProider {
     }
   }
 
+  //******************************************************post update test*****************************************************************
+
+  Future<dynamic> UpdateTest(var product) async {
+    String json = jsonEncode(product);
+    try {
+      final response = await _dio.post(
+        "http://192.168.1.47/PAT_API/api/testing/Update",
+        data: jsonEncode(product),
+        options: Options(headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+        }),
+      );
+
+      return response.toString();
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  //******************************************************post result*****************************************************************
+
+  Future<dynamic> insertResult(var result) async {
+    String json = jsonEncode(result);
+    try {
+      final response = await _dio.post(
+        "http://192.168.1.47/PAT_API/api/Result",
+        data: jsonEncode(result),
+        options: Options(headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+        }),
+      );
+
+      return response.toString();
+    } catch (e) {
+      return e.toString();
+    }
+  }
   //****************************************product release report ****************************************************
 
   Future<dynamic> getProductsreport() async {
@@ -971,7 +1030,7 @@ class ApiProider {
   getTesterreport(var userid, var startdate, var enddate) async {
     List<TesterReportModel> finalData = [];
     final response = await http.get(Uri.parse(
-        "http://192.168.1.55/PAT_API/api/TestingReport?UserId=${userid}&startdate=2023-03-31&enddate=2023-04-01"));
+        "http://192.168.1.55/PAT_API/api/TestingReport?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
     var result = jsonDecode(response.body);
     if (result != "No Reords Found") {
       for (int i = 0; i < result.length; i++) {
@@ -989,6 +1048,7 @@ class ApiProider {
           testType: result[i]['test_type'],
           testedBy: result[i]['testedBy'],
           testedDate: result[i]['testedDate'],
+          testname: result[i]['testName'],
           testResult: result[i]['testResult'],
         );
         finalData.add(testerReportModel);
@@ -1023,6 +1083,7 @@ class ApiProider {
           testedBy: result[i]['testedBy'],
           testedDate: result[i]['testedDate'],
           testResult: result[i]['testResult'],
+          testName: result[i]['testName'],
         );
         finalData.add(testerReportModel);
       }
@@ -1130,6 +1191,143 @@ class ApiProider {
     }
     return result != "No Reords Found" ? finalData : result;
   }
+
+
+  //****************************************get single user task list *****************************************************************
+
+  getsingleusertasklist(var user_id) async {
+    List<TaskModel> finalData = [];
+    List<Testing> test = [];
+    List<TemplateValue> temp = [];
+    final response =
+    await http.get(Uri.parse("http://192.168.1.47/PAT_API/api/Task/TaskByUser?Userid=${user_id}"));
+    dynamic result = jsonDecode(response.body);
+
+    for (int i = 0; i < result.length; i++) {
+      TemplateValue templist = TemplateValue(
+        templateId: result[i]['product']['template'][0]['template_id'],
+        templateName: result[i]['product']['template'][0]['template_name'],
+        filePath: result[i]['product']['template'][0]['file_path'],
+        createdBy: result[i]['product']['template'][0]['created_by'],
+        updatedBy: result[i]['product']['template'][0]['updated_by'],
+        createdDate: result[i]['product']['template'][0]['created_date'],
+        updatedDate: result[i]['product']['template'][0]['updated_date'],
+        flg: result[i]['product']['template'][0]['flg'],
+        remarks: result[i]['product']['template'][0]['remarks'],
+        productId: result[i]['product']['template'][0]['product_id'],
+        excelRead:  result[i]['product']['template'][0]['excelRead'],
+      );
+      temp.add(templist);
+
+      Productvalue pro = Productvalue(
+        productId:result[i]['product']['product_id'],
+        productName: result[i]['product']['product_name'],
+        productCode:result[i]['product']['product_code'],
+        description:result[i]['product']['description'],
+        templateId:result[i]['product']['template_id'],
+        quantity:result[i]['product']['quantity'],
+        status:result[i]['product']['status'],
+        createdBy:result[i]['product']['created_by'],
+        updatedBy:result[i]['product']['updated_by'],
+        createdDate:result[i]['product']['created_date'],
+        updatedDate:result[i]['product']['updated_date'],
+        flg:result[i]['product']['flg'],
+        remarks:result[i]['product']['remarks'],
+        timeRequired:result[i]['product']['time_required'],
+        macAddress:result[i]['product']['mac_address'],
+        template:temp,
+      );
+      TaskModel taskmodel = TaskModel(
+          taskId: result[i]["task_id"],
+          userId: result[i]["user_id"],
+          assignId: result[i]["assign_id"],
+          wolId: result[i]["wol_id"],
+          quantity: result[i]["quantity"],
+          startSerialNo: result[i]["start_serial_no"],
+          endSerialNo: result[i]["end_serial_no"],
+          status: result[i]["status"],
+          testingStatus: result[i]["testing_status"],
+          startDate: result[i]["start_date"],
+          endDate: result[i]["end_date"],
+          createdBy: result[i]["created_by"],
+          updatedBy: result[i]["updated_by"],
+          createdDate: result[i]["created_date"],
+          updatedDate: result[i]["updated_date"],
+          flg: result[i]["flg"],
+          rating: result[i]["rating"],
+          workorderid: result[i]["workorder_id"],
+          productid: result[i]["product_id"],
+          username: result[i]["name"],
+          product: pro,
+          testing: test);
+
+
+      finalData.add(taskmodel);
+
+      var datum = result[i]['testing'];
+
+      for (int j = 0; j < datum.length; j++) {
+        Testing testing = Testing(
+          testId: datum[j]['test_id'],
+          taskId: datum[j]['task_id'],
+          testStage: datum[j]['test_stage'],
+          testStatus: datum[j]['test_status'],
+          pass: datum[j]['pass'],
+          fail: datum[j]['fail'],
+          status: datum[j]['status'],
+          flg: datum[j]['flg'],
+          macAddress: datum[j]['mac_address'],
+          testType: datum[j]['test_type'],
+          testDate: datum[j]['test_date'],
+          hoursTaken: datum[j]['hours_taken'],
+          testNumber: datum[j]['test_number'],
+            testName: datum[j]['test_Name'],
+            isOnline: datum[j]['isOnline'],
+            type: datum[j]['type'],
+            packetId: datum[j]['packetID'],
+            pktType: datum[j]['pkt_Type'],
+            userEntry: datum[j]['user_Entry'],
+            wifiResult: datum[j]['wifi_Result'],
+            passCrieteria: datum[j]['pass_Crieteria'],
+
+          isSelected: false
+        );
+        test.add(testing);
+      }
+    }
+    return finalData;
+  }
+
+
+
+/*  gettestlist(var workid, var productid) async {
+    List<TestList> finalData = [];
+    final response = await http.get(Uri.parse(
+        "http://192.168.1.47/PAT_API/api/WO_List/GetWolistbywoid?workorderid=${workid}&productid=${productid}"));
+    var result = jsonDecode(response.body);
+
+      for (int i = 0; i < result.length; i++) {
+        TestList testerReportModel = TestList(
+          id: result[i]['id'],
+          workorderId: result[i]['workorder_id'],
+          productId: result[i]['product_id'],
+          quantity: result[i]['quantity'],
+          startSerialNo: result[i]['start_serial_no'],
+          endSerialNo: result[i]['end_serial_no'],
+          status: result[i]['status'],
+          testingStatus: result[i]['testing_status'],
+          startDate: result[i]['start_date'],
+          endDate: result[i]['end_date'],
+          flg: result[i]['flg'],
+          task:
+        );
+        finalData.add(testerReportModel);
+      }
+
+    return result != "No Reords Found" ? finalData : result;
+  }*/
+
+
 }
 
 class HttpServices {

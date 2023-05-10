@@ -70,8 +70,7 @@ class UpdateTestProvider extends StateNotifier<AddTestState> {
 
   updatetTest(var UpdateTest) async {
     state = _loading();
-    final data = await ref.read(apiProvider);
-    //.UpdateTest(UpdateTest);
+    final data = await ref.read(apiProvider).UpdateTest(UpdateTest);
     if (data != null) {
       state = _dataState(data.toString());
     } else if (data == null) {

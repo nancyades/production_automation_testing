@@ -778,7 +778,7 @@ class _AddUsersState extends ConsumerState<AddUsers> {
                         }else if(Helper.sharedRoleId == "Test Admin"){
                           ref.read(addUserNotifier.notifier).addUser({
                             "emp_id": controllerEmpId.text,
-                            "name": controllerUsername.text,
+                           "name": controllerUsername.text,
                             "password": controllerPassword.text,
                             "avatar_id": "",
                             "emailid": controllerEmail.text,
@@ -810,7 +810,13 @@ class _AddUsersState extends ConsumerState<AddUsers> {
 
                         }
 
-
+                        final snackBar = SnackBar(
+                          content:  Text(
+                              "User added Successfully"),
+                          backgroundColor:
+                          (Colors.black),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
                         clearText();
                       }

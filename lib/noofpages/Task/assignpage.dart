@@ -126,10 +126,10 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
 
     return ref.watch(getWorkorderNotifier).when(data: (data){
       if (isValue == true) {
-        selectWorkorder = data[0].workorderCode.toString();
+        selectWorkorder = data.isEmpty? "" :data[0].workorderCode.toString();
       }
       if (isValue1 == true) {
-        selectProduct = data[0].woList![0].product_name.toString();
+        selectProduct = data.isEmpty ? "" : data[0].woList![0].product_name.toString();
       }
       if (workorders.length == 0) {
 
@@ -1637,7 +1637,22 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
                         }, error: (r,s){
                           return Text(r.toString());
                         }, loading: (){
-                          return Center(child: CircularProgressIndicator());
+                          return Column(
+                            children: [
+                              SizedBox(
+                                height: 300,
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  color: Color(0xffcbdff2),
+                                  elevation: 10,
+
+                                ),
+                              ),
+
+                            ],
+                          );
                         });
 
 

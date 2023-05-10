@@ -497,6 +497,54 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                 ],
               ),
             ),
+           ( Helper.sharedRoleId == "Test Admin" && Helper.furious == "ADMIN")? Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 18.0),
+                          child: Row(
+                            children: [
+                              Text("Status: ",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 11.0,
+                                      color: Colors.blueAccent)),
+
+                              Text(widget.workorderModel.status.toString() ,
+                                  style: TextStyle(color: Colors.red)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ):Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 18.0),
+                          child: Row(
+                            children: [
+
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(
               height: 70,
               child: Card(

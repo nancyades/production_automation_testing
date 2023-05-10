@@ -629,7 +629,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                               }),
                         ),
                         Expanded(
-                          flex: 2,
+                          flex: 3,
                           child: Column(
                             children: [
                               Container(
@@ -962,7 +962,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                               }),
                         ),
                         Expanded(
-                          flex: 2,
+                          flex: 3,
                           child: Column(
                             children: [
                               Container(
@@ -986,6 +986,16 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                       Expanded(
                                           child: Text(
                                             'Product serial number',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight:
+                                                FontWeight.bold),
+                                          )),
+                                      Expanded(
+                                          child: Text(
+                                            'Test Name',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 color: Colors.white,
@@ -1162,7 +1172,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                           }),
                         ),
                         Expanded(
-                          flex: 2,
+                          flex: 3,
                           child: Column(
                             children: [
                               Container(
@@ -1232,6 +1242,17 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                       Expanded(
                                           child: Text(
                                             'Test Result',
+                                            textAlign:
+                                            TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight:
+                                                FontWeight.bold),
+                                          )),
+                                      Expanded(
+                                          child: Text(
+                                            'Test Name',
                                             textAlign:
                                             TextAlign.center,
                                             style: TextStyle(
@@ -2152,10 +2173,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
 
         },
         child: Container(
-          height: MediaQuery
-              .of(context)
-              .size
-              .height * 0.08,
+          height: MediaQuery.of(context).size.height * 0.04,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: _currentColorIndex == index ?  Color(0xffFFAAA1E) : Color(0xff565e8a),
@@ -2262,7 +2280,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
 
   gettestuser(List<Users> user, int index) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(6.0),
       child: GestureDetector(
         onTap: () {
           testuserid = user[index].userId;
@@ -2274,7 +2292,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
           height: MediaQuery
               .of(context)
               .size
-              .height * 0.08,
+              .height * 0.04,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8), color: _currentColorIndex_1 == index ?  Color(0xffFFAAA1E) : Color(0xff565e8a),),
           child: Row(
@@ -2305,7 +2323,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
 
   getTestuserdetails(List<TesterReportModel> tester, int index) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(6.0),
       child: Column(
         children: [
           Row(
@@ -2314,7 +2332,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
               Expanded(
                 flex: 4,
                 child: Container(
-                  height: 30.0,
+                  height: 35.0,
                   width: 10.0,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -2339,6 +2357,15 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
+                          child: Text(tester[index].testname,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
                           child: Text(tester[index].testResult,
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
@@ -2349,7 +2376,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       Expanded(
                         child: Center(
                           child: Text((){
-                            var str = tester[index].testResult.toString().split('T')[0];
+                            var str = tester[index].testedDate.toString().split('T')[0];
                             return str.toString();
                           }(),
                               style: TextStyle(
@@ -2377,7 +2404,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
   //**********************workorder based t6est  report ***************************************
   getworkorderbasedtest(List<WorkorderModel> workorder, int index) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(6),
       child: GestureDetector(
         onTap: () {
           ref.read(workorderbasedReportNotifier.notifier).workorderbasedReport(workorder[index].workorderId);
@@ -2387,7 +2414,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
           height: MediaQuery
               .of(context)
               .size
-              .height * 0.08,
+              .height * 0.04,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8), color: _currentColorIndex_2 == index ?  Color(0xffFFAAA1E) : Color(0xff565e8a)),
           child: Row(
@@ -2428,7 +2455,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
               Expanded(
                 flex: 4,
                 child: Container(
-                  height: 30.0,
+                  height: 35.0,
                   width: 10.0,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -2487,6 +2514,15 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       Expanded(
                         child: Center(
                           child: Text(mData[index].testResult.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(mData[index].testName.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,

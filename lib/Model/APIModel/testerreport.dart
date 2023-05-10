@@ -14,6 +14,7 @@ class TesterReportModel {
     required this.testType,
     required this.testedBy,
     required this.testedDate,
+    required this.testname,
     required this.testResult,
   });
 
@@ -30,6 +31,7 @@ class TesterReportModel {
   String testType;
   String testedBy;
   dynamic testedDate;
+  String testname;
   String testResult;
 
 

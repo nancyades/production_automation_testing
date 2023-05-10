@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:production_automation_testing/Helper/application_class.dart';
 import 'package:production_automation_testing/Helper/packet_control.dart';
+import 'package:production_automation_testing/Model/APIModel/taskmodel.dart';
 import 'package:production_automation_testing/Model/excelModel.dart';
 import 'package:production_automation_testing/Provider/excelprovider.dart';
 import 'package:production_automation_testing/Provider/generalProvider.dart';
@@ -29,7 +30,7 @@ class TcpReceiveDataProvider extends StateNotifier<TcpResponseSate> {
     var currentStep = ref.read(currentStepProvider);
     var lastTestSent = ref.read(lastTestSentProvider);
     var lastPacketSent = ref.read(lastPacketSentProvider);
-    List<FirstTest> ? testlist = [];
+    List<Testing> ? testlist = [];
     state = _dataState(receivedData);
     Helper.tcpResponse = receivedData;
 
@@ -38,7 +39,7 @@ class TcpReceiveDataProvider extends StateNotifier<TcpResponseSate> {
 
         if(firstElement.isNotEmpty){
         for(var secondElement in firstElement){
-          if(secondElement != null && secondElement.testnumber == lastTestSent ){
+          if(secondElement != null && secondElement.testNumber == lastTestSent ){
             testlist.add(secondElement) ;
             Helper.firstTest = secondElement;
           }
@@ -47,7 +48,7 @@ class TcpReceiveDataProvider extends StateNotifier<TcpResponseSate> {
         }
       }
       for (var element in testlist) {
-        if (element.testnumber.toString() == lastTestSent) {
+        if (element.testNumber.toString() == lastTestSent) {
           if (receivedData == "TimeOut") {
             element.setResult('TimeOut');
             element.setDisplayResult('FAIL');
@@ -137,9 +138,9 @@ class TcpReceiveDataProvider extends StateNotifier<TcpResponseSate> {
                           ref.read(macAddressTestProvider.notifier).state = val;
                         } else {
                           List<String> wifiResultSplit =
-                          mData.wifiresult!.split(',');
+                          mData.wifiResult!.split(',');
                           List<String> testUserPassCrieteriaSplit =
-                          mData.passcrieteria!.split('-');
+                          mData.passCrieteria!.split('-');
                           int splitIndex = 3;
                           List<String> responseValueList = [];
                           List<String> givenValueList = [];
@@ -270,9 +271,9 @@ class TcpReceiveDataProvider extends StateNotifier<TcpResponseSate> {
 
                         } else {
                           List<String> wifiResultSplit =
-                          mData.wifiresult!.split(',');
+                          mData.wifiResult!.split(',');
                           List<String> testUserPassCrieteriaSplit =
-                          mData.passcrieteria!.split('-');
+                          mData.passCrieteria!.split('-');
                           int splitIndex = 3;
                           List<String> responseValueList = [];
                           List<String> givenValueList = [];

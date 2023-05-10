@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:production_automation_testing/Helper/helper.dart';
+import 'package:production_automation_testing/Provider/post_provider/tasklist_provider.dart';
 import 'package:production_automation_testing/noofpages/Report/Report_screen.dart';
+import 'package:production_automation_testing/noofpages/Test/tasklistscreen.dart';
 import 'package:production_automation_testing/noofpages/dashboardscreenpage.dart';
 import 'package:production_automation_testing/noofpages/Task/taskpage.dart';
 import 'package:production_automation_testing/noofpages/WorkOrder/workorderscreenpage.dart';
@@ -29,7 +31,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
     ProductPage(),
     TaskPage(),
     UserPage(),
-    TestPage(),
+    TaskListPage(),
     SettingPage(),
     Reportscreen()
   ];

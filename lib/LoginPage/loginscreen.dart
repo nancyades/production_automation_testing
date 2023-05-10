@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:production_automation_testing/Database/Curd_operation/boxes.dart';
 import 'package:production_automation_testing/Database/Curd_operation/database.dart';
+import 'package:production_automation_testing/Provider/navigation_provider.dart';
 import '../Database/Curd_operation/HiveModel/usermanagement.dart';
 import '../Helper/AppClass.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -374,6 +375,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                                                                 print("helpername---->${ Helper.sharedRoleId}");
                                                                                 print("helpername---->${ Helper.shareduserid}");
 
+                                                                                ref.refresh(navNotifier);
+
                                                                                 Navigator.push(
                                                                                     context, MaterialPageRoute(builder: (context) => HomeScreenPage()));
                                                                                 //conditionfailed = false;
@@ -454,7 +457,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           msg: 'Employee Id should not be empty',
           context: context);
       return false;
-    }else if (controllerEmpId.text.length < 7) {
+    }else if (controllerEmpId.text.length < 5) {
       popDialog(
           title: 'Update Failed',
           msg: 'Please enter a valid employee code',
