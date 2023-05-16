@@ -37,6 +37,10 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
 
   List<Testing> heading =  [];
 
+  List<Testing>  teststate = [];
+
+  String? testType;
+
 
 
 
@@ -385,13 +389,41 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
                                                 );
                                                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                               }
-                                              //print("please select atleast one field")
                                               else{
+                                               /* for(int i=0; i<testindex.length; i++){
+                                                  for(int j=0; j<widget.tasks.testing!.length; j++){
+                                                    if(testindex[i].toString() == widget.tasks.testing![j].testStatus.toString()){
+                                                      Testing  st = Testing(
+                                                        testStatus: widget.tasks.testing![j].testStatus.toString(),
+                                                        testStage:  widget.tasks.testing![j].testStage
+                                                      );
+                                                      teststate.add(st);
+                                                      final snackBar = SnackBar(
+                                                        content:  Text(
+                                                        "${ st.testStatus!.toString() + ":"  + st.testStage.toString() }"),
+                                                        backgroundColor:
+                                                        (Colors.black),
+                                                      );
+                                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                                                    }
+                                                  }
+                                                }*/
+
+
+                                                  getteststagepopup();
+
+
+
+                                              }
+
+
+                                             /* else{
                                                 ref.read(testStartedProvider.notifier).state = false;
                                                 Navigator.push(
                                                     context, MaterialPageRoute(builder: (context) => TestScreenPage(testtype: [testindex],testlist: widget.tet, tsk: widget.tasks,)));
 
-                                              }
+                                              }*/
 
 
 
@@ -488,6 +520,18 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
                                                   ],
                                                 )
                                             ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Container(
+                                            height: 20.0,
+                                            width: 10.0,
+                                            child: Center(
+                                                child: Text("Test Type",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 15.0,
+                                                        color: Colors.black))),
                                           ),
                                         ),
                                       ],
@@ -678,8 +722,97 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
                     ),),
                 ),
               ),
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(
+                      child: Text(mList[index].testStage.toString() == "1"? "First Test"
+                          : mList[index].testStage.toString() == "2"? "Second Test"
+                          : "ReTest",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w300,
+                              fontSize: 13.0,
+                              color: Colors.black))),
+                ),
+              ),
             ],
           ),
         ));
   }
+
+   getteststagepopup() {
+     setState(() {
+       testType = "1";
+     });
+    return showDialog(
+        context: context,
+        builder: (c) => StatefulBuilder(
+        builder: (context, setState) {
+      return AlertDialog(
+        title: const Text('Confirmation'),
+        content:
+        const Text('Are you sure, you want to start the test ?'),
+        actions: [
+          RadioListTile(
+            title: const Text('First Test'),
+            value: "1",
+            groupValue: testType,
+            onChanged: (value) {
+              setState(() {
+                testType = value.toString();
+              });
+            },
+          ),
+         RadioListTile(
+            title: const Text("Second Test"),
+            value: "2",
+            groupValue: testType,
+            onChanged: (value) {
+              setState(() {
+                testType = value.toString();
+              });
+            },
+          ),
+          RadioListTile(
+            title: const Text("ReTest"),
+            value: "3",
+            groupValue: testType,
+            onChanged: (value) {
+              setState(() {
+                testType = value.toString();
+              });
+            },
+          ),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 15),
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('CANCEL')),
+              ),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.red,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
+                  ),
+                  onPressed: () async {
+                    ref.read(testStartedProvider.notifier).state = false;
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => TestScreenPage(testtype: [testindex],testlist: widget.tet, tsk: widget.tasks,stages: testType,)));
+                  },
+                  child: const Text('CONFIRM')),
+            ],
+          ),
+        ],
+      );
+    }));
+   }
 }

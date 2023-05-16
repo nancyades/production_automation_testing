@@ -150,6 +150,7 @@ class Testing {
   String? result;
   String? displayResult = 'UNDEFINED';
   String? userAckValue ;
+  String? serial_no;
 
 
   Testing({
@@ -177,6 +178,7 @@ class Testing {
     this.passCrieteria,
     this.remarks,
     this.radiotype,
+    this.serial_no,
 
   });
 

@@ -782,6 +782,7 @@ class ApiProider {
 
   Future<dynamic> UpdateWorkorders(var workorder) async {
     try {
+      String json = jsonEncode(workorder);
       final response = await _dio.post(
         HttpServices.baseUrl +
             HttpServices.WorkOrders +
@@ -1003,10 +1004,13 @@ class ApiProider {
     final response = await http.get(Uri.parse(
         "http://192.168.1.55/PAT_API/api/WOReport?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
     var result = jsonDecode(response.body);
-    if (result != "No Reords Found") {
+
+    if (result == "No Reords Found") {
+      return finalData = [];
+    }else{
       for (int i = 0; i < result.length; i++) {
         WorkorderProgressReportModel workorderReportmodel =
-            WorkorderProgressReportModel(
+        WorkorderProgressReportModel(
           workorderId: result[i]['workorder_id'],
           workOrder: result[i]['workOrder'],
           workOrderQty: result[i]['workOrderQty'],
@@ -1022,7 +1026,9 @@ class ApiProider {
         finalData.add(workorderReportmodel);
       }
     }
-    return result != "No Reords Found" ? finalData : result;
+
+
+    return  finalData;
   }
 
   //****************************************Tester report *****************************************************************
@@ -1032,7 +1038,10 @@ class ApiProider {
     final response = await http.get(Uri.parse(
         "http://192.168.1.55/PAT_API/api/TestingReport?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
     var result = jsonDecode(response.body);
-    if (result != "No Reords Found") {
+    if (result == "No Reords Found") {
+      return finalData = [];
+    }
+  else{
       for (int i = 0; i < result.length; i++) {
         TesterReportModel testerReportModel = TesterReportModel(
           workorderId: result[i]['workorder_id'],
@@ -1053,9 +1062,9 @@ class ApiProider {
         );
         finalData.add(testerReportModel);
       }
-    } else if (result == "No Reords Found") {
-      finalData = [];
     }
+
+
     return finalData;
   }
 
@@ -1066,7 +1075,9 @@ class ApiProider {
     final response = await http.get(Uri.parse(
         "http://192.168.1.55/PAT_API/api/WOBReport?Workorderid=${userid}"));
     var result = jsonDecode(response.body);
-    if (result != "No Reords Found") {
+    if (result == "No Reords Found") {
+      return finalData = [];
+    }else{
       for (int i = 0; i < result.length; i++) {
         WorkorderbasedReport testerReportModel = WorkorderbasedReport(
           workorderId: result[i]['workorder_id'],
@@ -1088,7 +1099,8 @@ class ApiProider {
         finalData.add(testerReportModel);
       }
     }
-    return result != "No Reords Found" ? finalData : result;
+
+    return finalData;
   }
 
 //******************************************Read excel by passing productid*********************************************

@@ -44,8 +44,17 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
 
   bool preferencePressed = false;
 
+  bool stanger = false;
+  bool teststanger = false;
+  bool workorderstanger = false;
+
+
+
   int? _currentColorIndex;
   int _previousColorIndex = 0;
+
+  var selectUsers = "";
+  var selectworkorder = "";
 
 
   void _changeColor(int index) {
@@ -81,6 +90,12 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
       }
     });
   }
+
+  @override
+  void initState(){
+    ref.refresh(getProductReportNotifier);
+  }
+
 
 
   @override
@@ -456,6 +471,58 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                           ),
                         ),
                       ),
+                      Consumer(
+                          builder: (context, ref, child) {
+                            return ref.watch(getUserNotifier).when(data: (data){
+                              List<Users> testuser = data.where((element) => element.role == "Test User").toList();
+
+                              if(stanger == false){
+                                selectUsers =testuser.isEmpty? "": testuser[0].name.toString();
+                              }
+
+
+                              return DropdownButton(
+                                icon: Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Icon(Icons.keyboard_arrow_down),
+                                ),
+                                items: testuser.map<DropdownMenuItem<String>>(
+                                        (Users setlist) {
+                                      return DropdownMenuItem<String>(
+                                        value: setlist.name,
+                                        child: Text(setlist.name.toString()),
+                                      );
+                                    }).toList(),
+                                value: selectUsers,
+                                onChanged: (item) {
+
+                                  setState(() {
+
+                                    selectUsers = item.toString();
+                                    stanger = true;
+                                    for(int i=0; i<testuser.length; i++){
+                                      if(selectUsers == testuser[i].name){
+                                        workorderuserid = testuser[i].userId;
+                                        print("print nancy-----> ${workorderuserid}");
+                                      }
+
+                                    }
+                                  //  workorderuserid = testuser[index].userId;
+                                    print("Index==>"+selectUsers);
+                                    //List<FirstClass> emptylist = [];
+
+                                  });
+                                },
+                              );
+
+                            }, error: (e,s){
+                              return Text(e.toString());
+                            }, loading: (){
+                              return Center(child: CircularProgressIndicator());
+                            });
+
+                          }
+                      ),
                       Expanded(
                         flex: 6,
                         child: Row(
@@ -606,7 +673,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                   Expanded(
                     child: Row(
                       children: [
-                        Expanded(
+                      /*  Expanded(
                           flex: 1,
                           child: Consumer(
                               builder: (context, snapshot, child) {
@@ -627,9 +694,9 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                               testuser, index);
                                         }));
                               }),
-                        ),
+                        ),*/
                         Expanded(
-                          flex: 3,
+                          flex: 5,
                           child: Column(
                             children: [
                               Container(
@@ -673,6 +740,56 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                       Expanded(
                                           child: Text(
                                             'Ending Serial no',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight:
+                                                FontWeight.bold),
+                                          )),
+                                      Expanded(
+                                          child: Text(
+                                            'Total Tested Unit',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight:
+                                                FontWeight.bold),
+                                          )),
+                                      Expanded(
+                                          child: Text(
+                                            'Qty Passed',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight:
+                                                FontWeight.bold),
+                                          )),
+                                      Expanded(
+                                          child: Text(
+                                            'Qty Failed',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight:
+                                                FontWeight.bold),
+                                          )),
+                                      Expanded(
+                                          child: Text(
+                                            'Test Start Date',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight:
+                                                FontWeight.bold),
+                                          )),
+                                      Expanded(
+                                          child: Text(
+                                            'Test End Date',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 color: Colors.white,
@@ -788,6 +905,58 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                             ),
                           ),
                         ),
+                      ),
+                      Consumer(
+                          builder: (context, ref, child) {
+                            return ref.watch(getUserNotifier).when(data: (data){
+                              List<Users> testuser = data.where((element) => element.role == "Test User").toList();
+
+                              if(teststanger == false){
+                                selectUsers =testuser.isEmpty? "": testuser[0].name.toString();
+                              }
+
+
+                              return DropdownButton(
+                                icon: Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Icon(Icons.keyboard_arrow_down),
+                                ),
+                                items: testuser.map<DropdownMenuItem<String>>(
+                                        (Users setlist) {
+                                      return DropdownMenuItem<String>(
+                                        value: setlist.name,
+                                        child: Text(setlist.name.toString()),
+                                      );
+                                    }).toList(),
+                                value: selectUsers,
+                                onChanged: (item) {
+
+                                  setState(() {
+
+                                    selectUsers = item.toString();
+                                    teststanger = true;
+                                    for(int i=0; i<testuser.length; i++){
+                                      if(selectUsers == testuser[i].name){
+                                        testuserid = testuser[i].userId;
+                                        print("print nancy-----> ${testuserid}");
+                                      }
+
+                                    }
+                                    //  workorderuserid = testuser[index].userId;
+                                    print("Index==>"+selectUsers);
+                                    //List<FirstClass> emptylist = [];
+
+                                  });
+                                },
+                              );
+
+                            }, error: (e,s){
+                              return Text(e.toString());
+                            }, loading: (){
+                              return Center(child: CircularProgressIndicator());
+                            });
+
+                          }
                       ),
                       Expanded(
                         flex: 6,
@@ -939,7 +1108,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                   Expanded(
                     child: Row(
                       children: [
-                        Expanded(
+                       /* Expanded(
                           flex: 1,
                           child: Consumer(
                               builder: (context, snapshot, child) {
@@ -960,7 +1129,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                           return gettestuser(testuser, index);
                                         }));
                               }),
-                        ),
+                        ),*/
                         Expanded(
                           flex: 3,
                           child: Column(
@@ -993,16 +1162,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                                 fontWeight:
                                                 FontWeight.bold),
                                           )),
-                                      Expanded(
-                                          child: Text(
-                                            'Test Name',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight:
-                                                FontWeight.bold),
-                                          )),
+
                                       Expanded(
                                           child: Text(
                                             'Test Result',
@@ -1016,6 +1176,16 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                       Expanded(
                                           child: Text(
                                             'Tested Date',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight:
+                                                FontWeight.bold),
+                                          )),
+                                      Expanded(
+                                          child: Text(
+                                            'Test Report',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 color: Colors.white,
@@ -1125,8 +1295,8 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                   ),
                   Row(
                     children: [
-                      Expanded(
-                        flex: 4,
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.24,
                         child: SizedBox(
                           height:
                           MediaQuery
@@ -1147,12 +1317,59 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                           ),
                         ),
                       ),
+                      ref.watch(getWorkorderNotifier).when(data: (doll){
+
+
+                        if(workorderstanger == false){
+                          selectworkorder =doll.isEmpty? "": doll[0].workorderCode.toString();
+                        }
+
+
+                        return DropdownButton(
+                          icon: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Icon(Icons.keyboard_arrow_down),
+                          ),
+                          items: doll.map<DropdownMenuItem<String>>(
+                                  (WorkorderModel setlist) {
+                                return DropdownMenuItem<String>(
+                                  value: setlist.workorderCode,
+                                  child: Text(setlist.workorderCode.toString()),
+                                );
+                              }).toList(),
+                          value: selectworkorder,
+                          onChanged: (item) {
+
+                            setState(() {
+
+                              selectworkorder = item.toString();
+                              workorderstanger = true;
+                              for(int i=0; i<doll.length; i++){
+                                if(selectworkorder == doll[i].workorderCode){
+                                  ref.read(workorderbasedReportNotifier.notifier).workorderbasedReport(doll[i].workorderId);
+                                  print("print dolllllll-----> ${doll[i].workorderId}");
+                                }
+
+                              }
+                              //  workorderuserid = testuser[index].userId;
+                              print("Index==>"+selectUsers);
+                              //List<FirstClass> emptylist = [];
+
+                            });
+                          },
+                        );
+
+                      }, error: (e,s){
+                        return Text(e.toString());
+                      }, loading: (){
+                        return Center(child: CircularProgressIndicator());
+                      }),
                     ],
                   ),
                   Expanded(
                     child: Row(
                       children: [
-                        Expanded(
+                      /*  Expanded(
                           flex: 1,
                           child: Consumer(builder:
                               (context, snapshot, child) {
@@ -1170,7 +1387,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                       return getworkorderbasedtest(data, index);
                                     }));
                           }),
-                        ),
+                        ),*/
                         Expanded(
                           flex: 3,
                           child: Column(
@@ -1252,7 +1469,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                           )),
                                       Expanded(
                                           child: Text(
-                                            'Test Name',
+                                            'Test Report',
                                             textAlign:
                                             TextAlign.center,
                                             style: TextStyle(
@@ -2260,6 +2477,56 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                   color: Colors.black)),
                         ),
                       ),
+
+                      Expanded(
+                        child: Center(
+                          child: Text(mdata[index].totalTestUnit.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(mdata[index].qtyPassed.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(mdata[index].qtyFailed.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(mdata[index].qtyPassed.toString() == "0"
+                              && mdata[index].qtyFailed.toString() == "0" ? ""
+                              : mdata[index].testStartDate.toString().split(" ")[0],
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(mdata[index].qtyPassed.toString() == "0"
+                              && mdata[index].qtyFailed.toString() == "0" ? ""
+                              : mdata[index].testStartDate.toString().split(" ")[0],
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -2357,15 +2624,6 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(tester[index].testname,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
-                        ),
-                      ),
-                      Expanded(
-                        child: Center(
                           child: Text(tester[index].testResult,
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
@@ -2379,6 +2637,15 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                             var str = tester[index].testedDate.toString().split('T')[0];
                             return str.toString();
                           }(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text("https//link_to_open_report",
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2522,7 +2789,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mData[index].testName.toString(),
+                          child: Text("https//link_to_open_report",
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,

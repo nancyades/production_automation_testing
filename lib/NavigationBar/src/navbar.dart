@@ -42,7 +42,7 @@ class _NavBarState extends ConsumerState<NavBar> {
               });
             },
           ),
-          NavBarItem(
+         /* NavBarItem(
             active: selected[1],
             icon: Icons.menu,
             name: 'Workorder',
@@ -52,8 +52,8 @@ class _NavBarState extends ConsumerState<NavBar> {
                 select(1);
               });
             },
-          ),
-          NavBarItem(
+          ),*/
+         /* NavBarItem(
             active: selected[2],
             icon: Icons.ballot_sharp,
             name: ' Product ',
@@ -63,8 +63,8 @@ class _NavBarState extends ConsumerState<NavBar> {
                 select(2);
               });
             },
-          ),
-          NavBarItem(
+          ),*/
+         /* NavBarItem(
             active: selected[3],
             icon: Icons.message_sharp,
             name: '  Task ',
@@ -74,8 +74,8 @@ class _NavBarState extends ConsumerState<NavBar> {
                 select(3);
               });
             },
-          ),
-          NavBarItem(
+          ),*/
+         /* NavBarItem(
             active: selected[4],
             icon: Icons.contacts,
             name: '   User  ',
@@ -85,7 +85,7 @@ class _NavBarState extends ConsumerState<NavBar> {
                 select(4);
               });
             },
-          ),
+          ),*/
           NavBarItem(
             active: selected[5],
             icon: Icons.task_alt_outlined,

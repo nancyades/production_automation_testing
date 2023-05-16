@@ -46,6 +46,8 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
   bool approve = false;
   bool reject = false;
 
+  bool seen = true;
+
   var createdvalue;
   var verifiedvalue;
   var approvedvalue;
@@ -72,6 +74,8 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
     'Design User',
     'Test User'
   ];
+
+
 
 
   @override
@@ -152,8 +156,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 20.0),
                             ),
+                            Helper.sharedRoleId == "Super Admin" ?
                             Visibility(
-                              visible: Helper.sharedRoleId == "Super Admin" ? false:true ,
+                              visible: _isShow,
+                             // Helper.sharedRoleId == "Super Admin" ? false:true ,
                               child: MaterialButton(
                                 padding: const EdgeInsets.all(15),
                                 onPressed: () {
@@ -164,11 +170,53 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                     workorder.startSerialNo = "";
                                     workorder.endSerialNo = "";
                                     workorder.status = "Created";
+                                    workorder.remarks ="";
                                     _isShow = !_isShow;
                                     chart = !chart;
                                     searchdropdown = !searchdropdown;
                                     Helper.furious = "";
                                   });
+                                },
+                                child: const Icon(
+                                  Icons.open_in_browser_rounded,
+                                  size: 20,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ) : Helper.sharedRoleId == "Test Admin"
+                            ?  Visibility(
+                              visible: seen,
+                              // Helper.sharedRoleId == "Super Admin" ? false:true ,
+                              child: MaterialButton(
+                                padding: const EdgeInsets.all(15),
+                                onPressed: () {
+                                  ref.refresh(getProductNotifier);
+                                  setState(() {
+                                    workorder.workorderCode = "";
+                                    workorder.quantity = 0;
+                                    workorder.startSerialNo = "";
+                                    workorder.endSerialNo = "";
+                                    workorder.status = "Created";
+                                    workorder.remarks ="";
+                                    _isShow = !_isShow;
+                                    chart = !chart;
+                                    searchdropdown = !searchdropdown;
+                                    Helper.furious = "";
+                                  });
+                                },
+                                child: const Icon(
+                                  Icons.open_in_browser_rounded,
+                                  size: 20,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            )
+                            : Visibility(
+                              visible: seen,
+                              child: MaterialButton(
+                                padding: const EdgeInsets.all(15),
+                                onPressed: () {
+                                  seen = true;
                                 },
                                 child: const Icon(
                                   Icons.open_in_browser_rounded,
@@ -1376,8 +1424,8 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                     items[index].startSerialNo.toString();
                                 workorder.endSerialNo =
                                     items[index].endSerialNo.toString();
-                                workorder.status =
-                                    items[index].status.toString();
+                                workorder.status = items[index].status.toString();
+                                workorder.remarks = items[index].remarks.toString();
                                 List<WorkorderList> wolst = [];
 
                                 for(int i = 0; i< items[index].woList!.length; i++){
@@ -1390,10 +1438,14 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                       quantity:items[index].woList![i].quantity,
                                       start_serial_no: items[index].woList![i].start_serial_no,
                                       end_serial_no: items[index].woList![i].end_serial_no,
+                                      status: items[index].woList![i].status,
+                                      testing_status: items[index].woList![i].testing_status,
+                                      start_date: items[index].woList![i].start_date,
+                                      end_date: items[index].woList![i].end_date,
+                                      flg: items[index].woList![i].flg,
                                     );
                                     wolst.add(wlist);
                                   }
-
                                 }
 
                                 workorder.woList = wolst;
@@ -1409,6 +1461,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                Helper.furious = "ADMIN";
                                 chart = false;
                                 _isShow = true;
+                                seen = true;
                                 searchdropdown = false;
 
                                 Helper.editvalue = "passvalue";
@@ -1554,6 +1607,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                     createdvalue[index].endSerialNo.toString();
                                 workorder.status =
                                     createdvalue[index].status.toString();
+                                workorder.remarks = createdvalue[index].remarks.toString();
 
                                 List<WorkorderList> wolst = [];
 
@@ -1567,6 +1621,11 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                       quantity:createdvalue[index].woList![i].quantity,
                                       start_serial_no: createdvalue[index].woList![i].start_serial_no,
                                       end_serial_no: createdvalue[index].woList![i].end_serial_no,
+                                      status: createdvalue[index].woList![i].status,
+                                      testing_status: createdvalue[index].woList![i].testing_status,
+                                      start_date: createdvalue[index].woList![i].start_date,
+                                      end_date: createdvalue[index].woList![i].end_date,
+                                      flg: createdvalue[index].woList![i].flg,
                                     );
                                     wolst.add(wlist);
                                   }
@@ -1711,6 +1770,8 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                     verifiedvalue[index].endSerialNo.toString();
                                 workorder.status =
                                     verifiedvalue[index].status.toString();
+                                workorder.remarks = verifiedvalue[index].remarks.toString();
+
 
                                 List<WorkorderList> wolst = [];
 
@@ -1724,6 +1785,11 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                       quantity:verifiedvalue[index].woList![i].quantity,
                                       start_serial_no: verifiedvalue[index].woList![i].start_serial_no,
                                       end_serial_no: verifiedvalue[index].woList![i].end_serial_no,
+                                      status: verifiedvalue[index].woList![i].status,
+                                      testing_status: verifiedvalue[index].woList![i].testing_status,
+                                      start_date: verifiedvalue[index].woList![i].start_date,
+                                      end_date: verifiedvalue[index].woList![i].end_date,
+                                      flg: verifiedvalue[index].woList![i].flg,
                                     );
                                     wolst.add(wlist);
                                   }
@@ -1868,6 +1934,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                     approvedvalue[index].endSerialNo.toString();
                                 workorder.status =
                                     approvedvalue[index].status.toString();
+                                workorder.remarks = approvedvalue[index].remarks.toString();
 
                                 List<WorkorderList> wolst = [];
 
@@ -1881,6 +1948,11 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                       quantity:approvedvalue[index].woList![i].quantity,
                                       start_serial_no: approvedvalue[index].woList![i].start_serial_no,
                                       end_serial_no: approvedvalue[index].woList![i].end_serial_no,
+                                      status: approvedvalue[index].woList![i].status,
+                                      testing_status: approvedvalue[index].woList![i].testing_status,
+                                      start_date: approvedvalue[index].woList![i].start_date,
+                                      end_date: approvedvalue[index].woList![i].end_date,
+                                      flg: approvedvalue[index].woList![i].flg,
                                     );
                                     wolst.add(wlist);
                                   }
@@ -2024,6 +2096,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                     rejectedvalue[index].endSerialNo.toString();
                                 workorder.status =
                                     rejectedvalue[index].status.toString();
+                                workorder.remarks = rejectedvalue[index].remarks.toString();
 
                                 List<WorkorderList> wolst = [];
 
@@ -2037,6 +2110,11 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                       quantity:rejectedvalue[index].woList![i].quantity,
                                       start_serial_no: rejectedvalue[index].woList![i].start_serial_no,
                                       end_serial_no: rejectedvalue[index].woList![i].end_serial_no,
+                                      status: rejectedvalue[index].woList![i].status,
+                                      testing_status: rejectedvalue[index].woList![i].testing_status,
+                                      start_date: rejectedvalue[index].woList![i].start_date,
+                                      end_date: rejectedvalue[index].woList![i].end_date,
+                                      flg: rejectedvalue[index].woList![i].flg,
                                     );
                                     wolst.add(wlist);
                                   }

@@ -508,126 +508,219 @@ class _AddProductState extends ConsumerState<AddProduct> {
                       ],)
                           :  Helper.sharedRoleId == "Design Admin"
                       ? Column(children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
+                        (){
+                          if(widget.product.productCode != null){
+                            if(controllerProductStatus.text == "Created"){
+                             return Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20.0),
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding:
+                                          const EdgeInsets.only(
+                                              right: 15.0),
+                                          child: DropdownButton(
+                                            icon: Padding(
+                                              padding:
+                                              const EdgeInsets.only(
+                                                  left: 25.0),
+                                              child: Icon(Icons
+                                                  .keyboard_arrow_down),
+                                            ),
+                                            items: designadminstatus.map<
+                                                DropdownMenuItem<
+                                                    String>>(
+                                                    (String setlist) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: setlist,
+                                                    child: Text(
+                                                        setlist
+                                                            .toString()),
+                                                  );
+                                                }).toList(),
+                                            value: designadminstatusselection,
+                                            onChanged: (item) {
+                                              ref
+                                                  .read(counterModelProvider.notifier).press();
+                                              designadminstatusselection =
+                                                  item.toString();
+
+                                              controllerProductStatus.text = item.toString();
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }else{
+                              return  Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Row(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 18.0),
-                                      child: Row(
+                                    Expanded(
+                                      child: Column(
                                         children: [
-                                          Text("Status",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 11.0,
-                                                  color: Colors.blueAccent)),
-                                          Text('*',
-                                              style:
-                                              TextStyle(color: Colors.red)),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 18.0),
+                                            child:
+
+                                            Row(
+                                              children: [
+                                                Text("Status: ",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.w600,
+                                                        fontSize: 11.0,
+                                                        color: Colors.blueAccent)),
+
+                                                Text(widget.product.status.toString() ,
+                                                    style: TextStyle(color: Colors.red)),
+                                              ],
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
-                                    Consumer(builder: (context, ref, child) {
-                                      ref.watch(counterModelProvider);
-                                      return Visibility(
-                                        visible: searchdropdown,
-                                        child: Row(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 20.0),
-                                              child: Row(
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                    const EdgeInsets.only(
-                                                        right: 15.0),
-                                                    child: DropdownButton(
-                                                      icon: Padding(
+                                  ],
+                                ),
+                              );
+                            }
+
+
+                          }else {
+                            return Column(
+                                children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 18.0),
+                                          child: Row(
+                                            children: [
+                                              Text("Status",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.w600,
+                                                      fontSize: 11.0,
+                                                      color: Colors.blueAccent)),
+                                              Text('*',
+                                                  style:
+                                                  TextStyle(color: Colors.red)),
+                                            ],
+                                          ),
+                                        ),
+                                        Consumer(builder: (context, ref, child) {
+                                          ref.watch(counterModelProvider);
+                                          return Visibility(
+                                            visible: searchdropdown,
+                                            child: Row(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.only(
+                                                      left: 20.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Padding(
                                                         padding:
                                                         const EdgeInsets.only(
-                                                            left: 25.0),
-                                                        child: Icon(Icons
-                                                            .keyboard_arrow_down),
-                                                      ),
-                                                      items: designadminstatus.map<
-                                                          DropdownMenuItem<
-                                                              String>>(
-                                                              (String setlist) {
-                                                            return DropdownMenuItem<
-                                                                String>(
-                                                              value: setlist,
-                                                              child: Text(
-                                                                  setlist
-                                                                      .toString()),
-                                                            );
-                                                          }).toList(),
-                                                      value: designadminstatusselection,
-                                                      onChanged: (item) {
-                                                        ref
-                                                            .read(counterModelProvider.notifier).press();
-                                                        designadminstatusselection =
-                                                            item.toString();
+                                                            right: 15.0),
+                                                        child: DropdownButton(
+                                                          icon: Padding(
+                                                            padding:
+                                                            const EdgeInsets.only(
+                                                                left: 25.0),
+                                                            child: Icon(Icons
+                                                                .keyboard_arrow_down),
+                                                          ),
+                                                          items: designadminstatus.map<
+                                                              DropdownMenuItem<
+                                                                  String>>(
+                                                                  (String setlist) {
+                                                                return DropdownMenuItem<
+                                                                    String>(
+                                                                  value: setlist,
+                                                                  child: Text(
+                                                                      setlist
+                                                                          .toString()),
+                                                                );
+                                                              }).toList(),
+                                                          value: designadminstatusselection,
+                                                          onChanged: (item) {
+                                                            ref
+                                                                .read(counterModelProvider.notifier).press();
+                                                            designadminstatusselection =
+                                                                item.toString();
 
-                                                        controllerProductStatus.text = item.toString();
-                                                      },
-                                                    ),
+                                                            controllerProductStatus.text = item.toString();
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
+                                          );
+                                        })
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 0.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 30.0, right: 30.0),
+                                        child: Row(
+                                          children: [
+                                            Consumer(builder: (context, ref, child) {
+                                              ref.watch(counterModelProvider);
+                                              return Checkbox(
+                                                checkColor: AppColors.white,
+                                                activeColor: Colors.blue,
+                                                value: isSelected,
+                                                onChanged: (value) {
+                                                  ref
+                                                      .read(
+                                                      counterModelProvider.notifier)
+                                                      .press();
+                                                  isSelected = value!;
+                                                  widget.product.flg =
+                                                  isSelected == false ? 0 : 1;
+                                                },
+                                              );
+                                            }),
+                                            Text("Is Active",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 13.0,
+                                                    color: Colors.black)),
                                           ],
                                         ),
-                                      );
-                                    })
-                                  ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 0.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 30.0, right: 30.0),
-                                child: Row(
-                                  children: [
-                                    Consumer(builder: (context, ref, child) {
-                                      ref.watch(counterModelProvider);
-                                      return Checkbox(
-                                        checkColor: AppColors.white,
-                                        activeColor: Colors.blue,
-                                        value: isSelected,
-                                        onChanged: (value) {
-                                          ref
-                                              .read(
-                                              counterModelProvider.notifier)
-                                              .press();
-                                          isSelected = value!;
-                                          widget.product.flg =
-                                          isSelected == false ? 0 : 1;
-                                        },
-                                      );
-                                    }),
-                                    Text("Is Active",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 13.0,
-                                            color: Colors.black)),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                            ]
+                            );
+                          }
+                        }(),
+
+
                       ])
                       : Column(children: [
                         Padding(
@@ -738,8 +831,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                         activeColor: Colors.blue,
                                         value: isSelected,
                                         onChanged: (value) {
-                                          ref
-                                              .read(
+                                          ref.read(
                                               counterModelProvider.notifier)
                                               .press();
                                           isSelected = value!;
@@ -1322,7 +1414,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                     (Colors.black),
                                   );
                                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                  clearText();
+                                 // clearText();
                                 }
                               }
                               else if(Helper.product_id == null ){
@@ -1336,7 +1428,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                   (Colors.black),
                                 );
                                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                clearText();
+                               // clearText();
 
                               }
 
@@ -1805,11 +1897,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                       //Templatelist.length,
                                                                       itemBuilder: (BuildContext ctxt, int index) {
 
-                                                                        /*   for(var space in data){
-                                if(space.templateName == listoftemplate[index].templateName){
-                                  listoftemplate[index].templateId = space.templateId;
-                                }
-                              }*/
+
                                                                         return InkWell(
                                                                           onTap: () {
                                                                             /* controllerTemplate.text =
@@ -2307,9 +2395,124 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                   ),
                                                                 ),
                                                                 Row(
-                                                                  mainAxisAlignment: MainAxisAlignment
-                                                                      .end,
+                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                   children: [
+                                                                    MaterialButton(
+                                                                      shape: const CircleBorder(),
+                                                                      color: Colors.black,
+                                                                      padding: const EdgeInsets
+                                                                          .all(10),
+                                                                      onPressed: () {
+                                                                        setState(() {
+                                                                          refresh = true;
+                                                                          if (templatevalidateFields()) {
+
+                                                                            var template = temp.where((element) => element
+                                                                                .templateName ==
+                                                                                controllerTemplate
+                                                                                    .text)
+                                                                                .toList();
+                                                                            print(
+                                                                                "tem----------> $template");
+                                                                            if (template
+                                                                                .isEmpty) {
+                                                                              ref
+                                                                                  .read(
+                                                                                  addTemplateNotifier
+                                                                                      .notifier)
+                                                                                  .addTemplate({
+                                                                                "template_id": 0,
+                                                                                "template_name": controllerTemplate
+                                                                                    .text,
+                                                                                "file_path": controllerFilepath
+                                                                                    .text,
+                                                                                "created_by": 1,
+                                                                                "updated_by": 1,
+                                                                                "created_date": "2023-04-20",
+                                                                                "updated_date": "2023-04-20",
+                                                                                "flg": 1,
+                                                                                "remarks": controllerTemplateremarks
+                                                                                    .text,
+                                                                                "product_id": widget.product.productId.toString(),
+                                                                              });
+                                                                            }
+                                                                            /* if (template[0].templateName == controllerTemplate.text) {
+                                                                            showDialog(
+                                                                                context: context,
+                                                                                builder: (
+                                                                                    c) =>
+                                                                                    AlertDialog(
+                                                                                      title: Text(
+                                                                                          "Template!"),
+                                                                                      content:
+                                                                                      Text(
+                                                                                          "Tmplate already exists"),
+                                                                                      actions: [
+                                                                                        TextButton(
+                                                                                            child: const Text(
+                                                                                                'Ok'),
+                                                                                            onPressed: () {
+                                                                                              Navigator
+                                                                                                  .pop(
+                                                                                                  context);
+                                                                                            }),
+                                                                                      ],
+                                                                                    ));
+                                                                          } */
+                                                                            else {
+                                                                              ref
+                                                                                  .read(
+                                                                                  addTemplateNotifier
+                                                                                      .notifier)
+                                                                                  .addTemplate({
+                                                                                "template_id": 0,
+                                                                                "template_name": controllerTemplate
+                                                                                    .text,
+                                                                                "file_path": controllerFilepath
+                                                                                    .text,
+                                                                                "created_by": 1,
+                                                                                "updated_by": 1,
+                                                                                "created_date": "2023-04-20",
+                                                                                "updated_date": "2023-04-20",
+                                                                                "flg": 1,
+                                                                                "remarks": controllerTemplateremarks
+                                                                                    .text,
+                                                                                "product_id": widget.product.productId.toString(),
+                                                                              });
+                                                                            }
+                                                                            // ref.refresh(getTemplateNotifier);
+
+                                                                            Helper.editvalue = "notpassvalue";
+                                                                            Template pro = Template(
+                                                                              templateId: 0,
+                                                                              templateName: controllerTemplate.text,
+                                                                              filePath: controllerFilepath.text,
+                                                                              createdBy: 1,
+                                                                              updatedBy: 1,
+                                                                              createdDate: "2023-04-20",
+                                                                              updatedDate: "2023-04-20",
+                                                                              flg: 1,
+                                                                              remarks: controllerTemplateremarks.text,
+                                                                              productid: widget.product.productId.toString(),
+
+                                                                            );
+
+                                                                            widget.product.template!.add(pro);
+                                                                           // listoftemplate.add(pro);
+
+
+                                                                            clearTemplate();
+                                                                            clearText();
+                                                                          }
+                                                                        });
+                                                                      },
+                                                                      child: const Icon(
+                                                                        Icons.add,
+                                                                        size: 15,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                    //edit
                                                                     MaterialButton(
                                                                       shape: const CircleBorder(),
                                                                       color: Colors.black,

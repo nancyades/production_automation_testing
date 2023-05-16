@@ -28,6 +28,7 @@ Productmodel product = Productmodel();
 
 class _ProductPageState extends ConsumerState<ProductPage> {
   bool _isShow = false;
+  bool seen = true;
 
   bool all = true;
   bool active = false;
@@ -103,8 +104,59 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 20.0),
                             ),
+
+                               Helper.sharedRoleId == "Design User" ?
                             Visibility(
-                              visible: Helper.sharedRoleId == "Design Admin" || Helper.sharedRoleId == "Super Admin" ? false:true ,
+                              visible: seen,
+                              child: MaterialButton(
+                                padding: const EdgeInsets.all(15),
+                                onPressed: () {
+                                  setState(() {
+                                    product.productId = 0;
+                                    product.productCode = "";
+                                    product.productName = "";
+                                    product.quantity = 0;
+                                    product.status = "Created";
+                                    product.timeRequired = 0;
+                                    product.description = "";
+                                    product.remarks = "";
+                                    Helper.product_id = null;
+                                    AddProduct(product: product);
+                                    _isShow = !_isShow;
+                                    procount = !procount;
+                                    search = !search;
+
+                                  });
+
+                                },
+                                child: const Icon(
+                                  Icons.open_in_browser_rounded,
+                                  size: 20,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            )
+                               :  Helper.sharedRoleId == "Design Admin" || Helper.sharedRoleId == "Super Admin" ?
+                               Visibility(
+                                 visible: _isShow,
+                                 child: MaterialButton(
+                                   padding: const EdgeInsets.all(15),
+                                   onPressed: () {
+                                     setState(() {
+                                       _isShow = false;
+                                     });
+
+                                   },
+                                   child: const Icon(
+                                     Icons.open_in_browser_rounded,
+                                     size: 20,
+                                     color: Colors.black,
+                                   ),
+                                 ),
+                               )
+
+                                :   Visibility(
+                              visible: seen,
                               child: MaterialButton(
                                 padding: const EdgeInsets.all(15),
                                 onPressed: () {
@@ -130,7 +182,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                   color: Colors.black,
                                 ),
                               ),
-                            ),
+                            )
 
                           ],
                         ),
@@ -1203,6 +1255,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                     _isShow = true;
                                     procount = false;
                                     search = false;
+                                   // seen = true;
                                     Helper.editvalue = "editedvalue";
                                   });
                                 },
@@ -1391,7 +1444,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
 
                               AddProduct(product: product);
 
-
+                              seen = true;
                               _isShow = true;
                               procount = false;
                               search = false;
@@ -1578,6 +1631,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
 
 
                               AddProduct(product: product);
+                              seen = true;
                               _isShow = true;
                               procount = false;
                               search = false;

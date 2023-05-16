@@ -125,12 +125,17 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
 
 
     return ref.watch(getWorkorderNotifier).when(data: (data){
+
+
       if (isValue == true) {
         selectWorkorder = data.isEmpty? "" :data[0].workorderCode.toString();
       }
+
       if (isValue1 == true) {
         selectProduct = data.isEmpty ? "" : data[0].woList![0].product_name.toString();
       }
+
+
       if (workorders.length == 0) {
 
         for (int i = 0; i < data.length; i++) {
@@ -155,6 +160,7 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
             }
 
           }
+
           WorkorderModel val = WorkorderModel(
               workorderId: data[i].workorderId,
               workorderCode: data[i].workorderCode.toString(),
@@ -170,8 +176,12 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
               remarks: data[i].remarks.toString(),
               woList: wolst
           );
+          if(val.status == "Approved"){
+            workorders.add(val);
+            selectWorkorder = workorders[0].workorderCode.toString();
+          }
 
-          workorders.add(val);
+
         }
 
       }
@@ -1880,11 +1890,13 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
                               "test_type": gettest[i].isOnline == "0" ? "Offline" : "Online" ,
                               "test_date": null,
                               "hours_taken": 0,
-                              "test_number": gettest[i].testNumber
+                              "test_number": gettest[i].testNumber,
+                              "serial_no": null
                             });
                           }
-
+                             ref.refresh(getTaskNotifier);
                             Navigator.pop(context);
+                             Navigator.pop(context);
                           }),
                       TextButton(
                           child: const Text('No'),

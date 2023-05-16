@@ -112,7 +112,7 @@ bool valus = true;
                                 "start_serial_no": widget.tasks!.startSerialNo,
                                 "end_serial_no": widget.tasks!.endSerialNo,
                                 "status": widget.tasks!.status,
-                                "testing_status": valus == false ? "in-progress" : "Completed",
+                                "testing_status": valus == false ? "FAIL" : "PASS",
                                 "start_date": widget.tasks!.startDate,
                                 "end_date": widget.tasks!.endDate,
                                 "created_by": widget.tasks!.createdBy,

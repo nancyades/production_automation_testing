@@ -26,6 +26,7 @@ import '../../Model/APIModel/taskmodel.dart';
 import '../../Model/readexcel/readecel.dart';
 import '../../NavigationBar/src/company_name.dart';
 import '../../NavigationBar/src/navbar.dart';
+import '../../Provider/changenotifier/widget_notifier.dart';
 import '../../Provider/excelprovider.dart';
 import '../../Provider/generalProvider.dart';
 import '../../Provider/post_provider/result_provider.dart';
@@ -39,8 +40,9 @@ class TestScreenPage extends ConsumerStatefulWidget {
   dynamic testtype;
   List<Testing>? testlist;
   TaskModel? tsk;
+  String? stages;
 
-  TestScreenPage({Key? key, this.testtype, this.testlist, this.tsk}) : super(key: key);
+  TestScreenPage({Key? key, this.testtype, this.testlist, this.tsk, this.stages}) : super(key: key);
 
   @override
   ConsumerState<TestScreenPage> createState() => _TestScreenPageState();
@@ -78,10 +80,14 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
   TextEditingController serialnocontroller = TextEditingController();
   TextEditingController jigaddresscontroller = TextEditingController(text: '');
 
+  List<TextEditingController> generalController=[];
+
   TextEditingController mac = TextEditingController();
 
   String? choice;
-
+  
+  var startserialno;
+  var endserialno;
   bool isEast = false;
   var userEntry;
 
@@ -128,6 +134,10 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
 
     super.initState();
+
+    for(int i=0;i<100;i++){
+      generalController.add(TextEditingController(text: ""));
+    }
   }
 
   String? receivedData;
@@ -135,6 +145,11 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    
+   
+    startserialno = int.parse(widget.tsk!.startSerialNo!.toString());
+    endserialno = int.parse(widget.tsk!.endSerialNo!.toString());
 
     producttitlecontroller.text = widget.tsk!.product!.productName.toString();
     fontSize = MediaQuery.of(context).size.width;
@@ -236,21 +251,34 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 10.0, top: 20),
+                    padding: const EdgeInsets.only(left: 10.0, top: 20, right: 20, bottom: 15),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IconButton(
+                       /* IconButton(
                             onPressed: () {
                              // ref.refresh(gettesttypeNotifier);
                               Navigator.of(context).pop();
                               Helper.classes = "TEST";
                             },
-                            icon: Icon(Icons.arrow_back_outlined)),
+                            icon: Icon(Icons.arrow_back_outlined)),*/
                         Text(
                           "Product Test",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20.0),
                         ),
+                        ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.red,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 15),
+                            ),
+                            onPressed: () async {
+                              ref.read(testStartedProvider.notifier).state = false;
+                              Navigator.push(
+                                  context, MaterialPageRoute(builder: (context) => HomeScreenPage()));
+                            },
+                            child: const Text('DASHBOARD')),
                       ],
                     ),
                   ),
@@ -473,65 +501,72 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                 ),
                                               ],
                                             ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  "MAC Address : ",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontSize: 14.0,
-                                                      color: Colors.red),
-                                                ),
-                                                SizedBox(
-                                                  width: fontSize * 0.15,
-                                                  height: height * 0.05,
-                                                  child: TextField(
-                                                    maxLength: 10,
-                                                    decoration: InputDecoration(
-                                                      counterText: '',
-                                                      contentPadding:
-                                                          EdgeInsets.only(
-                                                              top: 10.0),
-                                                      border: OutlineInputBorder(
-                                                          borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  width: 1.0)),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      width:
-                                                                          1.0)),
-                                                      enabledBorder:
-                                                          OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      width:
-                                                                          1.0)),
+                                            Consumer(
+                                              builder: (context, ref, child) {
+                                                String mac =
+                                                ref.watch(macAddressTestProvider);
+                                                macaddresscontroller.text = mac;
+                                                return Row(
+                                                  children: [
+                                                    Text(
+                                                      "MAC Address : ",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 14.0,
+                                                          color: Colors.red),
                                                     ),
-                                                    cursorColor: Colors.red,
-                                                    controller:
-                                                        macaddresscontroller,
-                                                    onChanged: (val) {},
-                                                    textAlignVertical:
-                                                        TextAlignVertical
-                                                            .center,
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize:
-                                                            fontSize! * 0.010,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ),
-                                              ],
+                                                    SizedBox(
+                                                      width: fontSize * 0.15,
+                                                      height: height * 0.05,
+                                                      child: TextField(
+                                                        maxLength: 10,
+                                                        decoration: InputDecoration(
+                                                          counterText: '',
+                                                          contentPadding:
+                                                              EdgeInsets.only(
+                                                                  top: 10.0),
+                                                          border: OutlineInputBorder(
+                                                              borderSide:
+                                                                  BorderSide(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      width: 1.0)),
+                                                          focusedBorder:
+                                                              OutlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color: Colors
+                                                                              .white,
+                                                                          width:
+                                                                              1.0)),
+                                                          enabledBorder:
+                                                              OutlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color: Colors
+                                                                              .white,
+                                                                          width:
+                                                                              1.0)),
+                                                        ),
+                                                        cursorColor: Colors.red,
+                                                        controller:
+                                                            macaddresscontroller,
+                                                        onChanged: (val) {},
+                                                        textAlignVertical:
+                                                            TextAlignVertical
+                                                                .center,
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize:
+                                                                fontSize! * 0.010,
+                                                            fontWeight:
+                                                                FontWeight.bold),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              }
                                             ),
                                           ],
                                         ),
@@ -902,7 +937,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                           break;
                                                           case 'UNITREMARK':
                                                           if (ind3[k][i].isOnline == "0"? false : true) {
-                                                                onlineTestIds[index] = OnlineTestModel(
+                                                                onlineTestIds[i] = OnlineTestModel(
                                                                 PacketControl.startPacket + ind3[k][i].pktType.toString() + PacketControl.splitChar +
                                                                 ApplicationClass().formDigits(3, ind3[k][i].packetId.toString())! + PacketControl.endPacket,
                                                                 ind3[k][i].testNumber!);
@@ -951,13 +986,18 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                     color: Colors.black)))),
                                     onPressed: () {
 
+
+                                      if(int.parse(serialnocontroller.text)  < startserialno || int.parse(serialnocontroller.text)  > endserialno ){
+                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("IN-valid Serial No!!! ")));
+
+                                      }else{
                                         if (test.isNotEmpty) {
                                           print("print test k-----------------> ${test}");
                                           for(int i=0;i<test[0].length; i++){
                                             ref.read(updateTestNotifier.notifier).updatetTest({
                                               "test_id": test[0][i].testId,
                                               "task_id": test[0][i].taskId,
-                                              "test_stage": test[0][i].testStage,
+                                              "test_stage": int.parse(widget.stages.toString()),
                                               "test_status": test[0][i].testStatus,
                                               "pass": test[0][i].displayResult == "PASS" ? 1 : 0,//pass
                                               "fail": test[0][i].displayResult == "FAIL" ? 1 : 0,//fail
@@ -977,67 +1017,64 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                               "wifi_Result": test[0][i].wifiResult,
                                               "pass_Crieteria": test[0][i].passCrieteria,
                                               "remarks": test[0][i].remarks,
+                                              "serial_no": serialnocontroller.text
+
                                             });
                                           }
 
                                           for(var ele in test[0]){
 
-                                              if(ele.result == null && ele.displayResult == "UNDEFINED" ){
-                                                return showfailedTest();
-                                              }
-                                              else if(ele.remarks == null && ele.displayResult == "FAIL"){
-                                                return showRemarks();
-                                              }
+                                            if(ele.result == null && ele.displayResult == "UNDEFINED" ){
+                                              return showfailedTest();
+                                            }
+                                            else if(ele.remarks == null && ele.displayResult == "FAIL"){
+                                              return showRemarks();
+                                            }
 
 
 
                                           }
 
-                                         for(var element in test[0]){
-                                           element.result = "";
-                                           element.displayResult = "";
-                                         }
+                                          for(var element in test[0]){
+                                            element.result = "";
+                                            element.displayResult = "";
+                                          }
                                           test.clear();
 
                                         }
                                         setState(() {
-                                        if ((ind3.length) - 1 > k ) {
-                                          k++;
-                                          {
-                                            print("hello nancyy!!!!!!!!!!!");
+                                          if ((ind3.length) - 1 > k ) {
+                                            k++;
+                                            {
+                                              print("hello nancyy!!!!!!!!!!!");
 
-                                            if(isNow == true){
-                                              Future.delayed(
-                                                  const Duration(
-                                                      milliseconds: 1000), () {
-                                                splitExcelOnlineTestData(
-                                                    onlineTestIds);
-                                              });
+                                              if(isNow == true){
+                                                Future.delayed(
+                                                    const Duration(
+                                                        milliseconds: 1000), () {
+                                                  splitExcelOnlineTestData(
+                                                      onlineTestIds);
+                                                });
+                                              }
                                             }
+
+                                          } else {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        TestCompleted(tasks: widget.tsk,)));
+                                            stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+                                            Helper.classes = "TEST";
                                           }
 
+                                          if (test.isEmpty) {
 
+                                            test.add(ind3[k]);
 
-
-
-
-                                        } else {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      TestCompleted(tasks: widget.tsk,)));
-                                          stopWatchTimer.onExecute.add(StopWatchExecute.stop);
-                                          Helper.classes = "TEST";
-                                        }
-
-                                        if (test.isEmpty) {
-
-                                          test.add(ind3[k]);
-
-                                        }
-                                        isEast = false;
-                                      });
+                                          }
+                                          isEast = false;
+                                        });
 
 
                                         for(int i=0; i< uniquelist.length; i++){
@@ -1048,6 +1085,8 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                             "flg": 1
                                           });
                                         }
+                                      }
+
                                       /* Navigator.push(
                                               context, MaterialPageRoute(builder: (context) => TestScreenPage()));*/
                                     }),
@@ -1079,30 +1118,34 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
   }
 
   getAllTest(List<Testing> radio, int index) {
-   print("nanades");
 
 
 
 
-    Results tt = Results(
-      testId: radio[index].testId,
-      status: radio[index].displayResult.toString(),
-      flg: radio[index].flg,
-      spendTime: totalSeconds
 
-    );
-    if(radio[index].displayResult.toString() != "UNDEFINED"){
-      ted.add(tt);
+    if(radio[index].type.toString() == "FLAG" || radio[index].type.toString() == "SERIALNO" ){
+
+    }else{
+      Results tt = Results(
+          testId: radio[index].testId,
+          status: radio[index].displayResult.toString(),
+          flg: radio[index].flg,
+          spendTime: totalSeconds
+
+      );
+      if(radio[index].displayResult.toString() != "UNDEFINED"){
+        ted.add(tt);
+      }
+
+      var seen = Set<String>();
+
+      uniquelist = ted.where((student) => seen.add(student.testId.toString())).toList();
+
     }
 
 
-    var seen = Set<String>();
-
-     uniquelist = ted.where((student) => seen.add(student.testId.toString())).toList();
 
 
-
-    print("ted---------------> ${uniquelist.toString()}");
 
 
 
@@ -1223,6 +1266,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       radio[index].setDisplayResult('FAIL');
                     }
                   }
+/*
 
                   if(uniquelist.isNotEmpty){
                     for(int i=0; i<uniquelist.length; i++){
@@ -1230,6 +1274,32 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     }
                   }
 
+*/
+
+                  Results tt = Results(
+                      testId: radio[index].testId,
+                      status: radio[index].displayResult.toString(),
+                      flg: radio[index].flg,
+                      spendTime: totalSeconds
+
+                  );
+                  if(ted.isEmpty){
+                    if(radio[index].displayResult.toString() != "UNDEFINED"){
+                      ted.add(tt);
+                    }
+                  }else{
+                    for(int i=0; i<ted.length; i++){
+                      if(ted[i].testId == radio[index].testId){
+                        ted.remove(ted[i]);
+                      }
+                    }
+                    ted.add(tt);
+
+                  }
+
+                  var seen = Set<String>();
+
+                  uniquelist = ted.where((student) => seen.add(student.testId.toString())).toList();
 
 
 
@@ -1338,11 +1408,38 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     }
                   }
 
-                  if(uniquelist.isNotEmpty){
+                 /* if(uniquelist.isNotEmpty){
                     for(int i=0; i<uniquelist.length; i++){
                       uniquelist[i].status = radio[index].displayResult.toString();
                     }
+                  }*/
+
+
+                  Results tt =  Results(
+                      testId: radio[index].testId,
+                      status: radio[index].displayResult.toString(),
+                      flg: radio[index].flg,
+                      spendTime: totalSeconds
+
+                  );
+                  if(ted.isEmpty){
+                    if(radio[index].displayResult.toString() != "UNDEFINED"){
+                      ted.add(tt);
+                    }
+                  }else{
+                    for(int i=0; i<ted.length; i++){
+                      if(ted[i].testId == radio[index].testId){
+                        ted.remove(ted[i]);
+                      }
+                    }
+                    ted.add(tt);
+
                   }
+
+                  var seen = Set<String>();
+
+                  uniquelist = ted.where((student) => seen.add(student.testId.toString())).toList();
+
 
 
                   radio[index].radiotype = value.toString();
@@ -1352,7 +1449,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
                       isEast = true;
                       break;
-                    case '02':
+                    case  '02':
                       choice = value.toString();
 
                       isEast = true;
@@ -2296,16 +2393,16 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       LengthLimitingTextInputFormatter(18),
                     ],
                     controller: mac,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(
                       // errorText: validation ? 'can\t be empty' : null ,
-                      hintStyle: TextStyle(color: Colors.white24),
+                      hintStyle: TextStyle(color: Colors.black),
                       hintText: "Enter Mac",
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: BorderSide(color: Colors.black),
                       ),
                       enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: BorderSide(color: Colors.black),
                       ),
                     ),
                     onChanged: (values) {
@@ -2746,6 +2843,20 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   groupValue: radio[index].radiotype,
                   onChanged: (value) {
                     setState(() {
+                      if(radio[index].userEntry!.split("/")[0].toString()   == "PASS")
+                      {
+                        userEntry = "PASS";
+
+                        if(userEntry == radio[index].passCrieteria)
+                        {
+                          radio[index].setResult("PASS");
+                          radio[index].setDisplayResult('PASS');
+                        }  else {
+                          radio[index].setResult("FAIL");
+                          radio[index].setDisplayResult('FAIL');
+                        }
+
+                      }
                       radio[index].radiotype = value.toString();
                       switch (value) {
                         case '01':
@@ -2778,6 +2889,20 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   groupValue: radio[index].radiotype,
                   onChanged: (value) {
                     setState(() {
+                      if(radio[index].userEntry!.split("/")[0].toString()   == "PASS")
+                      {
+                        userEntry = "FAIL";
+
+                        if(userEntry == radio[index].passCrieteria)
+                        {
+                          radio[index].setResult("PASS");
+                          radio[index].setDisplayResult('PASS');
+                        }  else {
+                          radio[index].setResult("FAIL");
+                          radio[index].setDisplayResult('FAIL');
+                        }
+
+                      }
                       radio[index].radiotype = value.toString();
                       switch (value) {
                         case '01':
@@ -3031,226 +3156,235 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
 
     }
-    return Card(
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                flex: 1,
-                child: Container(
-                  height: 20.0,
-                  width: 10.0,
-                  child: Center(
-                      child: Text(radio[index].testNumber.toString(),
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black))),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Container(
-                  height: 20.0,
-                  width: 10.0,
-                  child: Center(
-                      child: Text(radio[index].testName.toString(),
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black))),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Container(
-                  //height: 20.0,
-                  //width: 10.0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [testType],
+    return Column(
+      children: [
+        Card(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      height: 20.0,
+                      width: 10.0,
+                      child: Center(
+                          child: Text(radio[index].testNumber.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black))),
+                    ),
                   ),
-                ),
-              ),
-
-              Expanded(
-                child: (){
-                  return  Container(
-                      child: (radio[index].displayResult.toString() == "PASS" ||
-                          radio[index].displayResult.toString() == "UNDEFINED" ||
-                          radio[index].displayResult.toString() == "") ?
-                      Text("")
-                          : TextField(
-                        style: TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
-                          hintStyle:
-                          TextStyle(color: Colors.black),
-                          hintText: "Remarks",
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                            new BorderSide(color: Colors.black),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide:
-                            new BorderSide(color: Colors.black),
-                          ),
-                        ),
-                        onChanged: (values) {
-                          setState(() {
-                            radio[index].setRemarks(values);
-
-                          });
-                          print("value is ${values}");
-                        },
-
-                      )
-                  );
-                }()
-
-              ),
-              Expanded(
-                flex: 2,
-                child: Container(
-                  height: 20.0,
-                  width: 10.0,
-                  child: Center(child:
-
-                      () {
-                  /*  if (radio[index].type == "FLAG") {
-                      if (radio[index].radiotype == "01") {
-                        if (radio[index].userentry!.split('/')[0] == "YES ") {
-                          radio[index].radiotype = "YES";
-                        } else {
-                          radio[index].radiotype = "SHORT";
-                        }
-                        if (radio[index].radiotype !=
-                            radio[index].passcrieteria) {
-                          radio[index].radiotype = "01";
-                          return Text(
-                              radio[index].userentry!.split('/')[0] == "OK"
-                                  ? "PASS"
-                                  : "FAIL",
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      height: 20.0,
+                      width: 10.0,
+                      child: Center(
+                          child: Text(radio[index].testName.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
-                                  color: Colors.black));
-                        }
-                      } else if (radio[index].radiotype == "02") {
-                        if (radio[index].userentry!.split('/')[1] == "NO") {
-                          radio[index].radiotype = "NO";
-                        } else {
-                          radio[index].radiotype = "NO SHORT";
-                        }
-                        if (radio[index].radiotype ==
-                                radio[index].passcrieteria ||
-                            radio[index].radiotype !=
-                                radio[index].passcrieteria) {
-                          radio[index].radiotype = "02";
-                          print(
-                              'print userentry-----> ${radio[index].userentry!.split('/')[1].toString()}');
-                          return Text(
-                              radio[index].userentry!.split('/')[0] == "OK"
-                                  ? "FAIL"
-                                  : "PASS",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black));
-                        } else {
-                          return Text("FAIL");
-                        }
-                      } else {
-                        return Text("");
-                      }
-                    }
-                    if (radio[index].type == "Value") {
-                      if (radio[index].displayResult.toString() == "FAIL") {
-                        return Text("FAIL",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                fontSize: 13.0,
-                                color: Colors.black));
-                      } else if (radio[index].displayResult.toString() ==
-                          "PASS") {
-                        return Text("PASS",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                fontSize: 13.0,
-                                color: Colors.black));
-                      } else if (radio[index].displayResult.toString() ==
-                          "UNDEFINED") {
-                        return Text(" ",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                fontSize: 13.0,
-                                color: Colors.black));
-                      } else {
-                        return Text("",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                fontSize: 13.0,
-                                color: Colors.black));
-                      }
-                    }*/
+                                  color: Colors.black))),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      //height: 20.0,
+                      //width: 10.0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [testType],
+                      ),
+                    ),
+                  ),
 
+                  Expanded(
+                    child: (){
+                      return  Consumer(
+                        builder: (context, ref, child) {
+                          ref.watch(counterModelProvider);
+                          return Container(
+                              child: (radio[index].displayResult.toString() == "PASS" ||
+                                  radio[index].displayResult.toString() == "UNDEFINED" ||
+                                  radio[index].displayResult.toString() == "") ?
+                              Text("")
+                                  : TextField(
+                                controller: generalController[index],
+                                style: TextStyle(color: Colors.black),
+                                decoration: InputDecoration(
+                                  hintStyle:
+                                  TextStyle(color: Colors.black),
+                                  hintText: "Remarks",
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide:
+                                    new BorderSide(color: Colors.black),
+                                  ),
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide:
+                                    new BorderSide(color: Colors.black),
+                                  ),
+                                ),
+                                onChanged: (values) {
+                                  setState(() {
+                                    radio[index].setRemarks(values);
+                                  });
+                                  print("value is ${values}");
+                                },
 
-/*
-                        if(radio[index].isOnline == '1'){
-                            if(radio[index].displayResult.toString() != "UNDEFINED" ){
-                              Results tst = Results(
-                                resultId: 0,
-                                testId:  radio[index].testId,
-                                spendTime:  0,
-                                status:  radio[index].displayResult,
-                                flg:  1,
-                              );
-                              if(reslt.isEmpty){
-                                reslt.add(tst);
-                              }
-                              else{
-                                for(int i=0; i<reslt.length; i++){
-                                  if(reslt[i].testId !=  radio[index].testId){
-                                    reslt.add(tst);
-                                  }
-                                }
-                              }
-                              print(reslt);
+                              )
+                          );
+                        }
+                      );
+                    }()
+
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      height: 20.0,
+                      width: 10.0,
+                      child: Center(child:
+
+                          () {
+                      /*  if (radio[index].type == "FLAG") {
+                          if (radio[index].radiotype == "01") {
+                            if (radio[index].userentry!.split('/')[0] == "YES ") {
+                              radio[index].radiotype = "YES";
+                            } else {
+                              radio[index].radiotype = "SHORT";
                             }
-
+                            if (radio[index].radiotype !=
+                                radio[index].passcrieteria) {
+                              radio[index].radiotype = "01";
+                              return Text(
+                                  radio[index].userentry!.split('/')[0] == "OK"
+                                      ? "PASS"
+                                      : "FAIL",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 13.0,
+                                      color: Colors.black));
+                            }
+                          } else if (radio[index].radiotype == "02") {
+                            if (radio[index].userentry!.split('/')[1] == "NO") {
+                              radio[index].radiotype = "NO";
+                            } else {
+                              radio[index].radiotype = "NO SHORT";
+                            }
+                            if (radio[index].radiotype ==
+                                    radio[index].passcrieteria ||
+                                radio[index].radiotype !=
+                                    radio[index].passcrieteria) {
+                              radio[index].radiotype = "02";
+                              print(
+                                  'print userentry-----> ${radio[index].userentry!.split('/')[1].toString()}');
+                              return Text(
+                                  radio[index].userentry!.split('/')[0] == "OK"
+                                      ? "FAIL"
+                                      : "PASS",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 13.0,
+                                      color: Colors.black));
+                            } else {
+                              return Text("FAIL");
+                            }
+                          } else {
+                            return Text("");
+                          }
+                        }
+                        if (radio[index].type == "Value") {
+                          if (radio[index].displayResult.toString() == "FAIL") {
+                            return Text("FAIL",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black));
+                          } else if (radio[index].displayResult.toString() ==
+                              "PASS") {
+                            return Text("PASS",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black));
+                          } else if (radio[index].displayResult.toString() ==
+                              "UNDEFINED") {
+                            return Text(" ",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black));
+                          } else {
+                            return Text("",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black));
+                          }
                         }*/
 
 
+/*
+                            if(radio[index].isOnline == '1'){
+                                if(radio[index].displayResult.toString() != "UNDEFINED" ){
+                                  Results tst = Results(
+                                    resultId: 0,
+                                    testId:  radio[index].testId,
+                                    spendTime:  0,
+                                    status:  radio[index].displayResult,
+                                    flg:  1,
+                                  );
+                                  if(reslt.isEmpty){
+                                    reslt.add(tst);
+                                  }
+                                  else{
+                                    for(int i=0; i<reslt.length; i++){
+                                      if(reslt[i].testId !=  radio[index].testId){
+                                        reslt.add(tst);
+                                      }
+                                    }
+                                  }
+                                  print(reslt);
+                                }
+
+                            }*/
 
 
 
 
 
-                       /* ref.read(addResultNotifier.notifier).addResult( {
-                          "test_id": radio[index].testId.toString(),
-                          "spend_time": displayTime,
-                          "status": radio[index].displayResult.toString(),
-                          "flg": 1
-                        });*/
-                        return Text(
-                            radio[index].displayResult.toString() == "UNDEFINED"
-                                ? ""
-                                : radio[index].displayResult.toString(),
-                            style: TextStyle(
-                                fontSize: 13.0,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black));
+
+
+                           /* ref.read(addResultNotifier.notifier).addResult( {
+                              "test_id": radio[index].testId.toString(),
+                              "spend_time": displayTime,
+                              "status": radio[index].displayResult.toString(),
+                              "flg": 1
+                            });*/
+                            return Text(
+                                radio[index].displayResult.toString() == "UNDEFINED"
+                                    ? ""
+                                    : radio[index].displayResult.toString(),
+                                style: TextStyle(
+                                    fontSize: 13.0,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.black));
 
 
 
-                  }()),
-                ),
+                      }()),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ));
+            )),
+      ],
+    );
   }
 
   void _scrollDown() {

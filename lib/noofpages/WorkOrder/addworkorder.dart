@@ -41,6 +41,7 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
 
   List<WorkorderList> listofproduct = [];
   List<ProductList> listofproduct1 = [];
+  List<WorkorderList> listofproduct2 = [];
 
   WorkorderList ? lWorkorder;
 
@@ -66,7 +67,7 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
   // var selectRole = "Created";
   List<String> status = [
    // 'Created',
-   // 'Verified',
+    'Verified',
     'Approved',
     'Rejected',
   ];
@@ -113,13 +114,17 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
         controllerStartserial.text = widget.workorderModel.startSerialNo!;
         controllerEndserial.text = widget.workorderModel.endSerialNo!;
         controllerStatus.text = widget.workorderModel.status!;
+        controllerRemarks.text = widget.workorderModel.remarks!;
         isSelected = widget.workorderModel.flg == 0 ? false : true;
 
-        if(controllerStatus.text == "Created"){
-          widget.workorderModel.status = "Approved";
-        }else{
-          widget.workorderModel.status = controllerStatus.text;
+        if(Helper.sharedRoleId != "Test Admin"){
+          if(controllerStatus.text == "Created"){
+            widget.workorderModel.status = "Verified";
+          }else{
+            widget.workorderModel.status = controllerStatus.text;
+          }
         }
+
 
 
       }
@@ -497,7 +502,8 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                 ],
               ),
             ),
-           ( Helper.sharedRoleId == "Test Admin" && Helper.furious == "ADMIN")? Padding(
+           ( Helper.sharedRoleId == "Test Admin" && Helper.furious == "ADMIN")?
+           Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
                 children: [
@@ -524,7 +530,8 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                   ),
                 ],
               ),
-            ):Padding(
+            )
+               :Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
                 children: [
@@ -545,7 +552,14 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                 ],
               ),
             ),
-            SizedBox(
+            widget.workorderModel.status.toString() == "Approved"
+                ||  widget.workorderModel.status.toString() == "Verified"
+                ||  widget.workorderModel.status.toString() == "Rejected"  ?
+           Column(
+              children: [
+
+              ],
+            ):  SizedBox(
               height: 70,
               child: Card(
                 elevation: 10,
@@ -576,14 +590,10 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                         }
                       }*/
 
-                // print(datamodels);
-                // print("product length2====> ${products.length}");
-                // print("product value2====> ${products}");
+
                 child: Consumer(builder: (context, ref, child) {
                   return ref.watch(getProductNotifier).when(data: (data) {
-                   /* for(int i=0; i<data.length; i++){
-                      if(data[i].status ==)
-                    }*/
+
 
                     if (isValue == true) {
                       selectedProduct = data[0].productName.toString();
@@ -593,19 +603,13 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                         Productmodel val = Productmodel(
                             productName: data[i].productName,
                             quantity: data[i].quantity,
-                          status: data[i].status
+                            status: data[i].status
                         );
                         if(val.status == "Approved"){
                           products.add(val.productName.toString());
                           selectedProduct = products[0];
 
                         }
-
-
-
-
-
-
                       }
                     }
                     for (var i in data) {
@@ -621,38 +625,38 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                         Expanded(
                           flex: 2,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child:  widget.workorderModel.workorderCode == ""
-                            ? DropdownButton(
-                              icon: Icon(Icons.keyboard_arrow_down),
-                              items: products.map<DropdownMenuItem<String>>(
-                                  (String setlist) {
-                                return DropdownMenuItem<String>(
-                                  value: setlist,
-                                  child: Text(setlist.toString()),
-                                );
-                              }).toList(),
-                              value: selectedProduct,
-                              onChanged: (item) {
-                                ref.read(dropDownChange.notifier).state =
-                                    !ref.watch(dropDownChange);
-                                if (isValue == true) {
-                                  isValue = false;
-                                }
-                                if (isValue == false) {
-                                  selectedProduct = item.toString();
-                                  for (int i = 0; i < productlist.length; i++) {
-                                    if (productlist[i]['productName'] == selectedProduct) {
-                                      controllerProductQuantity.text =
-                                          productlist[i]['quantity'].toString();
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child:  widget.workorderModel.workorderCode == ""
+                                  ? DropdownButton(
+                                icon: Icon(Icons.keyboard_arrow_down),
+                                items: products.map<DropdownMenuItem<String>>(
+                                        (String setlist) {
+                                      return DropdownMenuItem<String>(
+                                        value: setlist,
+                                        child: Text(setlist.toString()),
+                                      );
+                                    }).toList(),
+                                value: selectedProduct,
+                                onChanged: (item) {
+                                  ref.read(dropDownChange.notifier).state =
+                                  !ref.watch(dropDownChange);
+                                  if (isValue == true) {
+                                    isValue = false;
+                                  }
+                                  if (isValue == false) {
+                                    selectedProduct = item.toString();
+                                    for (int i = 0; i < productlist.length; i++) {
+                                      if (productlist[i]['productName'] == selectedProduct) {
+                                        controllerProductQuantity.text =
+                                            productlist[i]['quantity'].toString();
+                                      }
                                     }
                                   }
-                                }
 
-                                print("ITEM.TOSTRING =====>$item");
-                              },
-                            )
-                                : Center(child: Text(updatepoduct))
+                                  print("ITEM.TOSTRING =====>$item");
+                                },
+                              )
+                                  : Center(child: Text(updatepoduct))
                           ),
                         ),
                         Expanded(
@@ -678,7 +682,7 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                                   child: TextField(
                                     controller: controllerProductQuantity,
                                     decoration: InputDecoration(
-                                        /* border: OutlineInputBorder(
+                                      /* border: OutlineInputBorder(
                                        borderRadius: BorderRadius.circular(8.0),
                                      ),*/
                                         filled: true,
@@ -793,17 +797,17 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                                     quantity: int.parse(controllerProductQuantity.text),
                                     start_serial_no: controllerProductStartserial.text,
                                     end_serial_no: controllerProductEndserial.text,
-                                  status: "Created",
-                                  flg:1
+                                    status: "Created",
+                                    flg:1
                                 );
                                 listofproduct.add(pro);
 
 
                                 ProductList pro1 = ProductList(
-                                  productname: selectedProduct,
-                                  quantity: double.parse(controllerProductQuantity.text),
-                                  startserial: controllerProductStartserial.text,
-                                  endserial: controllerProductEndserial.text
+                                    productname: selectedProduct,
+                                    quantity: double.parse(controllerProductQuantity.text),
+                                    startserial: controllerProductStartserial.text,
+                                    endserial: controllerProductEndserial.text
                                 );
                                 listofproduct1.add(pro1);
 
@@ -829,10 +833,27 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                           onPressed: () {
                             if(productvalidation()){
                               setState(() {
-                                  widget.workorderModel.woList![val!].product_name = selectedProduct;
-                                  widget.workorderModel.woList![val!].quantity = int.parse(controllerProductQuantity.text);
-                                  widget.workorderModel.woList![val!].start_serial_no = controllerProductStartserial.text;
-                                  widget.workorderModel.woList![val!].end_serial_no = controllerProductEndserial.text;
+                                widget.workorderModel.woList![val!].product_name = selectedProduct;
+                                widget.workorderModel.woList![val!].quantity = int.parse(controllerProductQuantity.text);
+                                widget.workorderModel.woList![val!].start_serial_no = controllerProductStartserial.text;
+                                widget.workorderModel.woList![val!].end_serial_no = controllerProductEndserial.text;
+
+                                WorkorderList pro = WorkorderList(
+                                    id: widget.workorderModel.woList![val!].id,
+                                    workorder_id: widget.workorderModel.woList![val!].workorder_id,
+                                    product_id: widget.workorderModel.woList![val!].product_id,
+                                    product_name: widget.workorderModel.woList![val!].product_name,
+                                    quantity: int.parse(controllerProductQuantity.text),
+                                    start_serial_no: controllerProductStartserial.text,
+                                    end_serial_no: controllerProductEndserial.text,
+                                    status: widget.workorderModel.woList![val!].status,
+                                    testing_status: widget.workorderModel.woList![val!].testing_status,
+                                    start_date: widget.workorderModel.woList![val!].start_date,
+                                    end_date: widget.workorderModel.woList![val!].end_date,
+                                    flg:1
+                                );
+                                listofproduct2.add(pro);
+
 
                                 clearproductText();
                               });
@@ -1052,7 +1073,7 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                                     "start_serial_no":
                                     controllerStartserial.text,
                                     "end_serial_no": controllerEndserial.text,
-                                    "status": widget.workorderModel.status,
+                                    "status": "Created",
                                     "created_by": 1,
                                     "updated_by": 1,
                                     "created_date": null,
@@ -1121,7 +1142,8 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                               "created_date": null,
                               "updated_date": null,
                               "flg": isSelected ? 1 : 0,
-                              "remarks": controllerRemarks.text
+                              "remarks": controllerRemarks.text,
+                              "woList": (listofproduct2) ,
                             });
                             clearText();
                           }),

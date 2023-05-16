@@ -614,11 +614,11 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                                     });
                                                   },
                                                   child: TestTaskListItems(
-                                                      Productname: datum[index].taskId.toString(),
-                                                      productcode: datum[index].assignId.toString(),
-                                                      quantity: datum[index].quantity.toString(),
-                                                      assignedby: datum[index].createdBy.toString(),
-                                                      status: datum[index].status.toString(),
+                                                      Productname: datum[index].product.productName.toString(),
+                                                      productcode: datum[index].product.productCode.toString(),
+                                                      quantity: datum[index].product.quantity.toString(),
+                                                      assignedby: datum[index].product.createdBy.toString(),
+                                                      status: datum[index].product.status.toString(),
 
 
                                                   ),
