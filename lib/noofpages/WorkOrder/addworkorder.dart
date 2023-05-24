@@ -74,6 +74,8 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
 
   int? val;
 
+  var productquantity = 0;
+  var productquantity_1 = 0;
   @override
   void initState() {
     super.initState();
@@ -790,6 +792,7 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                             if(productvalidation()){
                               setState(() {
                                 Helper.editvalue = "notpassvalue";
+
                                 WorkorderList pro = WorkorderList(
                                     id: 0,
                                     workorder_id: 0,
@@ -800,19 +803,46 @@ class _AddWorkOrderState extends ConsumerState<AddWorkOrder> {
                                     status: "Created",
                                     flg:1
                                 );
-                                listofproduct.add(pro);
+
+                                if(controllerProductQuantity.text.isNotEmpty){
+                                  if(productquantity.toString().contains("-")){
+
+                                    productquantity =  int.parse(productquantity.toString().split("-")[1]);
+                                  }
+                                  productquantity = productquantity + int.parse(controllerProductQuantity.text);
+                                }
+                                print("before popup---> ${productquantity}");
+                                if(int.parse(controllerQuantity.text) < productquantity ){
+
+                                  final snackBar = SnackBar(
+                                    content: const Text('product quantity is excess than workorder quantity'),
+                                    backgroundColor: (Colors.black),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  productquantity =  int.parse(controllerProductQuantity.text) - (productquantity);
+                                  print("after popup---> ${productquantity}");
+                                }else{
+                                  listofproduct.add(pro);
+                                  ProductList pro1 = ProductList(
+                                      productname: selectedProduct,
+                                      quantity: double.parse(controllerProductQuantity.text),
+                                      startserial: controllerProductStartserial.text,
+                                      endserial: controllerProductEndserial.text
+                                  );
+                                  listofproduct1.add(pro1);
 
 
-                                ProductList pro1 = ProductList(
-                                    productname: selectedProduct,
-                                    quantity: double.parse(controllerProductQuantity.text),
-                                    startserial: controllerProductStartserial.text,
-                                    endserial: controllerProductEndserial.text
-                                );
-                                listofproduct1.add(pro1);
+                                  clearproductText();
+                                }
 
 
-                                clearproductText();
+
+
+
+
+
+
+
                               });
 
 

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:production_automation_testing/Helper/helper.dart';
 import 'package:production_automation_testing/Model/APIModel/productcount.dart';
 import 'package:production_automation_testing/Model/APIModel/templatemodel.dart';
@@ -308,7 +310,7 @@ class ApiProider {
   Future<dynamic> getWorkOrders() async {
     List<WorkorderModel> finalData = [];
     final response =
-        await http.get(Uri.parse('http://192.168.1.51/PAT_API/api/workorder'));
+        await http.get(Uri.parse('http://192.168.1.47/PAT_API/api/workorder'));
     dynamic result = jsonDecode(response.body);
     List<WorkorderList> wo_list = [];
 
@@ -731,7 +733,7 @@ class ApiProider {
     try {
       String json = jsonEncode(user);
       final response = await _dio.post(
-        "http://192.168.1.55/PAT_API/api/User",
+        "http://192.168.1.47/PAT_API/api/User",
         data: jsonEncode(user),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -747,7 +749,7 @@ class ApiProider {
   Future<dynamic> updatetUser(var user) async {
     try {
       final response = await _dio.post(
-        "http://192.168.1.55/PAT_API/api/User/Update",
+        "http://192.168.1.47/PAT_API/api/User/Update",
         data: jsonEncode(user),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -1036,7 +1038,7 @@ class ApiProider {
   getTesterreport(var userid, var startdate, var enddate) async {
     List<TesterReportModel> finalData = [];
     final response = await http.get(Uri.parse(
-        "http://192.168.1.55/PAT_API/api/TestingReport?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
+      "http://192.168.1.55/PAT_API/api/TestingReport/Taskwisereport?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
     var result = jsonDecode(response.body);
     if (result == "No Reords Found") {
       return finalData = [];
@@ -1059,6 +1061,8 @@ class ApiProider {
           testedDate: result[i]['testedDate'],
           testname: result[i]['testName'],
           testResult: result[i]['testResult'],
+            testStage: result[i]['testStage'],
+          serial_no: result[i]['serial_no'],
         );
         finalData.add(testerReportModel);
       }
@@ -1067,6 +1071,8 @@ class ApiProider {
 
     return finalData;
   }
+
+
 
   //****************************************workorderbased report *****************************************************************
 
@@ -1101,6 +1107,127 @@ class ApiProider {
     }
 
     return finalData;
+  }
+
+  //****************************************workorderbased report *****************************************************************
+
+  getNewWorkorderbasedreport(var workorderid) async {
+    List<NewWorkorderbasedReport> finalData = [];
+    final response = await http.get(Uri.parse(
+      "http://192.168.1.55/PAT_API/api/WOReport/WOReport?Workorderid=${workorderid}"));
+    var result = jsonDecode(response.body);
+    if (result == "No Reords Found") {
+      return finalData = [];
+    }else{
+      for (int i = 0; i < result.length; i++) {
+        NewWorkorderbasedReport testerReportModel = NewWorkorderbasedReport(
+          workorderId: result[i]['workorder_id'],
+          workOrder: result[i]['workOrder'],
+          productId: result[i]['product_id'],
+          productName: result[i]['product_name'],
+          productCode: result[i]['product_code'],
+          startSerialNo: result[i]['start_serial_no'],
+          endSerialNo: result[i]['end_serial_no'],
+          spendTime: result[i]['spend_time'],
+          hoursTaken: result[i]['hours_taken'],
+          macAddress: result[i]['mac_address'],
+          testType: result[i]['test_type'],
+          assignedBy: result[i]['assignedBy'],
+          testedBy: result[i]['testedBy'],
+          testedDate: result[i]['testedDate'],
+          testName: result[i]['testName'],
+          testResult: result[i]['testResult'],
+          testStage: result[i]['testStage'],
+          serialNo: result[i]['serial_no'],
+
+        );
+        finalData.add(testerReportModel);
+      }
+    }
+
+    return finalData;
+  }
+
+  //****************************************workorderbased report *****************************************************************
+  var gg;
+
+
+  Future<void> downloadExcelFile(String url, String savePath) async {
+    final response = await http.get(Uri.parse(url));
+    final file = File(savePath);
+
+
+
+    await file.writeAsBytes(response.bodyBytes);
+
+  }
+
+  void openExcelFile(String filePath) {
+
+    OpenFile.open(filePath);
+
+  }
+
+
+
+  Future<void> _prepareSaveDir() async {
+
+    var _localPath = (await _findLocalPath())!;
+
+
+
+    print("_localPath------------------> ${_localPath}");
+    final savedDir = Directory(_localPath);
+    bool hasExisted = await savedDir.exists();
+    if (!hasExisted) {
+      savedDir.create();
+    }
+  }
+
+  Future<String?> _findLocalPath() async {
+    var directory = await getApplicationDocumentsDirectory();
+    gg = directory.path + Platform.pathSeparator + 'Download';
+    print("ggg-----> ${gg}");
+    return directory.path + Platform.pathSeparator + 'Download';
+
+  }
+
+  getWorkorderbasedexcelreport(var workorderid, var productid, var serial_no) async {
+    final response = await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/WOReport/WOReportExcelExport?Workorderid=$workorderid&&Productid=$productid&&serialno=$serial_no"));
+    var result = jsonDecode(response.body);
+
+    _prepareSaveDir();
+    print("ggg111111111-----> ${gg}");
+
+    Future.delayed(const Duration(milliseconds: 700), () {
+      var apiLink = result;
+      var savePath = gg  + "\\"  "WOReportExcelExport_100_17-05-2023.xls" ;
+      downloadExcelFile(apiLink!, savePath!);
+
+      final downloadedFilePath = savePath;
+
+      return openExcelFile(downloadedFilePath!);
+    });
+
+
+
+  }
+
+
+  getTesterexcelreport(var productid, var serial_no) async {
+    final response = await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/TestingReport/TestingReportExcelExport?Productid=$productid&serialno=$serial_no"));
+    var result = jsonDecode(response.body);
+
+    _prepareSaveDir();
+
+    var apiLink = result;
+    var savePath = gg  + "\\"  "TestingReportExcelExport_252_18-05-2023.xls" ;
+    downloadExcelFile(apiLink!, savePath!);
+
+    final downloadedFilePath = savePath;
+
+    return openExcelFile(downloadedFilePath!);
+
   }
 
 //******************************************Read excel by passing productid*********************************************

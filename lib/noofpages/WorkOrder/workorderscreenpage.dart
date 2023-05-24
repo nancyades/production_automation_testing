@@ -85,6 +85,9 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
     });
   }
 
+  List<WorkorderModel> glossarListOnSearch = [];
+  TextEditingController _textEditingController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     var queryData = MediaQuery.of(context);
@@ -1091,6 +1094,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                   //MediaQuery.of(context).size.width * 0.25,
                                   height: 30,
                                   child: TextField(
+                                      controller: _textEditingController,
                                       decoration: InputDecoration(
                                         hintText: 'search',
                                         hintStyle: TextStyle(
@@ -1102,17 +1106,16 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                       style: TextStyle(
                                         color: Colors.black,
                                       ),
-                                      onChanged: (String query) {
-                                        final suggestions = datamodels!
-                                            .where((works) {
-                                          final workordercode = works
-                                              .workorder_code!.toLowerCase();
-                                          final input = query.toLowerCase();
-                                          return workordercode.contains(
-                                              input);
-                                        }).toList();
-                                        setState(() =>
-                                        datamodels = suggestions);
+                                      onChanged: (value) {
+
+                                        setState(() {
+                                          glossarListOnSearch = datum
+                                              .where((element) => element.workorderCode!
+                                              .toLowerCase()
+                                              .contains(
+                                              value.toLowerCase()))
+                                              .toList();
+                                        });
                                       }
                                     // SearchWorkorders,
                                   ),
@@ -1187,6 +1190,15 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                                   color: Colors.black)),
                                         ),
                                       ),
+                                      Expanded(
+                                        child: Center(
+                                          child: Text("Created Date",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15.0,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
                                       /* Center(
                                       child: Icon(Icons.search)
                                     ),*/
@@ -1225,26 +1237,75 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                                 color: Color(0xFFd9d8d7),
                                                 //Color(0xffcbdff2),
                                                 elevation: 15,
-                                                child: ListView.builder(
+                                                child: _textEditingController
+                                                    .text.isNotEmpty &&
+                                                    glossarListOnSearch.isEmpty
+                                                    ? Column(
+                                                  children: [
+                                                    Align(
+                                                      alignment:
+                                                      Alignment.center,
+                                                      child: Padding(
+                                                        padding:
+                                                        const EdgeInsets
+                                                            .fromLTRB(
+                                                            0, 50, 0, 0),
+                                                        child: Text(
+                                                          'No results',
+                                                          style: TextStyle(
+                                                              fontFamily:
+                                                              'Avenir',
+                                                              fontSize: 22,
+                                                              color: Color(
+                                                                  0xff848484)),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                )
+                                              :  ListView.builder(
                                                     itemCount: () {
                                                       if (all == true) {
-                                                        return datum.length;
+                                                        return _textEditingController
+                                                            .text.isNotEmpty
+                                                            ? glossarListOnSearch
+                                                            .length
+                                                            : datum.length;
                                                       } else
                                                       if (create == true) {
-                                                        return createdvalue
-                                                            .length;
+                                                        return _textEditingController
+                                                            .text.isNotEmpty
+                                                            ? glossarListOnSearch
+                                                            .length
+                                                            :  createdvalue.length;
+
                                                       } else
                                                       if (verify == true) {
-                                                        return verifiedvalue
+                                                        return _textEditingController
+                                                            .text.isNotEmpty
+                                                            ? glossarListOnSearch
+                                                            .length
+                                                            :  verifiedvalue
                                                             .length;
+
                                                       } else
                                                       if (approve == true) {
-                                                        return approvedvalue
+                                                        return _textEditingController
+                                                            .text.isNotEmpty
+                                                            ? glossarListOnSearch
+                                                            .length
+                                                            :  approvedvalue
                                                             .length;
+
                                                       } else
                                                       if (reject == true) {
-                                                        return rejectedvalue
+                                                        return _textEditingController
+                                                            .text.isNotEmpty
+                                                            ? glossarListOnSearch
+                                                            .length
+                                                            : rejectedvalue
                                                             .length;
+
                                                       } else {
                                                         return 0;
                                                       }
@@ -1363,27 +1424,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(items[index].workorderCode
-                                  .toString(),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 10.0,
-                                      color: Colors.black)),
-                            ),
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: Text(items[index].quantity.toString(),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 10.0,
-                                      color: Colors.black)),
-                            ),
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: Text(items[index].startSerialNo
-                                  .toString(),
+                              child: Text( _textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].workorderCode!.toString()
+                                  : items[index].workorderCode.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1393,7 +1437,44 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           Expanded(
                             child: Center(
                               child: Text(
-                                  items[index].endSerialNo.toString(),
+                                  _textEditingController.text.isNotEmpty
+                                      ? glossarListOnSearch[index].quantity!.toString()
+                                      : items[index].quantity.toString(),
+
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 10.0,
+                                      color: Colors.black)),
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].startSerialNo!.toString()
+                                  : items[index].startSerialNo.toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 10.0,
+                                      color: Colors.black)),
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].endSerialNo!.toString()
+                                  : items[index].endSerialNo.toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 10.0,
+                                      color: Colors.black)),
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].createdDate!.toString().split(" ")[0]
+                                  : items[index].createdDate.toString().split(" ")[0],
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1541,8 +1622,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(createdvalue[index].workorderCode
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].endSerialNo!.toString()
+                                  :  createdvalue[index].workorderCode.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1551,8 +1634,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(createdvalue[index].quantity
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].quantity!.toString()
+                                  :  createdvalue[index].quantity.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1561,8 +1646,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(createdvalue[index].startSerialNo
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].startSerialNo!.toString()
+                                  :  createdvalue[index].startSerialNo.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1572,7 +1659,23 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           Expanded(
                             child: Center(
                               child: Text(
-                                  createdvalue[index].endSerialNo.toString(),
+                                  _textEditingController.text.isNotEmpty
+                                      ? glossarListOnSearch[index].endSerialNo!.toString()
+                                      :  createdvalue[index].endSerialNo.toString(),
+
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 10.0,
+                                      color: Colors.black)),
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                  _textEditingController.text.isNotEmpty
+                                      ? glossarListOnSearch[index].createdDate!.toString().split(" ")[0]
+                                      :  createdvalue[index].createdDate.toString().split(" ")[0],
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1703,8 +1806,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(verifiedvalue[index].workorderCode
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].workorderCode!.toString()
+                                  :  verifiedvalue[index].workorderCode.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1713,8 +1818,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(verifiedvalue[index].quantity
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].quantity!.toString()
+                                  :  verifiedvalue[index].quantity.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1723,8 +1830,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(verifiedvalue[index].startSerialNo
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].startSerialNo!.toString()
+                                  :  verifiedvalue[index].startSerialNo.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1733,8 +1842,22 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(
-                                  verifiedvalue[index].endSerialNo.toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].endSerialNo!.toString()
+                                  :  verifiedvalue[index].endSerialNo.toString(),
+
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 10.0,
+                                      color: Colors.black)),
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].createdDate!.toString().split(" ")[0]
+                                  :  verifiedvalue[index].createdDate.toString().split(" ")[0],
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1867,8 +1990,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(approvedvalue[index].workorderCode
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].workorderCode!.toString()
+                                  :    approvedvalue[index].workorderCode.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1877,8 +2002,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(approvedvalue[index].quantity
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].quantity!.toString()
+                                  :    approvedvalue[index].quantity.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1887,8 +2014,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(approvedvalue[index].startSerialNo
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].startSerialNo!.toString()
+                                  :    approvedvalue[index].startSerialNo.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -1897,8 +2026,22 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(
-                                  approvedvalue[index].endSerialNo.toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].endSerialNo!.toString()
+                                  :    approvedvalue[index].endSerialNo.toString(),
+
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 10.0,
+                                      color: Colors.black)),
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].endSerialNo!.toString().split(" ")[0]
+                                  :  approvedvalue[index].createdDate.toString().split(" ")[0],
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -2029,8 +2172,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(rejectedvalue[index].workorderCode
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].workorderCode!.toString()
+                                  :  rejectedvalue[index].workorderCode.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -2039,8 +2184,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(rejectedvalue[index].quantity
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].quantity!.toString()
+                                  :  rejectedvalue[index].quantity.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -2049,8 +2196,10 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text(rejectedvalue[index].startSerialNo
-                                  .toString(),
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].startSerialNo!.toString()
+                                  :  rejectedvalue[index].startSerialNo.toString(),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,
@@ -2060,7 +2209,22 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           Expanded(
                             child: Center(
                               child: Text(
-                                  rejectedvalue[index].endSerialNo.toString(),
+                                  _textEditingController.text.isNotEmpty
+                                      ? glossarListOnSearch[index].endSerialNo!.toString()
+                                      :  rejectedvalue[index].endSerialNo.toString(),
+
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 10.0,
+                                      color: Colors.black)),
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(_textEditingController.text.isNotEmpty
+                                  ? glossarListOnSearch[index].createdDate.toString().split(" ")[0]
+                                  :   rejectedvalue[index].createdDate.toString().split(" ")[0],
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10.0,

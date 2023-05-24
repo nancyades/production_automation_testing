@@ -64,6 +64,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
   List<radTest> items = <radTest>[];
   int groupValue = 0;
+  int indices = 0;
 
   String rType = "";
 
@@ -432,6 +433,18 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                         fontWeight:
                                                             FontWeight.bold),
                                                   ),
+                                                ),
+                                                Text(
+                                                 " ${"Note:  " +
+                                                      startserialno.toString() +
+                                                    "-"
+                                                    + endserialno.toString()
+                                                  }",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                      FontWeight.w500,
+                                                      fontSize: 10.0,
+                                                      color: Colors.black),
                                                 ),
                                               ],
                                             ),
@@ -1084,6 +1097,10 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                             "status": uniquelist[i].status.toString(),
                                             "flg": 1
                                           });
+                                        }
+                                        generalController.clear();
+                                        for(int i=0;i<100;i++){
+                                          generalController.add(TextEditingController(text: ""));
                                         }
                                       }
 
@@ -3207,6 +3224,10 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     child: (){
                       return  Consumer(
                         builder: (context, ref, child) {
+
+
+                             indices = index;
+
                           ref.watch(counterModelProvider);
                           return Container(
                               child: (radio[index].displayResult.toString() == "PASS" ||

@@ -1,14 +1,20 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:production_automation_testing/Model/APIModel/usermodel.dart';
 import 'package:production_automation_testing/Model/APIModel/workorderbasedreport.dart';
 import 'package:production_automation_testing/Model/APIModel/workordermodel.dart';
 import 'package:production_automation_testing/Model/APIModel/workorderprogressreport.dart';
 import 'package:production_automation_testing/Provider/changenotifier/widget_notifier.dart';
 import 'package:production_automation_testing/Provider/excelprovider.dart';
+import 'package:production_automation_testing/Provider/post_provider/testerexcel_provider.dart';
+import 'package:production_automation_testing/Provider/post_provider/workorderbasedexcel_provider.dart';
 import 'package:production_automation_testing/Provider/reportprovider/testerreportprovider.dart';
 import 'package:production_automation_testing/Provider/reportprovider/workorderbasedreportprovider.dart';
 import 'package:production_automation_testing/Provider/reportprovider/workorderprogressreportprovider.dart';
@@ -17,6 +23,8 @@ import '../../Helper/AppClass.dart';
 import '../../Model/APIModel/productmodel.dart';
 import '../../Model/APIModel/productreport.dart';
 import '../../Model/APIModel/testerreport.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
 
 class Reportscreen extends ConsumerStatefulWidget {
   const Reportscreen({Key? key}) : super(key: key);
@@ -56,6 +64,21 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
   var selectUsers = "";
   var selectworkorder = "";
 
+  List<NewWorkorderbasedReport> glossarListOnSearch_1 = [];
+  TextEditingController _textEditing_1Controller = TextEditingController();
+  List<NewWorkorderbasedReport> workorderbased = [];
+
+  List<TesterReportModel> glossarListOnSearch_2 = [];
+  TextEditingController _textEditing_2Controller = TextEditingController();
+  List<TesterReportModel> Tester = [];
+
+  List<WorkorderProgressReportModel> glossarListOnSearch_3 = [];
+  TextEditingController _textEditing_3Controller = TextEditingController();
+  List<WorkorderProgressReportModel> workorderprogress = [];
+
+
+
+
 
   void _changeColor(int index) {
     setState(() {
@@ -94,12 +117,63 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
   @override
   void initState(){
     ref.refresh(getProductReportNotifier);
+
   }
+
+
+  String? filePath;
+
+  String? _localPath;
+  late bool _permissionReady;
+
+
+  var gg;
+
+
+
+
+  Future<void> downloadExcelFile(String url, String savePath) async {
+    final response = await http.get(Uri.parse(url));
+    final file = File(savePath);
+
+     file.writeAsBytes(response.bodyBytes);
+  }
+
+  void openExcelFile(String filePath) {
+    OpenFile.open(filePath);
+  }
+
+
+  Future<void> _prepareSaveDir() async {
+
+      _localPath = (await _findLocalPath())!;
+
+
+
+    print("_localPath------------------> ${_localPath!}");
+    final savedDir = Directory(_localPath!);
+    bool hasExisted = await savedDir.exists();
+    if (!hasExisted) {
+      savedDir.create();
+    }
+  }
+
+  Future<String?> _findLocalPath() async {
+      var directory = await getApplicationDocumentsDirectory();
+       gg = directory.path + Platform.pathSeparator + 'Download';
+      return directory.path + Platform.pathSeparator + 'Download';
+
+  }
+
+   String? apiLink;
+   String? savePath;
+
 
 
 
   @override
   Widget build(BuildContext context) {
+    _prepareSaveDir();
     print("currntindex-----> $_currentColorIndex");
     return Column(children: [
       Card(
@@ -460,8 +534,16 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                               .height *
                               0.05,
                           child: TextField(
+                            controller: _textEditing_3Controller,
                             onChanged: (value) {
-                              //onItemChanged(value);
+                              setState(() {
+                                glossarListOnSearch_3 = workorderprogress
+                                    .where((element) => element.workOrder!
+                                    .toLowerCase()
+                                    .contains(
+                                    value.toLowerCase()))
+                                    .toList();
+                              });
                             },
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -807,9 +889,39 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                         top: 10.0),
                                     child: ref.watch(workorderProgressReportNotifier).id.when(
                                         data: (workorder) {
-                                          return ListView.builder(
-                                              itemCount: workorder
-                                                  .length,
+                                          return _textEditing_3Controller
+                                              .text.isNotEmpty &&
+                                              glossarListOnSearch_3.isEmpty
+                                              ? Column(
+                                            children: [
+                                              Align(
+                                                alignment:
+                                                Alignment.center,
+                                                child: Padding(
+                                                  padding:
+                                                  const EdgeInsets
+                                                      .fromLTRB(
+                                                      0, 50, 0, 0),
+                                                  child: Text(
+                                                    'No results',
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                        'Avenir',
+                                                        fontSize: 22,
+                                                        color: Color(
+                                                            0xff848484)),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                           : ListView.builder(
+                                              itemCount: _textEditing_3Controller
+                                                  .text.isNotEmpty
+                                                  ? glossarListOnSearch_3
+                                                  .length
+                                                  : workorder.length,
+
                                               // shrinkWrap: true,
                                               controller:
                                               ScrollController(),
@@ -895,8 +1007,16 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                               .height *
                               0.05,
                           child: TextField(
+                            controller: _textEditing_2Controller,
                             onChanged: (value) {
-                              //onItemChanged(value);
+                              setState(() {
+                                glossarListOnSearch_2 = Tester
+                                    .where((element) => element.productName!
+                                    .toLowerCase()
+                                    .contains(
+                                    value.toLowerCase()))
+                                    .toList();
+                              });
                             },
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -1200,15 +1320,46 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                               Consumer(builder:
                                   (context, snapshot, child) {
                                     return ref.watch(testerReportNotifier).id.when(data: (tester){
+                                      Tester = tester;
                                       return Expanded(
                                         child: Padding(
                                           padding: const EdgeInsets.only(
                                               top: 10.0),
-                                          child: ListView.builder(
-                                              itemCount: tester.length,
+                                          child: _textEditing_2Controller
+                                              .text.isNotEmpty &&
+                                              glossarListOnSearch_2.isEmpty
+                                              ? Column(
+                                            children: [
+                                              Align(
+                                                alignment:
+                                                Alignment.center,
+                                                child: Padding(
+                                                  padding:
+                                                  const EdgeInsets
+                                                      .fromLTRB(
+                                                      0, 50, 0, 0),
+                                                  child: Text(
+                                                    'No results',
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                        'Avenir',
+                                                        fontSize: 22,
+                                                        color: Color(
+                                                            0xff848484)),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                          : ListView.builder(
+                                              itemCount:  _textEditing_2Controller
+                                                  .text.isNotEmpty
+                                                  ? glossarListOnSearch_2
+                                                  .length
+                                                  :  tester.length,
+
                                               // shrinkWrap: true,
-                                              controller:
-                                              ScrollController(),
+                                              controller: ScrollController(),
                                               itemBuilder:
                                                   (context, index) {
                                                 return getTestuserdetails(tester, index);
@@ -1305,8 +1456,16 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                               .height *
                               0.05,
                           child: TextField(
+                            controller: _textEditing_1Controller,
                             onChanged: (value) {
-                              //onItemChanged(value);
+                              setState(() {
+                                glossarListOnSearch_1 = workorderbased
+                                    .where((element) => element.productName!
+                                    .toLowerCase()
+                                    .contains(
+                                    value.toLowerCase()))
+                                    .toList();
+                              });
                             },
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -1347,7 +1506,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                               for(int i=0; i<doll.length; i++){
                                 if(selectworkorder == doll[i].workorderCode){
                                   ref.read(workorderbasedReportNotifier.notifier).workorderbasedReport(doll[i].workorderId);
-                                  print("print dolllllll-----> ${doll[i].workorderId}");
+
                                 }
 
                               }
@@ -1485,13 +1644,45 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                               Consumer(builder:
                                   (context, snapshot, child) {
                                return ref.watch(workorderbasedReportNotifier).id.when(data: (data){
+                                 workorderbased = data;
                                   return Expanded(
                                     child: Padding(
                                       padding:
                                       const EdgeInsets.only(
                                           top: 10.0),
-                                      child: ListView.builder(
-                                          itemCount: data.length,
+                                      child: _textEditing_1Controller
+                                          .text.isNotEmpty &&
+                                          glossarListOnSearch_1.isEmpty
+                                          ? Column(
+                                        children: [
+                                          Align(
+                                            alignment:
+                                            Alignment.center,
+                                            child: Padding(
+                                              padding:
+                                              const EdgeInsets
+                                                  .fromLTRB(
+                                                  0, 50, 0, 0),
+                                              child: Text(
+                                                'No results',
+                                                style: TextStyle(
+                                                    fontFamily:
+                                                    'Avenir',
+                                                    fontSize: 22,
+                                                    color: Color(
+                                                        0xff848484)),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                      : ListView.builder(
+                                          itemCount: _textEditing_1Controller
+                                              .text.isNotEmpty
+                                              ? glossarListOnSearch_1
+                                              .length
+                                              : data.length,
+
                                           // shrinkWrap: true,
                                           controller:
                                           ScrollController(),
@@ -2441,7 +2632,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                     children: [
                       Expanded(
                         child: Center(
-                          child: Text(mdata[index].workOrder.toString(),
+                          child: Text(_textEditing_3Controller.text.isNotEmpty
+                              ? glossarListOnSearch_3[index].workOrder.toString()
+                              :  mdata[index].workOrder.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2450,7 +2644,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mdata[index].workOrderQty.toString(),
+                          child: Text(_textEditing_3Controller.text.isNotEmpty
+                              ? glossarListOnSearch_3[index].workOrderQty.toString()
+                              :  mdata[index].workOrderQty.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2459,8 +2656,11 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mdata[index].startingSerialNumber
-                              .toString(),
+                          child: Text(_textEditing_3Controller.text.isNotEmpty
+                              ? glossarListOnSearch_3[index].startingSerialNumber.toString()
+                              :  mdata[index].startingSerialNumber.toString(),
+
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2469,8 +2669,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mdata[index].endingSerialNumber
-                              .toString(),
+                          child: Text(_textEditing_3Controller.text.isNotEmpty
+                              ? glossarListOnSearch_3[index].endingSerialNumber.toString()
+                              :  mdata[index].endingSerialNumber.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2480,7 +2682,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
 
                       Expanded(
                         child: Center(
-                          child: Text(mdata[index].totalTestUnit.toString(),
+                          child: Text(_textEditing_3Controller.text.isNotEmpty
+                              ? glossarListOnSearch_3[index].totalTestUnit.toString()
+                              :  mdata[index].totalTestUnit.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2489,7 +2694,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mdata[index].qtyPassed.toString(),
+                          child: Text(_textEditing_3Controller.text.isNotEmpty
+                              ? glossarListOnSearch_3[index].qtyPassed.toString()
+                              :  mdata[index].qtyPassed.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2498,7 +2706,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mdata[index].qtyFailed.toString(),
+                          child: Text(_textEditing_3Controller.text.isNotEmpty
+                              ? glossarListOnSearch_3[index].qtyFailed.toString()
+                              :  mdata[index].qtyFailed.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2507,9 +2718,20 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mdata[index].qtyPassed.toString() == "0"
-                              && mdata[index].qtyFailed.toString() == "0" ? ""
-                              : mdata[index].testStartDate.toString().split(" ")[0],
+                          child: Text((){
+                            if(_textEditing_3Controller.text.isNotEmpty){
+                             return glossarListOnSearch_3[index].qtyPassed.toString() == "0"
+                                 && glossarListOnSearch_3[index].qtyFailed.toString() == "0" ? ""
+                                 : glossarListOnSearch_3[index].testStartDate.toString().split(" ")[0];
+                            }else{
+                             return  mdata[index].qtyPassed.toString() == "0"
+                                  && mdata[index].qtyFailed.toString() == "0" ? ""
+                                  : mdata[index].testStartDate.toString().split(" ")[0];
+                            }
+
+                          }(),
+
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2518,9 +2740,20 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mdata[index].qtyPassed.toString() == "0"
-                              && mdata[index].qtyFailed.toString() == "0" ? ""
-                              : mdata[index].testStartDate.toString().split(" ")[0],
+                          child: Text(
+                                  (){
+                                if(_textEditing_3Controller.text.isNotEmpty){
+                                  return  glossarListOnSearch_3[index].qtyPassed.toString() == "0"
+                                      && glossarListOnSearch_3[index].qtyFailed.toString() == "0" ? ""
+                                      : glossarListOnSearch_3[index].testStartDate.toString().split(" ")[0];
+                                }else{
+                                  return   mdata[index].qtyPassed.toString() == "0"
+                                      && mdata[index].qtyFailed.toString() == "0" ? ""
+                                      : mdata[index].testStartDate.toString().split(" ")[0];
+                                }
+
+                              }(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2606,7 +2839,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                     children: [
                       Expanded(
                         child: Center(
-                          child: Text(tester[index].productName,
+                          child: Text( _textEditing_2Controller.text.isNotEmpty
+                              ? glossarListOnSearch_2[index].productName.toString()
+                              : tester[index].productName.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2615,7 +2851,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(tester[index].startSerialNo,
+                          child: Text(_textEditing_2Controller.text.isNotEmpty
+                              ? glossarListOnSearch_2[index].serial_no.toString()
+                              : tester[index].serial_no.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2624,7 +2863,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(tester[index].testResult,
+                          child: Text(_textEditing_2Controller.text.isNotEmpty
+                              ? glossarListOnSearch_2[index].testResult.toString()
+                              : tester[index].testResult.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2634,7 +2876,9 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       Expanded(
                         child: Center(
                           child: Text((){
-                            var str = tester[index].testedDate.toString().split('T')[0];
+                            var str = _textEditing_2Controller.text.isNotEmpty
+                                ? glossarListOnSearch_2[index].testedDate.toString().split('T')[0]
+                                :  tester[index].testedDate.toString().split('T')[0];
                             return str.toString();
                           }(),
                               style: TextStyle(
@@ -2645,11 +2889,31 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text("https//link_to_open_report",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
+                          child: GestureDetector(
+                            onTap: ()async{
+                              ref.read(gettesterexcelNotifier.notifier).gettester(tester[index].productId, tester[index].serial_no);
+
+/*
+
+                              apiLink = "http://192.168.1.55//PAT_API/ReportExport/TestingReportExcelExport_100_16-05-2023.xls";
+                              savePath = gg + "\\" + "TestingReportExcelExport_100_16-05-2023.xls" ;
+                              downloadExcelFile(apiLink!, savePath!);
+
+                              final downloadedFilePath = savePath;
+
+                              openExcelFile(downloadedFilePath!);
+*/
+
+
+
+
+                            },
+                            child: Text("https//link_to_open_report",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.blue)),
+                          ),
                         ),
                       ),
                     ],
@@ -2669,7 +2933,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
   }
 
   //**********************workorder based t6est  report ***************************************
-  getworkorderbasedtest(List<WorkorderModel> workorder, int index) {
+ /* getworkorderbasedtest(List<NewWorkorderbasedReport> workorder, int index) {
     return Padding(
       padding: const EdgeInsets.all(6),
       child: GestureDetector(
@@ -2708,10 +2972,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
         ),
       ),
     );
-  }
+  }*/
 
 
-  getworkorderbasedtestdetails(List<WorkorderbasedReport> mData, int index) {
+  getworkorderbasedtestdetails(List<NewWorkorderbasedReport> mData, int index) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -2729,7 +2993,11 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                     children: [
                       Expanded(
                         child: Center(
-                          child: Text(mData[index].productName.toString(),
+                          child: Text(
+                              _textEditing_1Controller.text.isNotEmpty
+                                  ? glossarListOnSearch_1[index].productName.toString()
+                                  : mData[index].productName.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2738,7 +3006,9 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mData[index].startSerialNo.toString(),
+                          child: Text( _textEditing_1Controller.text.isNotEmpty
+                              ? glossarListOnSearch_1[index].serialNo.toString()
+                              : mData[index].serialNo.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2747,7 +3017,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mData[index].testType.toString(),
+                          child: Text(_textEditing_1Controller.text.isNotEmpty
+                              ? glossarListOnSearch_1[index].testStage.toString()
+                              : mData[index].testStage.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2756,7 +3029,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mData[index].testedBy.toString(),
+                          child: Text(_textEditing_1Controller.text.isNotEmpty
+                              ? glossarListOnSearch_1[index].testedBy.toString()
+                              : mData[index].testedBy.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2767,7 +3043,9 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                         child: Center(
                           child: Text(
                                   (){
-                                var str = mData[index].testedDate.toString().split('T')[0] ;
+                                var str = _textEditing_1Controller.text.isNotEmpty
+                                    ? glossarListOnSearch_1[index].testedDate.toString().split('T')[0]
+                                    : mData[index].testedDate.toString().split('T')[0];
                                 return str.toString();
                               }(),
 
@@ -2780,7 +3058,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text(mData[index].testResult.toString(),
+                          child: Text(_textEditing_1Controller.text.isNotEmpty
+                              ? glossarListOnSearch_1[index].testResult.toString()
+                              : mData[index].testResult.toString(),
+
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -2789,11 +3070,29 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                       Expanded(
                         child: Center(
-                          child: Text("https//link_to_open_report",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
+                          child: GestureDetector(
+                            onTap: (){
+
+                              ref.read(getworkorderexcelNotifier.notifier).addworkorder(mData[index].workorderId, mData[index].productId,mData[index].serialNo);
+
+
+
+
+/*
+                              apiLink = "http://192.168.1.55//PAT_API/ReportExport/WOReportExcelExport_100_17-05-2023.xls";
+                              savePath = gg + "\\" + "WOReportExcelExport_100_17-05-2023.xls" ;
+                              downloadExcelFile(apiLink!, savePath!);
+
+                              final downloadedFilePath = savePath;
+
+                              openExcelFile(downloadedFilePath!);*/
+                            },
+                            child: Text("https//link_to_open_report",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.blue)),
+                          ),
                         ),
                       ),
                     ],
@@ -2811,4 +3110,6 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
       ),
     );
   }
+
+
 }

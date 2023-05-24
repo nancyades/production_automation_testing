@@ -38,6 +38,9 @@ class _ProductPageState extends ConsumerState<ProductPage> {
 
   bool search = true;
 
+  List<Productmodel> glossarListOnSearch = [];
+  TextEditingController _textEditingController = TextEditingController();
+
   @override
   void initState() {
     ref.refresh(getProductNotifier);
@@ -900,6 +903,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                           onChanged: (item) {
                                             setState(() {
                                               selectRole = item.toString();
+
                                               //List<FirstClass> emptylist = [];
                                             });
                                           },
@@ -916,6 +920,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                       //MediaQuery.of(context).size.width * 0.25,
                                       height: 30,
                                       child: TextField(
+                                          controller: _textEditingController,
                                           decoration: InputDecoration(
                                             prefixIcon: Icon(Icons.search),
                                             hintText: 'search',
@@ -928,7 +933,15 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                           style: TextStyle(
                                             color: Colors.black,
                                           ),
-                                          onChanged: (String query) {
+                                          onChanged: (value) {
+                                            setState(() {
+                                              glossarListOnSearch = datum
+                                                  .where((element) => element.productName!
+                                                  .toLowerCase()
+                                                  .contains(
+                                                  value.toLowerCase()))
+                                                  .toList();
+                                            });
 
                                           })
                                   ),
@@ -1038,15 +1051,52 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                                 color: Color(0xffcbdff2),
 
                                 child:
-                                       ListView.builder
+                                _textEditingController
+                                    .text.isNotEmpty &&
+                                    glossarListOnSearch.isEmpty
+                                    ? Column(
+                                  children: [
+                                    Align(
+                                      alignment:
+                                      Alignment.center,
+                                      child: Padding(
+                                        padding:
+                                        const EdgeInsets
+                                            .fromLTRB(
+                                            0, 50, 0, 0),
+                                        child: Text(
+                                          'No results',
+                                          style: TextStyle(
+                                              fontFamily:
+                                              'Avenir',
+                                              fontSize: 22,
+                                              color: Color(
+                                                  0xff848484)),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )
+                                      : ListView.builder
                                         (
                                           itemCount: () {
                                             if (all == true) {
-                                              return datum.length;
+                                              return _textEditingController
+                                                  .text.isNotEmpty
+                                                  ? glossarListOnSearch
+                                                  .length
+                                                  : datum.length;
                                             } else if (active == true) {
-                                              return activevalue.length;
+                                              return _textEditingController
+                                                  .text.isNotEmpty
+                                                  ? glossarListOnSearch
+                                                  .length
+                                                  : activevalue.length;
+
                                             } else if (inactive == true) {
-                                              return inactivevalue.length;
+                                              return _textEditingController.text.isNotEmpty
+                                                  ? glossarListOnSearch.length
+                                                  : inactivevalue.length;
                                             } else {
                                               return 0;
                                             }
@@ -1154,7 +1204,11 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                     child: Container(
                       height: 20.0,
                       width: 10.0,
-                      child: Center(child: Text(items[index].productCode.toString(),
+                      child: Center(child: Text(
+                          _textEditingController.text.isNotEmpty
+                              ? glossarListOnSearch[index].productCode!.toString()
+                              :  items[index].productCode.toString(),
+
                           style: TextStyle(fontWeight: FontWeight.w300,
                               fontSize: 13.0,
                               color: Colors.black))),
@@ -1164,7 +1218,10 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                     child: Container(
                       height: 20.0,
                       width: 10.0,
-                      child: Center(child: Text(items[index].productName.toString(),
+                      child: Center(child: Text(_textEditingController.text.isNotEmpty
+                          ? glossarListOnSearch[index].productName!.toString()
+                          :   items[index].productName.toString(),
+
                           style: TextStyle(fontWeight: FontWeight.w300,
                               fontSize: 13.0,
                               color: Colors.black))),
@@ -1174,7 +1231,11 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                     child: Container(
                       height: 20.0,
                       width: 10.0,
-                      child: Center(child: Text(items[index].quantity.toString(),
+                      child: Center(child: Text(
+                          _textEditingController.text.isNotEmpty
+                              ? glossarListOnSearch[index].quantity!.toString()
+                              :   items[index].quantity.toString(),
+
                           style: TextStyle(fontWeight: FontWeight.w300,
                               fontSize: 13.0,
                               color: Colors.black))),
@@ -1184,7 +1245,10 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                     child: Container(
                       height: 20.0,
                       width: 10.0,
-                      child: Center(child: Text(items[index].status.toString(),
+                      child: Center(child: Text(_textEditingController.text.isNotEmpty
+                          ? glossarListOnSearch[index].status!.toString()
+                          :   items[index].status.toString(),
+
                           style: TextStyle(fontWeight: FontWeight.w300,
                               fontSize: 13.0,
                               color: Colors.black))),
@@ -1194,7 +1258,10 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                     child: Container(
                       height: 20.0,
                       width: 10.0,
-                      child: Center(child: Text(items[index].timeRequired.toString(),
+                      child: Center(child: Text(_textEditingController.text.isNotEmpty
+                          ? glossarListOnSearch[index].timeRequired!.toString()
+                          :   items[index].timeRequired.toString(),
+
                           style: TextStyle(fontWeight: FontWeight.w300,
                               fontSize: 13.0,
                               color: Colors.black))),
@@ -1211,44 +1278,90 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                             child: IconButton(
                                 onPressed: () {
                                   setState(() {
-                                    product.productId = int.parse(items[index].productId
-                                        .toString());
-                                    product.productCode = items[index].productCode
-                                        .toString();
-                                    product.productName = items[index].productName
-                                        .toString();
-                                    product.quantity = int.parse(items[index].quantity
-                                        .toString());
-                                    product.status = items[index].status.toString();
-                                    product.timeRequired = int.parse(items[index]
-                                        .timeRequired.toString());
-                                    product.description = items[index].description.toString();
-                                    product.remarks = items[index].remarks.toString();
-                                    product.templateId = int.parse(items[index]
-                                        .templateId.toString());
-                                    product.flg = items[index].flg;
-                                    List<Template> temp = [];
+                                    if (_textEditingController.text.isNotEmpty) {
 
-                                    for(int i = 0; i< items[index].template!.length; i++){
-                                      if(product.productId == int.parse(items[index].template![i].productid.toString()) ){
-                                        Template wlist = Template(
-                                          templateId:items[index].template![i].templateId,
-                                          templateName: items[index].template![i].templateName,
-                                          filePath: items[index].template![i].filePath,
-                                          createdBy: items[index].template![i].createdBy,
-                                          updatedBy: items[index].template![i].updatedBy,
-                                          createdDate: items[index].template![i].createdDate,
-                                          updatedDate: items[index].template![i].updatedDate,
-                                          flg: items[index].template![i].flg,
-                                          remarks: items[index].template![i].remarks,
-                                          productid: items[index].template![i].productid,
+                                      product.productId = int.parse(glossarListOnSearch[index].productId
+                                          .toString());
+                                      product.productCode = glossarListOnSearch[index].productCode
+                                          .toString();
+                                      product.productName = glossarListOnSearch[index].productName
+                                          .toString();
+                                      product.quantity = int.parse(glossarListOnSearch[index].quantity
+                                          .toString());
+                                      product.status = glossarListOnSearch[index].status.toString();
+                                      product.timeRequired = int.parse(glossarListOnSearch[index]
+                                          .timeRequired.toString());
+                                      product.description = glossarListOnSearch[index].description.toString();
+                                      product.remarks = glossarListOnSearch[index].remarks.toString();
+                                      product.templateId = int.parse(glossarListOnSearch[index]
+                                          .templateId.toString());
+                                      product.flg = glossarListOnSearch[index].flg;
+                                      List<Template> temp = [];
 
-                                        );
-                                        temp.add(wlist);
+                                      for(int i = 0; i< glossarListOnSearch[index].template!.length; i++){
+                                        if(product.productId == int.parse(glossarListOnSearch[index].template![i].productid.toString()) ){
+                                          Template wlist = Template(
+                                            templateId:glossarListOnSearch[index].template![i].templateId,
+                                            templateName: glossarListOnSearch[index].template![i].templateName,
+                                            filePath: glossarListOnSearch[index].template![i].filePath,
+                                            createdBy: glossarListOnSearch[index].template![i].createdBy,
+                                            updatedBy: glossarListOnSearch[index].template![i].updatedBy,
+                                            createdDate: glossarListOnSearch[index].template![i].createdDate,
+                                            updatedDate: glossarListOnSearch[index].template![i].updatedDate,
+                                            flg: glossarListOnSearch[index].template![i].flg,
+                                            remarks: glossarListOnSearch[index].template![i].remarks,
+                                            productid: glossarListOnSearch[index].template![i].productid,
+
+                                          );
+                                          temp.add(wlist);
+                                        }
+
                                       }
+                                      product.template = temp;
 
+                                    }else{
+                                      product.productId = int.parse(items[index].productId
+                                          .toString());
+                                      product.productCode = items[index].productCode
+                                          .toString();
+                                      product.productName = items[index].productName
+                                          .toString();
+                                      product.quantity = int.parse(items[index].quantity
+                                          .toString());
+                                      product.status = items[index].status.toString();
+                                      product.timeRequired = int.parse(items[index]
+                                          .timeRequired.toString());
+                                      product.description = items[index].description.toString();
+                                      product.remarks = items[index].remarks.toString();
+                                      product.templateId = int.parse(items[index]
+                                          .templateId.toString());
+                                      product.flg = items[index].flg;
+                                      List<Template> temp = [];
+
+                                      for(int i = 0; i< items[index].template!.length; i++){
+                                        if(product.productId == int.parse(items[index].template![i].productid.toString()) ){
+                                          Template wlist = Template(
+                                            templateId:items[index].template![i].templateId,
+                                            templateName: items[index].template![i].templateName,
+                                            filePath: items[index].template![i].filePath,
+                                            createdBy: items[index].template![i].createdBy,
+                                            updatedBy: items[index].template![i].updatedBy,
+                                            createdDate: items[index].template![i].createdDate,
+                                            updatedDate: items[index].template![i].updatedDate,
+                                            flg: items[index].template![i].flg,
+                                            remarks: items[index].template![i].remarks,
+                                            productid: items[index].template![i].productid,
+
+                                          );
+                                          temp.add(wlist);
+                                        }
+
+                                      }
+                                      product.template = temp;
                                     }
-                                    product.template = temp;
+
+
+
 
                                     AddProduct(product: product);
 
@@ -1338,8 +1451,23 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                 child: Container(
                   height: 20.0,
                   width: 10.0,
-                  child: Center(child: Text(
-                      activevalue[index].productCode.toString(), style: TextStyle(
+                  child: Center(child: Text(_textEditingController.text.isNotEmpty
+                      ? glossarListOnSearch[index].productCode!.toString()
+                      :    activevalue[index].productCode.toString(),
+                      style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 13.0,
+                      color: Colors.black))),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: 20.0,
+                  width: 10.0,
+                  child: Center(child: Text(_textEditingController.text.isNotEmpty
+                      ? glossarListOnSearch[index].productName!.toString()
+                      :    activevalue[index].productName.toString(),
+                     style: TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 13.0,
                       color: Colors.black))),
@@ -1350,18 +1478,10 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                   height: 20.0,
                   width: 10.0,
                   child: Center(child: Text(
-                      activevalue[index].productName.toString(), style: TextStyle(
-                      fontWeight: FontWeight.w300,
-                      fontSize: 13.0,
-                      color: Colors.black))),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 20.0,
-                  width: 10.0,
-                  child: Center(child: Text(
-                      activevalue[index].quantity.toString(), style: TextStyle(
+                      _textEditingController.text.isNotEmpty
+                          ? glossarListOnSearch[index].quantity!.toString()
+                          :    activevalue[index].quantity.toString(),
+                      style: TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 13.0,
                       color: Colors.black))),
@@ -1372,7 +1492,10 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                     height: 20.0,
                     width: 10.0,
                     child: Center(child: Text(
-                        activevalue[index].status.toString(), style: TextStyle(
+                        _textEditingController.text.isNotEmpty
+                            ? glossarListOnSearch[index].status!.toString()
+                            :    activevalue[index].status.toString(),
+                         style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 13.0,
                         color: Colors.black))),
@@ -1383,7 +1506,10 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                   height: 20.0,
                   width: 10.0,
                   child: Center(child: Text(
-                      activevalue[index].timeRequired.toString(),
+                      _textEditingController.text.isNotEmpty
+                          ? glossarListOnSearch[index].timeRequired!.toString()
+                          :    activevalue[index].timeRequired.toString(),
+
                       style: TextStyle(fontWeight: FontWeight.w300,
                           fontSize: 13.0,
                           color: Colors.black))),
@@ -1399,47 +1525,91 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                       IconButton(
                           onPressed: () {
                             setState(() {
-                              product.productId = int.parse(activevalue[index]
-                                  .productId.toString());
-                              product.productCode = activevalue[index].productCode
-                                  .toString();
-                              product.productName = activevalue[index].productName
-                                  .toString();
-                              product.quantity = int.parse(activevalue[index]
-                                  .quantity.toString());
-                              product.status = activevalue[index].status
-                                  .toString();
-                              product.timeRequired = int.parse(activevalue[index]
-                                  .timeRequired.toString());
-                              product.description = activevalue[index].description
-                                  .toString();
-                              product.remarks = activevalue[index].remarks.toString();
-                              product.templateId = int.parse(activevalue[index]
-                                  .templateId.toString());
-                              product.flg = activevalue[index].flg;
+                              if (_textEditingController.text.isNotEmpty) {
 
-                              List<Template> temp = [];
+                                product.productId = int.parse(glossarListOnSearch[index].productId
+                                    .toString());
+                                product.productCode = glossarListOnSearch[index].productCode
+                                    .toString();
+                                product.productName = glossarListOnSearch[index].productName
+                                    .toString();
+                                product.quantity = int.parse(glossarListOnSearch[index].quantity
+                                    .toString());
+                                product.status = glossarListOnSearch[index].status.toString();
+                                product.timeRequired = int.parse(glossarListOnSearch[index]
+                                    .timeRequired.toString());
+                                product.description = glossarListOnSearch[index].description.toString();
+                                product.remarks = glossarListOnSearch[index].remarks.toString();
+                                product.templateId = int.parse(glossarListOnSearch[index]
+                                    .templateId.toString());
+                                product.flg = glossarListOnSearch[index].flg;
+                                List<Template> temp = [];
 
-                              for(int i = 0; i< activevalue[index].template!.length; i++){
-                                if(product.productId == int.parse(activevalue[index].template![i].productid.toString())){
-                                  Template wlist = Template(
-                                    templateId:activevalue[index].template![i].templateId,
-                                    templateName: activevalue[index].template![i].templateName,
-                                    filePath: activevalue[index].template![i].filePath,
-                                    createdBy: activevalue[index].template![i].createdBy,
-                                    updatedBy: activevalue[index].template![i].updatedBy,
-                                    createdDate: activevalue[index].template![i].createdDate,
-                                    updatedDate: activevalue[index].template![i].updatedDate,
-                                    flg: activevalue[index].template![i].flg,
-                                    remarks: activevalue[index].template![i].remarks,
-                                    productid: activevalue[index].template![i].productid,
+                                for(int i = 0; i< glossarListOnSearch[index].template!.length; i++){
+                                  if(product.productId == int.parse(glossarListOnSearch[index].template![i].productid.toString()) ){
+                                    Template wlist = Template(
+                                      templateId:glossarListOnSearch[index].template![i].templateId,
+                                      templateName: glossarListOnSearch[index].template![i].templateName,
+                                      filePath: glossarListOnSearch[index].template![i].filePath,
+                                      createdBy: glossarListOnSearch[index].template![i].createdBy,
+                                      updatedBy: glossarListOnSearch[index].template![i].updatedBy,
+                                      createdDate: glossarListOnSearch[index].template![i].createdDate,
+                                      updatedDate: glossarListOnSearch[index].template![i].updatedDate,
+                                      flg: glossarListOnSearch[index].template![i].flg,
+                                      remarks: glossarListOnSearch[index].template![i].remarks,
+                                      productid: glossarListOnSearch[index].template![i].productid,
 
-                                  );
-                                  temp.add(wlist);
+                                    );
+                                    temp.add(wlist);
+                                  }
+
                                 }
+                                product.template = temp;
 
+                              }else{
+                                product.productId = int.parse(activevalue[index]
+                                    .productId.toString());
+                                product.productCode = activevalue[index].productCode
+                                    .toString();
+                                product.productName = activevalue[index].productName
+                                    .toString();
+                                product.quantity = int.parse(activevalue[index]
+                                    .quantity.toString());
+                                product.status = activevalue[index].status
+                                    .toString();
+                                product.timeRequired = int.parse(activevalue[index]
+                                    .timeRequired.toString());
+                                product.description = activevalue[index].description
+                                    .toString();
+                                product.remarks = activevalue[index].remarks.toString();
+                                product.templateId = int.parse(activevalue[index]
+                                    .templateId.toString());
+                                product.flg = activevalue[index].flg;
+
+                                List<Template> temp = [];
+
+                                for(int i = 0; i< activevalue[index].template!.length; i++){
+                                  if(product.productId == int.parse(activevalue[index].template![i].productid.toString())){
+                                    Template wlist = Template(
+                                      templateId:activevalue[index].template![i].templateId,
+                                      templateName: activevalue[index].template![i].templateName,
+                                      filePath: activevalue[index].template![i].filePath,
+                                      createdBy: activevalue[index].template![i].createdBy,
+                                      updatedBy: activevalue[index].template![i].updatedBy,
+                                      createdDate: activevalue[index].template![i].createdDate,
+                                      updatedDate: activevalue[index].template![i].updatedDate,
+                                      flg: activevalue[index].template![i].flg,
+                                      remarks: activevalue[index].template![i].remarks,
+                                      productid: activevalue[index].template![i].productid,
+
+                                    );
+                                    temp.add(wlist);
+                                  }
+
+                                }
+                                product.template = temp;
                               }
-                              product.template = temp;
+
 
 
                               AddProduct(product: product);
@@ -1525,8 +1695,10 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                 child: Container(
                   height: 20.0,
                   width: 10.0,
-                  child: Center(child: Text(
-                      inactivevalue[index].productCode.toString(),
+                  child: Center(child: Text( _textEditingController.text.isNotEmpty
+                      ? glossarListOnSearch[index].productCode!.toString()
+                      :    inactivevalue[index].productCode.toString(),
+
                       style: TextStyle(fontWeight: FontWeight.w300,
                           fontSize: 13.0,
                           color: Colors.black))),
@@ -1536,8 +1708,9 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                 child: Container(
                   height: 20.0,
                   width: 10.0,
-                  child: Center(child: Text(
-                      inactivevalue[index].productName.toString(),
+                  child: Center(child: Text(_textEditingController.text.isNotEmpty
+                      ? glossarListOnSearch[index].productName!.toString()
+                      :    inactivevalue[index].productName.toString(),
                       style: TextStyle(fontWeight: FontWeight.w300,
                           fontSize: 13.0,
                           color: Colors.black))),
@@ -1547,8 +1720,10 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                 child: Container(
                   height: 20.0,
                   width: 10.0,
-                  child: Center(child: Text(
-                      inactivevalue[index].quantity.toString(), style: TextStyle(
+                  child: Center(child: Text(_textEditingController.text.isNotEmpty
+                      ? glossarListOnSearch[index].quantity!.toString()
+                      :    inactivevalue[index].quantity.toString(),
+                     style: TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 13.0,
                       color: Colors.black))),
@@ -1559,7 +1734,10 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                   height: 20.0,
                   width: 10.0,
                   child: Center(child: Text(
-                      inactivevalue[index].status.toString(), style: TextStyle(
+                      _textEditingController.text.isNotEmpty
+                          ? glossarListOnSearch[index].status!.toString()
+                          :    inactivevalue[index].status.toString(),
+                      style: TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 13.0,
                       color: Colors.black))),
@@ -1570,7 +1748,9 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                   height: 20.0,
                   width: 10.0,
                   child: Center(child: Text(
-                      inactivevalue[index].timeRequired.toString(),
+                      _textEditingController.text.isNotEmpty
+                          ? glossarListOnSearch[index].timeRequired!.toString()
+                          :    inactivevalue[index].timeRequired.toString(),
                       style: TextStyle(fontWeight: FontWeight.w300,
                           fontSize: 13.0,
                           color: Colors.black))),
@@ -1586,47 +1766,92 @@ class _ProductPageState extends ConsumerState<ProductPage> {
                       IconButton(
                           onPressed: () {
                             setState(() {
-                              product.productId = int.parse(inactivevalue[index]
-                                  .productId.toString());
-                              product.productCode = inactivevalue[index]
-                                  .productCode.toString();
-                              product.productName = inactivevalue[index]
-                                  .productName.toString();
-                              product.quantity = int.parse(inactivevalue[index]
-                                  .quantity.toString());
-                              product.status = inactivevalue[index].status
-                                  .toString();
-                              product.timeRequired = int.parse(
-                                  inactivevalue[index].timeRequired.toString());
-                              product.description = inactivevalue[index]
-                                  .description.toString();
-                              product.remarks = inactivevalue[index].remarks.toString();
-                              product.templateId = int.parse(inactivevalue[index]
-                                  .templateId.toString());
-                              product.flg = inactivevalue[index].flg;
+                              if (_textEditingController.text.isNotEmpty) {
 
-                              List<Template> temp = [];
+                                product.productId = int.parse(glossarListOnSearch[index].productId
+                                    .toString());
+                                product.productCode = glossarListOnSearch[index].productCode
+                                    .toString();
+                                product.productName = glossarListOnSearch[index].productName
+                                    .toString();
+                                product.quantity = int.parse(glossarListOnSearch[index].quantity
+                                    .toString());
+                                product.status = glossarListOnSearch[index].status.toString();
+                                product.timeRequired = int.parse(glossarListOnSearch[index]
+                                    .timeRequired.toString());
+                                product.description = glossarListOnSearch[index].description.toString();
+                                product.remarks = glossarListOnSearch[index].remarks.toString();
+                                product.templateId = int.parse(glossarListOnSearch[index]
+                                    .templateId.toString());
+                                product.flg = glossarListOnSearch[index].flg;
+                                List<Template> temp = [];
 
-                              for(int i = 0; i< inactivevalue[index].template!.length; i++){
-                                if(product.productId == int.parse(inactivevalue[index].template![i].productid.toString())){
-                                  Template wlist = Template(
-                                    templateId:inactivevalue[index].template![i].templateId,
-                                    templateName: inactivevalue[index].template![i].templateName,
-                                    filePath: inactivevalue[index].template![i].filePath,
-                                    createdBy: inactivevalue[index].template![i].createdBy,
-                                    updatedBy: inactivevalue[index].template![i].updatedBy,
-                                    createdDate: inactivevalue[index].template![i].createdDate,
-                                    updatedDate: inactivevalue[index].template![i].updatedDate,
-                                    flg: inactivevalue[index].template![i].flg,
-                                    remarks: inactivevalue[index].template![i].remarks,
-                                    productid: inactivevalue[index].template![i].productid,
+                                for(int i = 0; i< glossarListOnSearch[index].template!.length; i++){
+                                  if(product.productId == int.parse(glossarListOnSearch[index].template![i].productid.toString()) ){
+                                    Template wlist = Template(
+                                      templateId:glossarListOnSearch[index].template![i].templateId,
+                                      templateName: glossarListOnSearch[index].template![i].templateName,
+                                      filePath: glossarListOnSearch[index].template![i].filePath,
+                                      createdBy: glossarListOnSearch[index].template![i].createdBy,
+                                      updatedBy: glossarListOnSearch[index].template![i].updatedBy,
+                                      createdDate: glossarListOnSearch[index].template![i].createdDate,
+                                      updatedDate: glossarListOnSearch[index].template![i].updatedDate,
+                                      flg: glossarListOnSearch[index].template![i].flg,
+                                      remarks: glossarListOnSearch[index].template![i].remarks,
+                                      productid: glossarListOnSearch[index].template![i].productid,
 
-                                  );
-                                  temp.add(wlist);
+                                    );
+                                    temp.add(wlist);
+                                  }
+
                                 }
+                                product.template = temp;
+
+                              }else{
+                                product.productId = int.parse(inactivevalue[index]
+                                    .productId.toString());
+                                product.productCode = inactivevalue[index]
+                                    .productCode.toString();
+                                product.productName = inactivevalue[index]
+                                    .productName.toString();
+                                product.quantity = int.parse(inactivevalue[index]
+                                    .quantity.toString());
+                                product.status = inactivevalue[index].status
+                                    .toString();
+                                product.timeRequired = int.parse(
+                                    inactivevalue[index].timeRequired.toString());
+                                product.description = inactivevalue[index]
+                                    .description.toString();
+                                product.remarks = inactivevalue[index].remarks.toString();
+                                product.templateId = int.parse(inactivevalue[index]
+                                    .templateId.toString());
+                                product.flg = inactivevalue[index].flg;
+
+                                List<Template> temp = [];
+
+                                for(int i = 0; i< inactivevalue[index].template!.length; i++){
+                                  if(product.productId == int.parse(inactivevalue[index].template![i].productid.toString())){
+                                    Template wlist = Template(
+                                      templateId:inactivevalue[index].template![i].templateId,
+                                      templateName: inactivevalue[index].template![i].templateName,
+                                      filePath: inactivevalue[index].template![i].filePath,
+                                      createdBy: inactivevalue[index].template![i].createdBy,
+                                      updatedBy: inactivevalue[index].template![i].updatedBy,
+                                      createdDate: inactivevalue[index].template![i].createdDate,
+                                      updatedDate: inactivevalue[index].template![i].updatedDate,
+                                      flg: inactivevalue[index].template![i].flg,
+                                      remarks: inactivevalue[index].template![i].remarks,
+                                      productid: inactivevalue[index].template![i].productid,
+
+                                    );
+                                    temp.add(wlist);
+                                  }
+
+                                }
+                                product.template = temp;
 
                               }
-                              product.template = temp;
+
 
 
 

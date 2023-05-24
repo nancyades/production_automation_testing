@@ -19,7 +19,7 @@ class WorkOrderbasedReportProvider extends StateNotifier<WorkOrderbasedReportSta
 
   workorderbasedReport(var user_id) async {
     state = _loading();
-    final data = await ref.read(apiProvider).getWorkorderbasedreport(user_id);
+    final data = await ref.read(apiProvider).getNewWorkorderbasedreport(user_id);
 
     if(data != null){
       state =_dataState(data);
@@ -31,7 +31,7 @@ class WorkOrderbasedReportProvider extends StateNotifier<WorkOrderbasedReportSta
 
 
 
-  WorkOrderbasedReportState _dataState(List<WorkorderbasedReport> entity){
+  WorkOrderbasedReportState _dataState(List<NewWorkorderbasedReport> entity){
     return WorkOrderbasedReportState(false, AsyncData(entity), '');
   }
 
@@ -49,7 +49,7 @@ class WorkOrderbasedReportProvider extends StateNotifier<WorkOrderbasedReportSta
 
 class WorkOrderbasedReportState {
   bool isLoading;
-  AsyncValue<List<WorkorderbasedReport>> id;
+  AsyncValue<List<NewWorkorderbasedReport>> id;
   String error;
 
   WorkOrderbasedReportState(this.isLoading,this.id,this.error);

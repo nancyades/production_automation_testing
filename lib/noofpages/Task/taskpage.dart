@@ -74,6 +74,8 @@ class _TaskPageState extends ConsumerState<TaskPage> {
 
   int e = 0;
 
+  bool nandy = true;
+
 
 
   @override
@@ -111,6 +113,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                           onPressed: () {
                             ref.refresh(getWorkorderNotifier);
                             setState(() {
+                              nandy =!nandy;
                               _isShow = !_isShow;
                               Helper.cleartemplate = false;
                                Helper.dropDown = "SHOW";
@@ -584,9 +587,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                                 ref.refresh(getTaskNotifier);
 
                                               }, icon: Icon(Icons.refresh,)),
-                                          SizedBox(
-                                            width: 10.0,
-                                          ),
+
                                           Text("Username",style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11.0,color: Colors.blueAccent )),
                                           Consumer(
                                             builder: (context, ref, child) {
@@ -709,30 +710,38 @@ class _TaskPageState extends ConsumerState<TaskPage> {
 
                                             }
                                           ),
-                                          Text("status",style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11.0,color: Colors.blueAccent )),
-                                          DropdownButton(
-                                            icon: Padding(
-                                              padding: const EdgeInsets.only(left: 8.0),
-                                              child: Icon(Icons.keyboard_arrow_down),
+                                          Visibility(
+                                            visible: nandy,
+                                            child: Row(
+                                              children: [
+                                                Text("status",style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11.0,color: Colors.blueAccent )),
+                                                DropdownButton(
+                                                  icon: Padding(
+                                                    padding: const EdgeInsets.only(left: 8.0),
+                                                    child: Icon(Icons.keyboard_arrow_down),
+                                                  ),
+                                                  items: Status.map<DropdownMenuItem<String>>(
+                                                          (String setlist) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: setlist,
+                                                          child: Text(setlist.toString()),
+                                                        );
+                                                      }).toList(),
+                                                  value: selectStatus,
+                                                  onChanged: (item) {
+
+                                                    setState(() {
+                                                      selectStatus = item.toString();
+                                                      print("Index==>"+selectStatus);
+                                                      //List<FirstClass> emptylist = [];
+
+                                                    });
+                                                  },
+                                                ),
+                                              ],
                                             ),
-                                            items: Status.map<DropdownMenuItem<String>>(
-                                                    (String setlist) {
-                                                  return DropdownMenuItem<String>(
-                                                    value: setlist,
-                                                    child: Text(setlist.toString()),
-                                                  );
-                                                }).toList(),
-                                            value: selectStatus,
-                                            onChanged: (item) {
+                                          )
 
-                                              setState(() {
-                                                selectStatus = item.toString();
-                                                print("Index==>"+selectStatus);
-                                                //List<FirstClass> emptylist = [];
-
-                                              });
-                                            },
-                                          ),
 
 
                                         ],
@@ -876,7 +885,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                                       rating= datum[index].rating;*/
 
 
-
+                                                      nandy = false;
 
                                                       Helper.cleartemplate = false;
                                                       task.taskId = datum[index].taskId;

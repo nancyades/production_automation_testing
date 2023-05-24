@@ -729,7 +729,8 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
                   child: Center(
                       child: Text(mList[index].testStage.toString() == "1"? "First Test"
                           : mList[index].testStage.toString() == "2"? "Second Test"
-                          : "ReTest",
+                          : mList[index].testStage.toString() == "3"? "ReTest"
+                          : "",
                           style: TextStyle(
                               fontWeight: FontWeight.w300,
                               fontSize: 13.0,

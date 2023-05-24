@@ -11,10 +11,10 @@ class DesignadminNavBar extends ConsumerStatefulWidget {
 }
 
 class _DesignadminNavBarState extends ConsumerState<DesignadminNavBar> {
-  List<bool> selected = [false, false, false, false, false];
+  List<bool> selected = [false, false, false, false];
 
   void select(int n) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
       if (i != n) {
         selected[i] = false;
       } else {
@@ -78,17 +78,7 @@ class _DesignadminNavBarState extends ConsumerState<DesignadminNavBar> {
                   });
                 },
               ),
-              DesignadminNavBarItem(
-                active: selected[4],
-                icon: Icons.report,
-                name: ' Report ',
-                touched: () {
-                  ref.read(navNotifier.notifier).currentIndex(7);
-                  setState(() {
-                    select(4);
-                  });
-                },
-              ),
+
             ],
           ),
         ));
