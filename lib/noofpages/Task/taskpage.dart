@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:production_automation_testing/DashBoard/src/ProjectCardOverview.dart';
@@ -17,6 +18,7 @@ import '../../DashBoard/src/tabs.dart';
 import '../../Model/APIModel/productmodel.dart';
 import '../../Model/APIModel/taskmodel.dart';
 import '../../Provider/excelprovider.dart';
+import '../../Provider/post_provider/test_provider.dart';
 import 'assignpage.dart';
 
 class TaskPage extends ConsumerStatefulWidget {
@@ -75,6 +77,10 @@ class _TaskPageState extends ConsumerState<TaskPage> {
   int e = 0;
 
   bool nandy = true;
+
+  var ucer_id;
+
+  bool isBugged = false;
 
 
 
@@ -610,7 +616,6 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                                       }).toList(),
                                                   value: selectUsers,
                                                   onChanged: (item) {
-
                                                     setState(() {
                                                       selectUsers = item.toString();
                                                       print("Index==>"+selectUsers);
@@ -843,6 +848,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                     ),
                                   ],
                                 ),
+
                                 Expanded(
                                   child: SingleChildScrollView(
                                     child: Column(
@@ -852,107 +858,349 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                             controller: ScrollController(),
                                             itemCount: datum.length,
                                             itemBuilder: (BuildContext ctxt, int index) {
-                                              return
-                                                InkWell(
-                                                  onTap: (){
-
-                                                    setState(() {
-
-                                                     /* taskId= datum[index].taskId;
-                                                      userId= datum[index].userId;
-                                                      username = datum[index].username;
-                                                      assignId= datum[index].assignId;
-                                                      wolId= datum[index].wolId;
-                                                      workOrder = datum[index].workOrder.toString();
-                                                      templateId = datum[index].templateId;
-                                                      templateName = datum[index].templateName;
-                                                      productName = datum[index].productName;
-                                                      productCode = datum[index].productCode;
-                                                      quantity= datum[index].wolId;
-                                                      startSerialNo= datum[index].startSerialNo;
-                                                      endSerialNo= datum[index].endSerialNo;
-                                                      status= datum[index].status;
-                                                      testingStatus= datum[index].testingStatus;
-                                                      startDate= datum[index].startDate;
-                                                      endDate= datum[index].endDate;
-                                                      welcomeCreatedBy = datum[index].welcomeCreatedBy;
-                                                      createdBy= datum[index].createdBy;
-                                                      updatedBy= datum[index].updatedBy;
-                                                      welcomeUpdatedBy = datum[index].welcomeUpdatedBy;
-                                                      createdDate= datum[index].createdDate;
-                                                      updatedDate= datum[index].updatedDate;
-                                                      flg= datum[index].flg;
-                                                      rating= datum[index].rating;*/
+                                              return  itemBuilderAssign(datum,index);
 
 
-                                                      nandy = false;
+                                            })
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
 
-                                                      Helper.cleartemplate = false;
-                                                      task.taskId = datum[index].taskId;
-                                                      task.userId = datum[index].userId;
-                                                      task.assignId = datum[index].assignId;
-                                                      task.wolId = datum[index].wolId;
-                                                      task.quantity = datum[index].quantity;
-                                                      task.startSerialNo = datum[index].startSerialNo;
-                                                      task.endSerialNo = datum[index].endSerialNo;
-                                                      task.status = datum[index].status;
-                                                      task.testingStatus = datum[index].testingStatus;
-                                                      task.startDate = datum[index].startDate;
-                                                      task.endDate = datum[index].endDate;
-                                                      task.createdDate = datum[index].createdDate;
-                                                      task.updatedDate = datum[index].updatedDate;
-                                                      task.flg = datum[index].flg;
-                                                      task.rating = datum[index].rating;
-                                                      task.workorderid = datum[index].workorderid;
-                                                      task.productid =datum[index].productid;
-                                                      task.username = datum[index].username;
+                      ],
+                    ),
 
-                                                      List<Testing> test = [];
+                  ),
+
+                  Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text('@copyright rax-tech International 2022',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 15.0,
+                                  color: Colors.black)),
+                        ],
+                      )),
+                ],
+              ),
+            ),
+          ),
+          Visibility(
+            visible: _isShow,
+            child: Expanded(
+                flex: 5,
+                child: AssignTask(tasks: task)),
+          ),
+        ],
+      );
+    }, error: (e,s){
+      print("nancy----> ${e.toString()}");
+      return Text(e.toString());
+        }, loading: (){
+      return Center(child: CircularProgressIndicator());
+        });
+
+  }
+
+   doNothing(BuildContext context, List<TaskModel> task, int index) {
+        showDialog(
+          context: context,
+          builder: (c) => StatefulBuilder(
+              builder: (context, setState) {
+                return AlertDialog(
+                  title: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('TEST USER'),
+                          ElevatedButton(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text("PROCEED ".toUpperCase(),
+                                    style: TextStyle(fontSize: 14)),
+                              ),
+                              style: ButtonStyle(
+                                  foregroundColor: MaterialStateProperty.all<Color>(
+                                      Colors.white),
+                                  backgroundColor:
+                                  MaterialStateProperty.all<Color>(Colors.red),
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8.0),
+                                          side: BorderSide(color: Colors.red.shade300)))),
+                              onPressed: (){
+
+
+                                ref.read(addTaskNotifier.notifier).addTask({
+
+                                  "user_id": ucer_id,
+                                  "assign_id": Helper.shareduserid,
+                                  "wol_id": task[index].wolId,
+                                  "quantity": task[index].quantity,
+                                  "start_serial_no": task[index].startSerialNo,
+                                  "end_serial_no": task[index].endSerialNo,
+                                  "status": "open",
+                                  "testing_status": "open",
+                                  "start_date": null,
+                                  "end_date": null,
+                                  "created_by": Helper.shareduserid.toString(),
+                                  "updated_by": Helper.shareduserid.toString(),
+                                  "created_date": null,
+                                  "updated_date": null,
+                                  "flg": 1,
+                                  "rating": 2
+                                });
+
+                                getconfirmationpopup(task, index);
+                                Helper.classes = "TEST";
+
+
+
+                                //  Navigator.pop(context);
+                              }),
+
+                        ],
+                      ),
+                      TextField(
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.search),
+                            hintText: 'search',
+                            hintStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                          onChanged: (String query) {
+
+                          }
+                        // SearchWorkorders,
+                      ),
+                    ],
+                  ),
+                  //content: Text("msg"),
+                  actions: [
+                    Column(
+                      children: [
+                        Container(
+                          width: 500,
+                          height: 350,
+                          child: Consumer(
+                              builder: (context, ref, child) {
+                                return ref.watch(getUserNotifier).when(data: (data){
+                                  var test_user =  data.where((element) => element.role == "Test User").toList();
+                                  print(test_user);
+
+                                  return ListView.builder(
+                                      shrinkWrap: true,
+                                      controller: ScrollController(),
+                                      itemCount: test_user.length,
+                                      itemBuilder: (BuildContext ctxt, int index) {
+                                        if(isBugged == true) {
+                                          test_user[index].isSelecteduser = false;
+                                        }
+
+                                        return Row(
+                                          children: [
+                                            Expanded(
+                                                flex: 2,
+                                                child: CircleAvatar(
+                                                  radius: 30,
+                                                  backgroundColor: Colors.red,
+                                                  child: ClipRRect(
+                                                    child: Image.asset("assets/images/profile.jpg"),
+                                                  ),
+                                                )),
+                                            Expanded(
+                                                flex: 7,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left: 10.0),
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(test_user[index].name.toString()),
+                                                      Text(test_user[index].empId.toString()),
+                                                    ],
+                                                  ),
+                                                )),
+                                            Expanded(
+                                                flex: 2,
+                                                child: Center(
+                                                    child: Checkbox(
+                                                        value: test_user[index].isSelecteduser,
+                                                        onChanged: (value) {
+                                                          setState((){
+                                                            test_user[index].Selection(value!);
+                                                            print("test_user ----> ${test_user[index].isSelecteduser}");
+                                                           isBugged = false;
+                                                            print("userid---------> ${test_user[index].userId}");
+                                                            print("assigid---------> ${Helper.shareduserid}");
+
+                                                            ucer_id = test_user[index].userId;
+
+
+                                                          });
+
+                                                        }))),
+                                          ],
+                                        );
+                                      });
+                                }, error: (e,s){
+                                  return Text(e.toString());
+                                }, loading: (){
+                                  return Center(child: CircularProgressIndicator());
+                                });
+
+                              }
+                          ),
+
+
+
+                        ),
+
+                      ],
+                    ),
+                  ],
+                );
+              }
+          ));
+
+
+  }
+  getconfirmationpopup(List<TaskModel> tsk, int index){
+
+    return  showDialog(
+        context: context,
+        builder: (c) => StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                content: Text("Are You Sure?"),
+                actions: [
+
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          child: const Text('Yes'),
+                          onPressed: () {
+                        for(int i=0;i< tsk[index].testing!.length; i++){
+                              ref.read(addTestNotifier.notifier).addTest({
+                                "task_id": int.parse(Helper.task_id.toString().split('-')[0]),
+                                "test_stage": 0,
+                                "test_status": tsk[index].testing![i].testStatus,
+                                "pass": 0,
+                                "fail": 0,
+                                "status": "Open",
+                                "flg": 1,
+                                "mac_address": null,
+                                "test_type":tsk[index].testing![i].isOnline == "0" ? "Offline" : "Online" ,
+                                "test_date": null,
+                                "hours_taken": 0,
+                                "test_number": tsk[index].testing![i].testNumber,
+                                "serial_no": null
+                              });
+                        }
+                            ref.refresh(getTaskNotifier);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          }),
+                      TextButton(
+                          child: const Text('No'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }),
+
+                    ],
+                  ),
+                ],
+              );
+            }
+        ));
+  }
+
+   itemBuilderAssign(List<TaskModel> datum, int index) {
+    return  InkWell(
+      onTap: (){
+
+        setState(() {
+
+          nandy = false;
+
+          Helper.cleartemplate = false;
+          task.taskId = datum[index].taskId;
+          task.userId = datum[index].userId;
+          task.assignId = datum[index].assignId;
+          task.wolId = datum[index].wolId;
+          task.quantity = datum[index].quantity;
+          task.startSerialNo = datum[index].startSerialNo;
+          task.endSerialNo = datum[index].endSerialNo;
+          task.status = datum[index].status;
+          task.testingStatus = datum[index].testingStatus;
+          task.startDate = datum[index].startDate;
+          task.endDate = datum[index].endDate;
+          task.createdDate = datum[index].createdDate;
+          task.updatedDate = datum[index].updatedDate;
+          task.flg = datum[index].flg;
+          task.rating = datum[index].rating;
+          task.workorderid = datum[index].workorderid;
+          task.productid =datum[index].productid;
+          task.username = datum[index].username;
+
+          List<Testing> test = [];
+          for(int i = 0; i< datum[index].testing!.length; i++){
+            if(task.taskId == datum[index].testing![i].taskId){
+              Testing wlist = Testing(
+                testId: datum[index].testing![i].taskId,
+                taskId: datum[index].testing![i].taskId,
+                testStage: datum[index].testing![i].testStage,
+                testStatus: datum[index].testing![i].testStatus,
+                pass: datum[index].testing![i].pass,
+                fail: datum[index].testing![i].fail,
+                status: datum[index].testing![i].status,
+                flg: datum[index].testing![i].flg,
+                macAddress: datum[index].testing![i].macAddress,
+                testType: datum[index].testing![i].testType,
+                testDate: datum[index].testing![i].testDate,
+                hoursTaken: datum[index].testing![i].hoursTaken,
+                testNumber: datum[index].testing![i].testNumber,
+                isSelected: false,
+              );
+              test.add(wlist);
+            }
+          }
+          var seen = Set<String>();
+          List<Testing> uniquelist = test.where((student) => seen.add(student.testStatus.toString())).toList();
 
 
 
 
-                                                      for(int i = 0; i< datum[index].testing!.length; i++){
-                                                      if(task.taskId == datum[index].testing![i].taskId){
-                                                        Testing wlist = Testing(
-                                                          testId: datum[index].testing![i].taskId,
-                                                          taskId: datum[index].testing![i].taskId,
-                                                          testStage: datum[index].testing![i].testStage,
-                                                          testStatus: datum[index].testing![i].testStatus,
-                                                          pass: datum[index].testing![i].pass,
-                                                          fail: datum[index].testing![i].fail,
-                                                          status: datum[index].testing![i].status,
-                                                          flg: datum[index].testing![i].flg,
-                                                          macAddress: datum[index].testing![i].macAddress,
-                                                          testType: datum[index].testing![i].testType,
-                                                          testDate: datum[index].testing![i].testDate,
-                                                          hoursTaken: datum[index].testing![i].hoursTaken,
-                                                          testNumber: datum[index].testing![i].testNumber,
-                                                          isSelected: false,
-                                                        );
-                                                        test.add(wlist);
-                                                      }
-                                                      }
-                                                      var seen = Set<String>();
-                                                      List<Testing> uniquelist = test.where((student) => seen.add(student.testStatus.toString())).toList();
+          task.testing = uniquelist;
+          //task.testing =
+          AssignTask(tasks: task);
+          _isShow = true;
+          Helper.editvalue = "editedvalue";
+          Helper.dropDown = "HIDE";
 
 
 
-
-                                                      task.testing = uniquelist;
-                                                      //task.testing =
-                                                      AssignTask(tasks: task);
-                                                      _isShow = true;
-                                                      Helper.editvalue = "editedvalue";
-                                                      Helper.dropDown = "HIDE";
+          ref.read(addTaskdetailsNotifier.notifier).addTaskdetails(datum[index].workorderid, datum[index].productid);
 
 
-
-                                                      ref.read(addTaskdetailsNotifier.notifier).addTaskdetails(datum[index].workorderid, datum[index].productid);
-
-
-                                                    });
-                                                  /*  showDialog(
+        });
+        /*  showDialog(
                                                         context: context,
                                                         builder: (c) => AlertDialog(
                                                           title: Text('TASK VIEW'),
@@ -1350,1017 +1598,48 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                                         ));*/
 
 
-                                                  },
-                                                  child: TaskListItems(
-                                                    username: datum[index].username.toString(),
-                                                      product: datum[index].productid.toString(),
-                                                      workorder: datum[index].workorderid.toString(),
-                                                      quantity: datum[index].quantity.toString(),
-                                                      startserial: datum[index].startSerialNo.toString(),
-                                                      endserial: datum[index].endSerialNo.toString(),
-                                                    status: datum[index].status.toString(),
-
-                                                  ),
-                                                );
-
-                                               /* InkWell(
-                                                onTap: (){
-                                                  setState(() {
-                                                      taskId= datum[index].taskId;
-                                                      userId= datum[index].userId;
-                                                      assignId= datum[index].assignId;
-                                                      wolId= datum[index].wolId;
-                                                      quantity= datum[index].wolId;
-                                                      startSerialNo= datum[index].startSerialNo;
-                                                      endSerialNo= datum[index].endSerialNo;
-                                                      status= datum[index].status;
-                                                      testingStatus= datum[index].testingStatus;
-                                                      startDate= datum[index].startDate;
-                                                      endDate= datum[index].endDate;
-                                                      createdBy= datum[index].createdBy;
-                                                      updatedBy= datum[index].updatedBy;
-                                                      createdDate= datum[index].createdDate;
-                                                      updatedDate= datum[index].updatedDate;
-                                                      flg= datum[index].flg;
-                                                      rating= datum[index].rating;
-
-                                                  });
-
-                                                },
-                                                child: Card(
-                                                    color: Colors.teal[100],
-                                                    child: Row(
-                                                      children: [
-                                                        Expanded(
-                                                            flex: 2,
-                                                            child: Padding(
-                                                              padding: const EdgeInsets.all(10.0),
-                                                              child: Column(
-                                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                                                children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        "User Name : ",
-                                                                        style: TextStyle(
-                                                                            fontWeight: FontWeight.w500,
-                                                                            fontSize: 14.0,
-                                                                            color: Colors.red
-                                                                        ),
-                                                                      ),
-                                                                      Text(datum[index].userId.toString(), style: TextStyle(
-                                                                          fontWeight: FontWeight.w500,
-                                                                          fontSize: 14.0,
-                                                                          color: Colors.black
-                                                                      ),),
-
-                                                                    ],
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        "Product : ",
-                                                                        style: TextStyle(
-                                                                            fontWeight: FontWeight.w500,
-                                                                            fontSize: 14.0,
-                                                                            color: Colors.red
-                                                                        ),
-                                                                      ),
-                                                                      Text(datum[index].assignId.toString(), style: TextStyle(
-                                                                          fontWeight: FontWeight.w500,
-                                                                          fontSize: 14.0,
-                                                                          color: Colors.black
-                                                                      ),),
-
-                                                                    ],
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        "Workorder : ",
-                                                                        style: TextStyle(
-                                                                            fontWeight: FontWeight.w500,
-                                                                            fontSize: 14.0,
-                                                                            color: Colors.red
-                                                                        ),
-                                                                      ),
-                                                                      Text(datum[index].wolId.toString(), style: TextStyle(
-                                                                          fontWeight: FontWeight.w500,
-                                                                          fontSize: 14.0,
-                                                                          color: Colors.black
-                                                                      ),),
-
-                                                                    ],
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        "Quantity : ",
-                                                                        style: TextStyle(
-                                                                            fontWeight: FontWeight.w500,
-                                                                            fontSize: 14.0,
-                                                                            color: Colors.red
-                                                                        ),
-                                                                      ),
-                                                                      Text(datum[index].quantity.toString(), style: TextStyle(
-                                                                          fontWeight: FontWeight.w500,
-                                                                          fontSize: 14.0,
-                                                                          color: Colors.black
-                                                                      ),),
-
-                                                                    ],
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        "Start Serial No : ",
-                                                                        style: TextStyle(
-                                                                            fontWeight: FontWeight.w500,
-                                                                            fontSize: 14.0,
-                                                                            color: Colors.red
-                                                                        ),
-                                                                      ),
-                                                                      Text(datum[index].startSerialNo.toString(), style: TextStyle(
-                                                                          fontWeight: FontWeight.w500,
-                                                                          fontSize: 14.0,
-                                                                          color: Colors.black
-                                                                      ),),
-
-                                                                    ],
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        "End Serial No : ",
-                                                                        style: TextStyle(
-                                                                            fontWeight: FontWeight.w500,
-                                                                            fontSize: 14.0,
-                                                                            color: Colors.red
-                                                                        ),
-                                                                      ),
-                                                                      Text(datum[index].endSerialNo.toString(), style: TextStyle(
-                                                                          fontWeight: FontWeight.w500,
-                                                                          fontSize: 14.0,
-                                                                          color: Colors.black
-                                                                      ),),
-
-                                                                    ],
-                                                                  ),
-
-                                                                ],
-                                                              ),
-                                                            )),
-                                                       */
-                                              /* Expanded(
-                                                            child: CircularPercentIndicator(
-                                                              radius: 50.0,
-                                                              lineWidth: 6.5,
-                                                              percent: 0.45,
-                                                              circularStrokeCap: CircularStrokeCap.round,
-                                                              center: Text(
-                                                                "45%",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w700,
-                                                                    fontSize: 13.0,
-                                                                    color: Colors.white
-                                                                ),
-                                                              ),
-                                                              progressColor: Colors.white,
-                                                              startAngle: 270,
-                                                              backgroundColor: Colors.white54,
-
-                                                            ))*/
-                                              /*
-                                                      ],
-                                                    )),
-                                              );*/
-                                            })
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                       /* Expanded(
-                          child: Container(
-                            child: Column(
-                              children: [
-                                Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 50,
-                                      child: Card(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8.0),
-                                        ),
-                                        color: Color(0xff8fcceb),
-                                        //Colors.blueAccent,
-                                        elevation: 10,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Center(
-                                                child: Text("TASK VIEW",
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 15.0,
-                                                        color: Colors.black))),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),(){
-                                  if(taskId == 0 && userId == 0 && assignId == 0){
-                                    return Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Center(child: Text("Click Task assign to view the Task  ")),
-                                      ],
-                                    );
-                                  }else{
-                                    return Expanded(
-                                      child: Container(
-                                        width: 660,
-                                        height: 450,
-                                        child: Card(
-                                            color: Colors.white70,
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                    flex: 2,
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.all(10.0),
-                                                      child: Column(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Task id : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(taskId.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "User id : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(userId.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Assign id : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(assignId.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text("Workorder list id : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(wolId.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Quantity : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(quantity.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Start Serial no0 : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(startSerialNo.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "End Serial no : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(endSerialNo.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Status : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(status.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "testing Status  : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(testingStatus.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Start date  : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text((){
-                                                                var str = startDate.toString().split('T')[0];
-                                                                return str.toString();
-
-                                                              }(),
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.black
-                                                                ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "end date  : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text((){
-                                                                var str = endDate.toString().split('T')[0];
-                                                                return str.toString();
-                                                              }(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Created by  : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(createdBy.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Updated by  : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(updatedBy.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Created date  : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text((){
-                                                                var str = createdDate.toString().split('T')[0];
-                                                                return str.toString();
-
-                                                              }(),
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.black
-                                                                ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Updated date  : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text((){
-                                                                var str = updatedDate.toString().split('T')[0];
-                                                                return str.toString();
-                                                              }(),
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.black
-                                                                ),),
-
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Rating  : ",
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: 14.0,
-                                                                    color: Colors.red
-                                                                ),
-                                                              ),
-                                                              Text(rating.toString(), style: TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  fontSize: 14.0,
-                                                                  color: Colors.black
-                                                              ),),
-
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )),
-                                              ],
-                                            )),
-
-                                      ),
-                                    );
-                                  }
-                                }(),
-
-
-                              ],
-                            ),
-                          ),
-                        )*/
-                      ],
-                    ),
-
-                  ),
-                /*  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-
-                            SizedBox(
-                              height: 50,
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                color: Color(0xff8fcceb),
-                                //Colors.blueAccent,
-                                elevation: 10,
-                                child: Center(
-                                    child: Text("TASK ASSIGN",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15.0,
-                                            color: Colors.black))),
-                              ),
-                            ),
-
-
-                            Card(
-                              elevation:10,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  DropdownButton(
-                                    icon: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: Icon(Icons.keyboard_arrow_down),
-                                    ),
-                                    items: users.map<DropdownMenuItem<String>>(
-                                            (String setlist) {
-                                          return DropdownMenuItem<String>(
-                                            value: setlist,
-                                            child: Text(setlist.toString()),
-                                          );
-                                        }).toList(),
-                                    value: selectUsers,
-                                    onChanged: (item) {
-
-                                      setState(() {
-                                        selectUsers = item.toString();
-                                        print("Index==>"+selectUsers);
-                                        //List<FirstClass> emptylist = [];
-
-                                      });
-                                    },
-                                  ),
-                                  DropdownButton(
-                                    icon: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: Icon(Icons.keyboard_arrow_down),
-                                    ),
-                                    items: workorders.map<DropdownMenuItem<String>>(
-                                            (String setlist) {
-                                          return DropdownMenuItem<String>(
-                                            value: setlist,
-                                            child: Text(setlist.toString()),
-                                          );
-                                        }).toList(),
-                                    value: selectWorkorder,
-                                    onChanged: (item) {
-
-                                      setState(() {
-                                        selectWorkorder = item.toString();
-                                        print("Index==>"+selectWorkorder);
-                                        //List<FirstClass> emptylist = [];
-
-                                      });
-                                    },
-                                  ),
-                                  DropdownButton(
-                                    icon: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: Icon(Icons.keyboard_arrow_down),
-                                    ),
-                                    items: products.map<DropdownMenuItem<String>>(
-                                            (String setlist) {
-                                          return DropdownMenuItem<String>(
-                                            value: setlist,
-                                            child: Text(setlist.toString()),
-                                          );
-                                        }).toList(),
-                                    value: selectProduct,
-                                    onChanged: (item) {
-
-                                      setState(() {
-                                        selectProduct = item.toString();
-                                        print("Index==>"+selectProduct);
-                                        //List<FirstClass> emptylist = [];
-
-                                      });
-                                    },
-                                  ),
-
-
-                                ],
-                              ),
-                            ),
-
-
-                            ListView.builder(
-                                shrinkWrap: true,
-                                controller: ScrollController(),
-                                itemCount: datum.length,
-                                itemBuilder: (BuildContext ctxt, int index) {
-                                  return Card(
-                                      color: Colors.teal[100],
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                              flex: 2,
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(10.0),
-                                                child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          "User Name : ",
-                                                          style: TextStyle(
-                                                              fontWeight: FontWeight.w500,
-                                                              fontSize: 14.0,
-                                                              color: Colors.red
-                                                          ),
-                                                        ),
-                                                        Text(datum[index].userId.toString(), style: TextStyle(
-                                                            fontWeight: FontWeight.w500,
-                                                            fontSize: 14.0,
-                                                            color: Colors.black
-                                                        ),),
-
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          "Product : ",
-                                                          style: TextStyle(
-                                                              fontWeight: FontWeight.w500,
-                                                              fontSize: 14.0,
-                                                              color: Colors.red
-                                                          ),
-                                                        ),
-                                                        Text(datum[index].assignId.toString(), style: TextStyle(
-                                                            fontWeight: FontWeight.w500,
-                                                            fontSize: 14.0,
-                                                            color: Colors.black
-                                                        ),),
-
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          "Workorder : ",
-                                                          style: TextStyle(
-                                                              fontWeight: FontWeight.w500,
-                                                              fontSize: 14.0,
-                                                              color: Colors.red
-                                                          ),
-                                                        ),
-                                                        Text(datum[index].wolId.toString(), style: TextStyle(
-                                                            fontWeight: FontWeight.w500,
-                                                            fontSize: 14.0,
-                                                            color: Colors.black
-                                                        ),),
-
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          "Quantity : ",
-                                                          style: TextStyle(
-                                                              fontWeight: FontWeight.w500,
-                                                              fontSize: 14.0,
-                                                              color: Colors.red
-                                                          ),
-                                                        ),
-                                                        Text(datum[index].quantity.toString(), style: TextStyle(
-                                                            fontWeight: FontWeight.w500,
-                                                            fontSize: 14.0,
-                                                            color: Colors.black
-                                                        ),),
-
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          "Start Serial No : ",
-                                                          style: TextStyle(
-                                                              fontWeight: FontWeight.w500,
-                                                              fontSize: 14.0,
-                                                              color: Colors.red
-                                                          ),
-                                                        ),
-                                                        Text(datum[index].startSerialNo.toString(), style: TextStyle(
-                                                            fontWeight: FontWeight.w500,
-                                                            fontSize: 14.0,
-                                                            color: Colors.black
-                                                        ),),
-
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          "End Serial No : ",
-                                                          style: TextStyle(
-                                                              fontWeight: FontWeight.w500,
-                                                              fontSize: 14.0,
-                                                              color: Colors.red
-                                                          ),
-                                                        ),
-                                                        Text(datum[index].endSerialNo.toString(), style: TextStyle(
-                                                            fontWeight: FontWeight.w500,
-                                                            fontSize: 14.0,
-                                                            color: Colors.black
-                                                        ),),
-
-                                                      ],
-                                                    ),
-
-                                                  ],
-                                                ),
-                                              )),
-                                          Expanded(
-                                              child: CircularPercentIndicator(
-                                                radius: 50.0,
-                                                lineWidth: 6.5,
-                                                percent: 0.45,
-                                                circularStrokeCap: CircularStrokeCap.round,
-                                                center: Text(
-                                                  "45%",
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.w700,
-                                                      fontSize: 13.0,
-                                                      color: Colors.white
-                                                  ),
-                                                ),
-                                                progressColor: Colors.white,
-                                                startAngle: 270,
-                                                backgroundColor: Colors.white54,
-
-                                              ))
-                                        ],
-                                      ));
-                                }),
-
-
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: MediaQuery.of(context).size.height,
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 50,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  color: Color(0xff8fcceb),
-                                  //Colors.blueAccent,
-                                  elevation: 10,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Center(
-                                          child: Text("TASK VIEW",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 15.0,
-                                                  color: Colors.black))),
-                                    ],
-                                  ),
-                                ),
-                              ),
-
-
-                              Card(
-                                elevation:10,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Text(
-                                        '${date.year}/${date.month}/${date.day}'
-                                    ),
-                                    GestureDetector(
-                                      onTap: ()async{
-                                        DateTime? newDate = await showDatePicker(
-                                            context: context,
-                                            initialDate: date,
-                                            firstDate: DateTime(1900),
-                                            lastDate: DateTime(2100));
-                                        if(newDate == null) return;
-                                        setState(() {
-                                          date = newDate;
-                                        });
-                                      },
-                                      child: Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 15,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    DropdownButton(
-                                      icon: Padding(
-                                        padding: const EdgeInsets.only(left: 8.0),
-                                        child: Icon(Icons.keyboard_arrow_down),
-                                      ),
-                                      items: workorders.map<DropdownMenuItem<String>>(
-                                              (String setlist) {
-                                            return DropdownMenuItem<String>(
-                                              value: setlist,
-                                              child: Text(setlist.toString()),
-                                            );
-                                          }).toList(),
-                                      value: selectWorkorder,
-                                      onChanged: (item) {
-
-                                        setState(() {
-                                          selectWorkorder = item.toString();
-                                          print("Index==>"+selectWorkorder);
-                                          //List<FirstClass> emptylist = [];
-
-                                        });
-                                      },
-                                    ),
-                                    DropdownButton(
-                                      icon: Padding(
-                                        padding: const EdgeInsets.only(left: 8.0),
-                                        child: Icon(Icons.keyboard_arrow_down),
-                                      ),
-                                      items: products.map<DropdownMenuItem<String>>(
-                                              (String setlist) {
-                                            return DropdownMenuItem<String>(
-                                              value: setlist,
-                                              child: Text(setlist.toString()),
-                                            );
-                                          }).toList(),
-                                      value: selectProduct,
-                                      onChanged: (item) {
-
-                                        setState(() {
-                                          selectProduct = item.toString();
-                                          print("Index==>"+selectProduct);
-                                          //List<FirstClass> emptylist = [];
-
-                                        });
-                                      },
-                                    ),
-
-
-                                  ],
-                                ),
-                              ),
-
-
-
-
-                              SizedBox(
-                                height: 350,
-                                child: ListView.builder(
-                                    itemCount: 20,
-                                    itemBuilder: (BuildContext ctxt, int index) {
-                                      return Card(
-                                          color: Colors.green[100],
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(15.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Text("16 zone"),
-                                                Text("100"),
-                                                Text("001"),
-                                                Text("500"),
-                                              ],
-                                            ),
-                                          ));
-                                    }),
-                              ),
-
-
-
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),*/
-
-                  Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text('@copyright rax-tech International 2022',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 15.0,
-                                  color: Colors.black)),
-                        ],
-                      )),
-                ],
-              ),
+      },
+      child: Slidable(
+        key: const ValueKey(0),
+        startActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          children:  [
+            SlidableAction(
+              onPressed: (context) {
+                setState(() {
+                  isBugged = true;
+                });
+
+           doNothing(context, datum, index);
+          },
+
+              backgroundColor: Color(0xFFFE4A49),
+              foregroundColor: Colors.white,
+              icon: Icons.delete,
+              label: 'Re-Assign',
             ),
-          ),
-          Visibility(
-            visible: _isShow,
-            child: Expanded(
-                flex: 5,
-                child: AssignTask(tasks: task)),
-          ),
-        ],
-      );
-    }, error: (e,s){
-      print("nancy----> ${e.toString()}");
-      return Text(e.toString());
-        }, loading: (){
-      return CircularProgressIndicator();
-        });
 
-  }
+          ],
+        ),
+
+        // The end action pane is the one at the right or the bottom side.
+        endActionPane:  ActionPane(
+          motion: ScrollMotion(),
+          children: [
+          ],
+        ),
+        child: TaskListItems(
+          username: datum[index].username.toString(),
+          product: datum[index].productid.toString(),
+          workorder: datum[index].workorderid.toString(),
+          quantity: datum[index].quantity.toString(),
+          startserial: datum[index].startSerialNo.toString(),
+          endserial: datum[index].endSerialNo.toString(),
+          status: datum[index].status.toString(),
+
+        ),
+      ),
+
+    );
+   }
 }

@@ -64,6 +64,11 @@ class ApplicationClass{
     return prefs.get(key);
   }
 
+  getStringForm1SharePreferences(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get(key);
+  }
+
   removeStringFormSharePreferences(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.remove(key);

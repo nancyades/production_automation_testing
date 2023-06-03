@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:production_automation_testing/Model/resultmodel.dart';
 import 'package:production_automation_testing/Provider/excelprovider.dart';
+import 'package:production_automation_testing/Provider/generalProvider.dart';
 import 'package:production_automation_testing/Provider/post_provider/test_provider.dart';
 import 'package:production_automation_testing/noofpages/Test/firsrtaskviewpage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,7 +31,7 @@ bool valus = true;
       if(data[i].taskId == widget.tasks!.taskId){
         if(valus == true){
           for(int j=0; j<data[i].testing!.length; j++){
-            if(data[i].testing![j].status == "FAIL"){
+            if(data[i].testing![j].status == "FAIL" || data[i].testing![j].displayResult == 'FAIL'){
               setState(() {
                 valus = false;
               });
@@ -111,12 +112,12 @@ bool valus = true;
                                 "quantity": widget.tasks!.quantity,
                                 "start_serial_no": widget.tasks!.startSerialNo,
                                 "end_serial_no": widget.tasks!.endSerialNo,
-                                "status": widget.tasks!.status,
+                                "status": valus == false ? "In-Progress" : "Completed",
                                 "testing_status": valus == false ? "FAIL" : "PASS",
                                 "start_date": widget.tasks!.startDate,
                                 "end_date": widget.tasks!.endDate,
-                                "created_by": widget.tasks!.createdBy,
-                                "updated_by": Helper.shareduserid,
+                                "created_by": widget.tasks!.createdBy.toString(),
+                                "updated_by": Helper.shareduserid.toString(),
                                 "created_date": widget.tasks!.createdDate,
                                 "updated_date": widget.tasks!.updatedDate,
                                 "flg": widget.tasks!.flg,
@@ -126,6 +127,9 @@ bool valus = true;
                                 "name": widget.tasks!.username
 
                               });
+
+                              ref.read(macAddressTestProvider.notifier).state = " ";
+
                               Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreenPage()));
                             },
                             child: Padding(

@@ -57,6 +57,7 @@ dependencies:
   fl_chart: ^0.61.0
   flutter_svg: ^1.0.3
   google_fonts: ^4.0.4
+  flutter_slidable: ^3.0.0
 
 
 

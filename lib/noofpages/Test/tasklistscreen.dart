@@ -35,9 +35,14 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
 
   List<TemplateValue> tempu = [];
 
+  var inprogress;
+  var complete;
+
   @override
   Widget build(BuildContext context) {
     return ref.watch(getTaskListNotifier).id.when(data: (datum) {
+     inprogress =  datum.where((element) => element.status == "In-Progress").toList();
+     complete   =  datum.where((element) => element.status == "Completed").toList();
 
       return Row(
         children: [
@@ -105,8 +110,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Text("${count[0]
-                                                          .taskCount}%",
+                                                      Text("${datum.length}%",
                                                           style: TextStyle(
                                                               fontWeight: FontWeight
                                                                   .bold,
@@ -119,7 +123,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                                   ),
                                                   Row(
                                                     children: [
-                                                      Text("All Task",
+                                                      Text("Total Task",
                                                           style: TextStyle(
                                                               fontWeight: FontWeight
                                                                   .w600,
@@ -207,8 +211,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Text("${count[0]
-                                                          .inprogress}%",
+                                                      Text("${inprogress.length}%",
                                                           style: TextStyle(
                                                               fontWeight: FontWeight
                                                                   .bold,
@@ -307,8 +310,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Text("${count[0]
-                                                          .completed}%",
+                                                      Text("${complete.length}%",
                                                           style: TextStyle(
                                                               fontWeight: FontWeight
                                                                   .bold,
@@ -437,20 +439,9 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                               child: Container(
                                                 height: 20.0,
                                                 width: 10.0,
-                                                child: Center(child: Text("Product Name",
+                                                child: Center(child: Text("WorkOrder",
                                                     style: TextStyle(
                                                         fontWeight: FontWeight.w900,
-                                                        fontSize: 15.0,
-                                                        color: Colors.black))),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Container(
-                                                height: 20.0,
-                                                width: 10.0,
-                                                child: Center(child: Text("Product Code",
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
                                                         fontSize: 15.0,
                                                         color: Colors.black))),
                                               ),
@@ -470,7 +461,18 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                               child: Container(
                                                 height: 20.0,
                                                 width: 10.0,
-                                                child: Center(child: Text("Created By",
+                                                child: Center(child: Text("Created by",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 15.0,
+                                                        color: Colors.black))),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Container(
+                                                height: 20.0,
+                                                width: 10.0,
+                                                child: Center(child: Text("Status",
                                                     style: TextStyle(
                                                         fontWeight: FontWeight.bold,
                                                         fontSize: 15.0,
@@ -483,7 +485,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                               child: Container(
                                                 height: 20.0,
                                                 width: 10.0,
-                                                child: Center(child: Text("Status",
+                                                child: Center(child: Text("Testing Status",
                                                     style: TextStyle(
                                                         fontWeight: FontWeight.bold,
                                                         fontSize: 15.0,
@@ -614,11 +616,16 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                                     });
                                                   },
                                                   child: TestTaskListItems(
-                                                      Productname: datum[index].product.productName.toString(),
-                                                      productcode: datum[index].product.productCode.toString(),
+
+                                                      Workorder: datum[index].workorderCode.toString(),
                                                       quantity: datum[index].product.quantity.toString(),
-                                                      assignedby: datum[index].product.createdBy.toString(),
-                                                      status: datum[index].product.status.toString(),
+                                                      createdby: datum[index].createdBy.toString(),
+                                                      status:  datum[index].status.toString(),
+                                                      testingstatus:  datum[index].testingStatus.toString(),
+
+
+
+
 
 
                                                   ),

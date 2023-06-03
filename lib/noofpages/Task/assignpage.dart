@@ -86,7 +86,7 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
 
   List<ExcelRead>? testlist;
 
-  List<ExcelRead> gettest =[];
+  List<ExcelRead> gettest = [];
 
 
 
@@ -115,6 +115,9 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
 
     }
 */
+
+
+
 
     if(Helper.ischecked == "passvalue"){
 
@@ -180,11 +183,10 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
             workorders.add(val);
             selectWorkorder = workorders[0].workorderCode.toString();
           }
-
-
         }
 
       }
+
 
 
       return ref.watch(addTaskdetailsNotifier).id.when(data: (data){
@@ -762,8 +764,6 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
                                                       // testlist_1 = readexcel;
                                                       // readtest = readexcel;
                                                       gettest = testlist!;
-
-
                                                     }
                                                     else{
                                                       Helper.classes = "TEST";
@@ -826,10 +826,7 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
                                           print("value-----> $val");
                                           setState(() {
                                             Helper.ischecked = "isactivevalue";
-
                                             isSelct = val!;
-
-
                                           });
 
                                         },
@@ -879,11 +876,7 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
                                           "name": widget.tasks.username
 
                                         });
-
-
                                       })
-
-
                                 ],
                               ),
                             )
@@ -895,10 +888,6 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
 
                          if(Helper.cleartemplate == true){
                            testlist = data[0].template![0].excelread;
-
-
-
-
 
                            s = 0 ;
                            if(s == 0 &&  vary == false){
@@ -974,8 +963,6 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
                                        onPressed: (){
                                          setState(() {
                                            isBugged = true;
-
-
                                          });
 
                                          assignlist(readexcel);
@@ -1729,8 +1716,8 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
                               "testing_status": "open",
                               "start_date": null,
                               "end_date": null,
-                              "created_by": Helper.shareduserid,
-                              "updated_by": 0,
+                              "created_by": Helper.shareduserid.toString(),
+                              "updated_by": Helper.shareduserid.toString(),
                               "created_date": null,
                               "updated_date": null,
                               "flg": 1,
@@ -1911,6 +1898,7 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
             }
         ));
   }
+
   getTaskItem(List<ExcelRead> mList, int index) {
 
     if(Helper.classes == "TEST" && readexcel.isNotEmpty){

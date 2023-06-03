@@ -6,6 +6,7 @@ import 'package:production_automation_testing/Helper/application_class.dart';
 import 'package:production_automation_testing/Helper/packet_control.dart';
 import 'package:production_automation_testing/Model/resultmodel.dart';
 import 'package:production_automation_testing/Model/testmodel.dart';
+import 'package:production_automation_testing/Provider/general_provider.dart';
 import 'package:production_automation_testing/Provider/post_provider/test_provider.dart';
 import 'package:production_automation_testing/Provider/tcpprovider/tcp_provider_receive_data.dart';
 import 'package:production_automation_testing/Provider/testProvider.dart';
@@ -42,7 +43,9 @@ class TestScreenPage extends ConsumerStatefulWidget {
   TaskModel? tsk;
   String? stages;
 
-  TestScreenPage({Key? key, this.testtype, this.testlist, this.tsk, this.stages}) : super(key: key);
+  TestScreenPage(
+      {Key? key, this.testtype, this.testlist, this.tsk, this.stages})
+      : super(key: key);
 
   @override
   ConsumerState<TestScreenPage> createState() => _TestScreenPageState();
@@ -71,22 +74,24 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
   bool isPressed = true;
 
   var stopWatchTimer;
-  var sec = 00, min = 00, hour = 00;
+  var sec = 00,
+      min = 00,
+      hour = 00;
   var fontSize, height;
 
   bool isNow = false;
 
   TextEditingController macaddresscontroller = TextEditingController();
   TextEditingController producttitlecontroller = TextEditingController();
-  TextEditingController serialnocontroller = TextEditingController();
+  TextEditingController serialnocontroller = TextEditingController(text: '');
   TextEditingController jigaddresscontroller = TextEditingController(text: '');
 
-  List<TextEditingController> generalController=[];
+  List<TextEditingController> generalController = [];
 
   TextEditingController mac = TextEditingController();
 
   String? choice;
-  
+
   var startserialno;
   var endserialno;
   bool isEast = false;
@@ -106,14 +111,14 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
   bool value = true;
 
-   var displayTime;
+  var displayTime;
 
-   List<Results> reslt = [];
+  List<Results> reslt = [];
 
   List<Results> ted = [];
   int jk = 0;
 
-  List<Results> uniquelist =[];
+  List<Results> uniquelist = [];
 
   int? totalSeconds;
 
@@ -131,12 +136,14 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
       jigaddresscontroller.text =
           await ApplicationClass().getStringFormSharePreferences('Jig') ?? '';
+      serialnocontroller.text =
+          await ApplicationClass().getStringForm1SharePreferences('serial') ?? '';
     });
 
 
     super.initState();
 
-    for(int i=0;i<100;i++){
+    for (int i = 0; i < 100; i++) {
       generalController.add(TextEditingController(text: ""));
     }
   }
@@ -146,17 +153,21 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    
-   
     startserialno = int.parse(widget.tsk!.startSerialNo!.toString());
     endserialno = int.parse(widget.tsk!.endSerialNo!.toString());
 
     producttitlecontroller.text = widget.tsk!.product!.productName.toString();
-    fontSize = MediaQuery.of(context).size.width;
-    height = MediaQuery.of(context).size.height;
-    List<FirstTest>? alltest = ref.watch(getallestNotifier).value;
-
+    fontSize = MediaQuery
+        .of(context)
+        .size
+        .width;
+    height = MediaQuery
+        .of(context)
+        .size
+        .height;
+    List<FirstTest>? alltest = ref
+        .watch(getallestNotifier)
+        .value;
 
 
     if (receivedData == null) {
@@ -172,23 +183,25 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
     List<List<Testing>> ind3 = [];
     List<Testing> ss = <Testing>[];
     int j = 0;
-    
-    
-    for(int i=0; i<widget.testtype[0].length; i++){
-      for(int j=0; j<widget.testlist!.length; j++){
-        if (widget.testtype[0][i] == widget.testlist![j].testStatus){
+
+
+    for (int i = 0; i < widget.testtype[0].length; i++) {
+      for (int j = 0; j < widget.testlist!.length; j++) {
+        if (widget.testtype[0][i] == widget.testlist![j].testStatus) {
           ss.add(widget.testlist![j]);
           ss.sort((a, b) => a.testNumber!.compareTo(b.testNumber!));
         }
       }
       ind2.add(ss);
-      //uniquelist.sort((a, b) => a.testNumber!.compareTo(b.testNumber!));
+
+      ind2.sort((a, b) => a[0].testNumber!.compareTo(b[0].testNumber!));
+
+
       ss = [];
     }
 
 
-
-   /* for (int i = 0; i < widget.testlist!.length; i++) {
+    /* for (int i = 0; i < widget.testlist!.length; i++) {
       if (widget.testtype[0].length > j) {
         for(int m = 0; m<widget.testtype[0].length; m++)
         if (widget.testlist![i].testStage == widget.testtype[0][m]) {
@@ -205,7 +218,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
     ind2.add(ss);*/
 
-    for (int i = 0; i < ind2.length; i++) {
+    /*  for (int i = 0; i < ind2.length; i++) {
       List<Testing> list1 = <Testing>[];
       list1 = ind2[i].toList();
 
@@ -216,7 +229,20 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           j++;
         }
       }
+    }*/
+
+
+    for (int i = 0; i < ind2.length; i++) {
+      List<Testing> list1 = <Testing>[];
+      list1 = ind2[i].toList();
+
+      for (var test in widget.testtype[0]) {
+        if (test == list1[0].testStatus.toString()) {
+          ind3.add(list1);
+        }
+      }
     }
+
 
     if (ind3.length >= k && test.isEmpty) {
       test.add(ind3[k]);
@@ -231,7 +257,10 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
-              height: MediaQuery.of(context).size.height,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height,
               width: 100,
               color: Color(0xff333951),
               child: Stack(
@@ -245,18 +274,25 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           Expanded(
             flex: 7,
             child: Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width * 0.63,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width * 0.63,
               color: Colors.white,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 10.0, top: 20, right: 20, bottom: 15),
+                    padding: const EdgeInsets.only(
+                        left: 10.0, top: 20, right: 20, bottom: 15),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                       /* IconButton(
+                        /* IconButton(
                             onPressed: () {
                              // ref.refresh(gettesttypeNotifier);
                               Navigator.of(context).pop();
@@ -275,9 +311,12 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                   horizontal: 20, vertical: 15),
                             ),
                             onPressed: () async {
-                              ref.read(testStartedProvider.notifier).state = false;
+                              ref
+                                  .read(testStartedProvider.notifier)
+                                  .state = false;
                               Navigator.push(
-                                  context, MaterialPageRoute(builder: (context) => HomeScreenPage()));
+                                  context, MaterialPageRoute(
+                                  builder: (context) => HomeScreenPage()));
                             },
                             child: const Text('DASHBOARD')),
                       ],
@@ -286,8 +325,14 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   Expanded(
                     child: Center(
                       child: Container(
-                        height: MediaQuery.of(context).size.width * 0.95,
-                        width: MediaQuery.of(context).size.width * 0.95,
+                        height: MediaQuery
+                            .of(context)
+                            .size
+                            .width * 0.95,
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width * 0.95,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           border: Border.all(width: 2.0),
@@ -299,7 +344,10 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                             children: [
                               Container(
                                 height: 200.0,
-                                width: MediaQuery.of(context).size.width,
+                                width: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Row(
@@ -308,7 +356,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                         flex: 6,
                                         child: Column(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
+                                          MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Row(
                                               children: [
@@ -316,7 +364,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                   "Product Title : ",
                                                   style: TextStyle(
                                                       fontWeight:
-                                                          FontWeight.w500,
+                                                      FontWeight.w500,
                                                       fontSize: 14.0,
                                                       color: Colors.red),
                                                 ),
@@ -328,44 +376,44 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                     decoration: InputDecoration(
                                                       counterText: '',
                                                       contentPadding:
-                                                          EdgeInsets.only(
-                                                              top: 10.0),
+                                                      EdgeInsets.only(
+                                                          top: 10.0),
                                                       border: OutlineInputBorder(
                                                           borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  width: 1.0)),
+                                                          BorderSide(
+                                                              color: Colors
+                                                                  .white,
+                                                              width: 1.0)),
                                                       focusedBorder:
-                                                          OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      width:
-                                                                          1.0)),
+                                                      OutlineInputBorder(
+                                                          borderSide:
+                                                          BorderSide(
+                                                              color: Colors
+                                                                  .white,
+                                                              width:
+                                                              1.0)),
                                                       enabledBorder:
-                                                          OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      width:
-                                                                          1.0)),
+                                                      OutlineInputBorder(
+                                                          borderSide:
+                                                          BorderSide(
+                                                              color: Colors
+                                                                  .white,
+                                                              width:
+                                                              1.0)),
                                                     ),
                                                     cursorColor: Colors.red,
                                                     controller:
-                                                        producttitlecontroller,
+                                                    producttitlecontroller,
                                                     onChanged: (val) {},
                                                     textAlignVertical:
-                                                        TextAlignVertical
-                                                            .center,
+                                                    TextAlignVertical
+                                                        .center,
                                                     style: TextStyle(
                                                         color: Colors.black,
                                                         fontSize:
-                                                            fontSize! * 0.010,
+                                                        fontSize! * 0.010,
                                                         fontWeight:
-                                                            FontWeight.bold),
+                                                        FontWeight.bold),
                                                   ),
                                                 ),
                                               ],
@@ -376,7 +424,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                   "Serial Number : ",
                                                   style: TextStyle(
                                                       fontWeight:
-                                                          FontWeight.w500,
+                                                      FontWeight.w500,
                                                       fontSize: 14.0,
                                                       color: Colors.red),
                                                 ),
@@ -388,57 +436,58 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                     decoration: InputDecoration(
                                                       counterText: '',
                                                       contentPadding:
-                                                          EdgeInsets.only(
-                                                              top: 10.0),
+                                                      EdgeInsets.only(
+                                                          top: 10.0),
                                                       border: OutlineInputBorder(
                                                           borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  width: 1.0)),
+                                                          BorderSide(
+                                                              color: Colors
+                                                                  .white,
+                                                              width: 1.0)),
                                                       focusedBorder:
-                                                          OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      width:
-                                                                          1.0)),
+                                                      OutlineInputBorder(
+                                                          borderSide:
+                                                          BorderSide(
+                                                              color: Colors
+                                                                  .white,
+                                                              width:
+                                                              1.0)),
                                                       enabledBorder:
-                                                          OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      width:
-                                                                          1.0)),
+                                                      OutlineInputBorder(
+                                                          borderSide:
+                                                          BorderSide(
+                                                              color: Colors
+                                                                  .white,
+                                                              width:
+                                                              1.0)),
                                                     ),
                                                     cursorColor: Colors.red,
                                                     controller:
-                                                        serialnocontroller,
+                                                    serialnocontroller,
                                                     onChanged: (val) {
+                                                      saveSerialAddress(val);
                                                       ref
                                                           .read(
-                                                              serialNoTestProvider
-                                                                  .notifier)
+                                                          serialNoTestProvider
+                                                              .notifier)
                                                           .state = val;
                                                     },
                                                     textAlignVertical:
-                                                        TextAlignVertical
-                                                            .center,
+                                                    TextAlignVertical
+                                                        .center,
                                                     style: TextStyle(
                                                         color: Colors.black,
                                                         fontSize:
-                                                            fontSize! * 0.010,
+                                                        fontSize! * 0.010,
                                                         fontWeight:
-                                                            FontWeight.bold),
+                                                        FontWeight.bold),
                                                   ),
                                                 ),
                                                 Text(
-                                                 " ${"Note:  " +
+                                                  " ${"Note:  " +
                                                       startserialno.toString() +
-                                                    "-"
-                                                    + endserialno.toString()
+                                                      "-"
+                                                      + endserialno.toString()
                                                   }",
                                                   style: TextStyle(
                                                       fontWeight:
@@ -454,7 +503,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                   "Jig Address : ",
                                                   style: TextStyle(
                                                       fontWeight:
-                                                          FontWeight.w500,
+                                                      FontWeight.w500,
                                                       fontSize: 14.0,
                                                       color: Colors.red),
                                                 ),
@@ -465,121 +514,125 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                     decoration: InputDecoration(
                                                       counterText: '',
                                                       contentPadding:
-                                                          EdgeInsets.only(
-                                                              top: 10.0),
+                                                      EdgeInsets.only(
+                                                          top: 10.0),
                                                       border: OutlineInputBorder(
                                                           borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  width: 1.0)),
+                                                          BorderSide(
+                                                              color: Colors
+                                                                  .white,
+                                                              width: 1.0)),
                                                       focusedBorder:
-                                                          OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      width:
-                                                                          1.0)),
+                                                      OutlineInputBorder(
+                                                          borderSide:
+                                                          BorderSide(
+                                                              color: Colors
+                                                                  .white,
+                                                              width:
+                                                              1.0)),
                                                       enabledBorder:
-                                                          OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      width:
-                                                                          1.0)),
+                                                      OutlineInputBorder(
+                                                          borderSide:
+                                                          BorderSide(
+                                                              color: Colors
+                                                                  .white,
+                                                              width:
+                                                              1.0)),
                                                     ),
                                                     cursorColor: Colors.red,
                                                     controller:
-                                                        jigaddresscontroller,
+                                                    jigaddresscontroller,
                                                     onChanged: (val) {
                                                       saveJigAddress(val);
                                                       ref
                                                           .read(
-                                                              jigAddressTestProvider
-                                                                  .notifier)
+                                                          jigAddressTestProvider
+                                                              .notifier)
                                                           .state = val;
                                                     },
                                                     textAlignVertical:
-                                                        TextAlignVertical
-                                                            .center,
+                                                    TextAlignVertical
+                                                        .center,
                                                     style: TextStyle(
                                                         color: Colors.black,
                                                         fontSize:
-                                                            fontSize! * 0.010,
+                                                        fontSize! * 0.010,
                                                         fontWeight:
-                                                            FontWeight.bold),
+                                                        FontWeight.bold),
                                                   ),
                                                 ),
                                               ],
                                             ),
                                             Consumer(
-                                              builder: (context, ref, child) {
-                                                String mac =
-                                                ref.watch(macAddressTestProvider);
-                                                macaddresscontroller.text = mac;
-                                                return Row(
-                                                  children: [
-                                                    Text(
-                                                      "MAC Address : ",
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontSize: 14.0,
-                                                          color: Colors.red),
-                                                    ),
-                                                    SizedBox(
-                                                      width: fontSize * 0.15,
-                                                      height: height * 0.05,
-                                                      child: TextField(
-                                                        maxLength: 10,
-                                                        decoration: InputDecoration(
-                                                          counterText: '',
-                                                          contentPadding:
-                                                              EdgeInsets.only(
-                                                                  top: 10.0),
-                                                          border: OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      width: 1.0)),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                                  borderSide:
-                                                                      BorderSide(
-                                                                          color: Colors
-                                                                              .white,
-                                                                          width:
-                                                                              1.0)),
-                                                          enabledBorder:
-                                                              OutlineInputBorder(
-                                                                  borderSide:
-                                                                      BorderSide(
-                                                                          color: Colors
-                                                                              .white,
-                                                                          width:
-                                                                              1.0)),
-                                                        ),
-                                                        cursorColor: Colors.red,
-                                                        controller:
-                                                            macaddresscontroller,
-                                                        onChanged: (val) {},
-                                                        textAlignVertical:
-                                                            TextAlignVertical
-                                                                .center,
+                                                builder: (context, ref, child) {
+                                                  String mac =
+                                                  ref.watch(
+                                                      macAddressTestProvider);
+                                                  macaddresscontroller.text =
+                                                      mac;
+                                                  return Row(
+                                                    children: [
+                                                      Text(
+                                                        "MAC Address : ",
                                                         style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize:
-                                                                fontSize! * 0.010,
                                                             fontWeight:
-                                                                FontWeight.bold),
+                                                            FontWeight.w500,
+                                                            fontSize: 14.0,
+                                                            color: Colors.red),
                                                       ),
-                                                    ),
-                                                  ],
-                                                );
-                                              }
+                                                      SizedBox(
+                                                        width: fontSize * 0.15,
+                                                        height: height * 0.05,
+                                                        child: TextField(
+                                                          maxLength: 10,
+                                                          decoration: InputDecoration(
+                                                            counterText: '',
+                                                            contentPadding:
+                                                            EdgeInsets.only(
+                                                                top: 10.0),
+                                                            border: OutlineInputBorder(
+                                                                borderSide:
+                                                                BorderSide(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    width: 1.0)),
+                                                            focusedBorder:
+                                                            OutlineInputBorder(
+                                                                borderSide:
+                                                                BorderSide(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    width:
+                                                                    1.0)),
+                                                            enabledBorder:
+                                                            OutlineInputBorder(
+                                                                borderSide:
+                                                                BorderSide(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    width:
+                                                                    1.0)),
+                                                          ),
+                                                          cursorColor: Colors
+                                                              .red,
+                                                          controller:
+                                                          macaddresscontroller,
+                                                          onChanged: (val) {},
+                                                          textAlignVertical:
+                                                          TextAlignVertical
+                                                              .center,
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black,
+                                                              fontSize:
+                                                              fontSize! * 0.010,
+                                                              fontWeight:
+                                                              FontWeight.bold),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                }
                                             ),
                                           ],
                                         ),
@@ -588,7 +641,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                         flex: 1,
                                         child: Column(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
+                                          MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Row(
                                               children: [
@@ -599,35 +652,44 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                 ),
                                                 StreamBuilder<int>(
                                                   stream:
-                                                      stopWatchTimer.rawTime,
+                                                  stopWatchTimer.rawTime,
                                                   initialData: stopWatchTimer
                                                       .rawTime.value,
                                                   builder: (context, snapshot) {
                                                     final value =
-                                                        snapshot.data!;
-                                              displayTime =
+                                                    snapshot.data!;
+                                                    displayTime =
                                                         StopWatchTimer
                                                             .getDisplayTime(
-                                                                value,
-                                                                hours: true,
-                                                                milliSecond:
-                                                                    false);
+                                                            value,
+                                                            hours: true,
+                                                            milliSecond:
+                                                            false);
 
-                                                    List<String> timeParts = displayTime.split(':'); // split the raw time value into its individual parts
-                                                    int hours = int.parse(timeParts[0]); // parse the hours part as an integer
-                                                    int minutes = int.parse(timeParts[1]); // parse the minutes part as an integer
-                                                    int seconds = int.parse(timeParts[2]); // parse the seconds part as an integer
-                                                     totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+                                                    List<
+                                                        String> timeParts = displayTime
+                                                        .split(
+                                                        ':'); // split the raw time value into its individual parts
+                                                    int hours = int.parse(
+                                                        timeParts[0]); // parse the hours part as an integer
+                                                    int minutes = int.parse(
+                                                        timeParts[1]); // parse the minutes part as an integer
+                                                    int seconds = int.parse(
+                                                        timeParts[2]); // parse the seconds part as an integer
+                                                    totalSeconds =
+                                                        (hours * 3600) +
+                                                            (minutes * 60) +
+                                                            seconds;
 
                                                     return Text(
                                                       displayTime,
                                                       style: TextStyle(
                                                           color:
-                                                              Colors.blueGrey,
+                                                          Colors.blueGrey,
                                                           fontSize:
-                                                              fontSize * 0.015,
+                                                          fontSize * 0.015,
                                                           fontWeight:
-                                                              FontWeight.w600),
+                                                          FontWeight.w600),
                                                     );
                                                   },
                                                 ),
@@ -648,7 +710,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                     flex: 6,
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           ind3[k][0].testStatus.toString(),
@@ -663,85 +725,120 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                     flex: 1,
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      MainAxisAlignment.center,
                                       children: [
                                         Consumer(
                                             builder: (context, ref, child) {
-                                          bool status =
+                                              bool status =
                                               ref.watch(testStartedProvider);
 
-                                          if (ind3[k][0].isOnline == "1" && isPressed == true) {
-                                            value = true;
-                                          }else{
-                                            value = false;
-                                          }
-                                          return Visibility(
-                                            visible: value,
-                                            child: ElevatedButton(
-                                                child: Text("START ".toUpperCase(),
-                                                    style: TextStyle(
-                                                        fontSize: 14)),
-                                                style: ButtonStyle(
-                                                    foregroundColor:
-                                                        MaterialStateProperty.all<Color>(
+                                              if (ind3[k][0].isOnline == "1" &&
+                                                  isPressed == true) {
+                                                value = true;
+                                              } else {
+                                                value = false;
+                                              }
+                                              return Visibility(
+                                                visible: value,
+                                                child: ElevatedButton(
+                                                    child: Text(
+                                                        "START ".toUpperCase(),
+                                                        style: TextStyle(
+                                                            fontSize: 14)),
+                                                    style: ButtonStyle(
+                                                        foregroundColor:
+                                                        MaterialStateProperty
+                                                            .all<Color>(
                                                             Colors.white),
-                                                    backgroundColor:
-                                                        MaterialStateProperty.all<Color>(
+                                                        backgroundColor:
+                                                        MaterialStateProperty
+                                                            .all<Color>(
                                                             Colors.black),
-                                                    shape: MaterialStateProperty.all<
+                                                        shape: MaterialStateProperty
+                                                            .all<
                                                             RoundedRectangleBorder>(
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius.circular(18.0),
-                                                            side: BorderSide(color: Colors.black)))),
-                                                onPressed: () async {
-                                                  print(
-                                                      "ispressed---------------------> ${isPressed}");
-                                                  jigAddress =
-                                                      await ApplicationClass().getStringFormSharePreferences('Jig') ?? '';
-                                                  if (jigAddress.isNotEmpty) {
-                                                    serverIp = jigAddress;
-                                                  }
-                                                  if (jigAddress.isEmpty) {
-                                                    final snackBar = SnackBar(
-                                                      content: const Text(
-                                                          'Please Enter the Test Jig Address'),
-                                                      backgroundColor:
+                                                            RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                    18.0),
+                                                                side: BorderSide(
+                                                                    color: Colors
+                                                                        .black)))),
+                                                    onPressed: () async {
+                                                      print(
+                                                          "ispressed---------------------> ${isPressed}");
+                                                      jigAddress =
+                                                          await ApplicationClass()
+                                                              .getStringFormSharePreferences(
+                                                              'Jig') ?? '';
+                                                      serialAddress =
+                                                          await ApplicationClass()
+                                                              .getStringForm1SharePreferences(
+                                                              'serial') ?? '';
+                                                      if (jigAddress
+                                                          .isNotEmpty) {
+                                                        serverIp = jigAddress;
+                                                      }
+                                                      if (jigAddress.isEmpty) {
+                                                        final snackBar = SnackBar(
+                                                          content: const Text(
+                                                              'Please Enter the Test Jig Address'),
+                                                          backgroundColor:
                                                           (Colors.black),
-                                                    );
-                                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                                  } else if (ref.read(serialNoTestProvider.notifier).state.isEmpty) {
-                                                    final snackBar = SnackBar(
-                                                      content: const Text(
-                                                          'Please Enter the Test Serial No'),
-                                                      backgroundColor:
-                                                          (Colors.black),
-                                                    );
-                                                    ScaffoldMessenger.of(
+                                                        );
+                                                        ScaffoldMessenger.of(
                                                             context)
-                                                        .showSnackBar(snackBar);
-                                                  } else {
-                                                    setState(() {
-                                                      isPressed = false;
-                                                      isNow = true;
-                                                    });
+                                                            .showSnackBar(
+                                                            snackBar);
+                                                      } else if (ref
+                                                          .read(
+                                                          serialNoTestProvider
+                                                              .notifier)
+                                                          .state
+                                                          .isEmpty) {
+                                                        final snackBar = SnackBar(
+                                                          content: const Text(
+                                                              'Please Enter the Test Serial No'),
+                                                          backgroundColor:
+                                                          (Colors.black),
+                                                        );
+                                                        ScaffoldMessenger.of(
+                                                            context)
+                                                            .showSnackBar(
+                                                            snackBar);
+                                                      } else {
+                                                        setState(() {
+                                                          isPressed = false;
+                                                          isNow = true;
+                                                        });
 
-                                                    serialnocontroller.text = ref.read(serialNoTestProvider.notifier).state;
-                                                    if (onlineTestIds.isNotEmpty) {
-                                                      print(onlineTestIds);
-                                                      Future.delayed(const Duration(microseconds: 1000), () {
-                                                        splitExcelOnlineTestData(
-                                                            onlineTestIds);
-                                                      });
+                                                        serialnocontroller
+                                                            .text = ref
+                                                            .read(
+                                                            serialNoTestProvider
+                                                                .notifier)
+                                                            .state;
+                                                        if (onlineTestIds
+                                                            .isNotEmpty) {
+                                                          print(onlineTestIds);
+                                                          Future.delayed(
+                                                              const Duration(
+                                                                  microseconds: 1000), () {
+                                                            splitExcelOnlineTestData(
+                                                                onlineTestIds);
+                                                          });
 
-                                                      ref.read(testStartedProvider.notifier).state = true;
-
-
-                                                    }
-                                                  }
-                                                }),
-                                          );
-                                        }),
+                                                          ref
+                                                              .read(
+                                                              testStartedProvider
+                                                                  .notifier)
+                                                              .state = true;
+                                                        }
+                                                      }
+                                                    }),
+                                              );
+                                            }),
                                       ],
                                     ),
                                   ),
@@ -762,7 +859,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                   elevation: 10,
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                    MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Text(' '),
                                       Expanded(
@@ -773,7 +870,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                               child: Text("Test Id",
                                                   style: TextStyle(
                                                       fontWeight:
-                                                          FontWeight.w900,
+                                                      FontWeight.w900,
                                                       fontSize: 15.0,
                                                       color: Colors.black))),
                                         ),
@@ -786,7 +883,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                               child: Text("Test",
                                                   style: TextStyle(
                                                       fontWeight:
-                                                          FontWeight.bold,
+                                                      FontWeight.bold,
                                                       fontSize: 15.0,
                                                       color: Colors.black))),
                                         ),
@@ -797,21 +894,21 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                           width: 10.0,
                                           child: Center(
                                               child: Row(
-                                            mainAxisAlignment:
+                                                mainAxisAlignment:
                                                 MainAxisAlignment.center,
-                                            children: [
-                                              Text("Option",
-                                                  style: TextStyle(
-                                                      fontWeight:
+                                                children: [
+                                                  Text("Option",
+                                                      style: TextStyle(
+                                                          fontWeight:
                                                           FontWeight.bold,
-                                                      fontSize: 15.0,
-                                                      color: Colors.black)),
-                                            ],
-                                          )),
+                                                          fontSize: 15.0,
+                                                          color: Colors.black)),
+                                                ],
+                                              )),
                                         ),
                                       ),
                                       Expanded(
-                                        child: Text('')
+                                          child: Text('')
                                       ),
                                       Expanded(
                                         child: Container(
@@ -819,17 +916,17 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                           width: 10.0,
                                           child: Center(
                                               child: Row(
-                                            mainAxisAlignment:
+                                                mainAxisAlignment:
                                                 MainAxisAlignment.center,
-                                            children: [
-                                              Text("Result",
-                                                  style: TextStyle(
-                                                      fontWeight:
+                                                children: [
+                                                  Text("Result",
+                                                      style: TextStyle(
+                                                          fontWeight:
                                                           FontWeight.bold,
-                                                      fontSize: 15.0,
-                                                      color: Colors.black)),
-                                            ],
-                                          )),
+                                                          fontSize: 15.0,
+                                                          color: Colors.black)),
+                                                ],
+                                              )),
                                         ),
                                       ),
                                     ],
@@ -840,28 +937,32 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                               Expanded(
                                 flex: 4,
                                 child: Consumer(builder: (context, ref, child) {
-                                  ref.watch(tcpReceiveDataNotifier).id.when(
+                                  ref
+                                      .watch(tcpReceiveDataNotifier)
+                                      .id
+                                      .when(
                                       data: (data) {
                                         if (data.isNotEmpty &&
                                             data != 'TimeOut') {
                                           Future.delayed(
                                               const Duration(milliseconds: 5),
-                                              () {
-                                            ref.refresh(tcpReceiveDataNotifier);
-                                            if (testList.length - 1 > i) {
-                                              i++;
-                                              ref
-                                                  .read(tcpSendDataNotifier
+                                                  () {
+                                                ref.refresh(
+                                                    tcpReceiveDataNotifier);
+                                                if (testList.length - 1 > i) {
+                                                  i++;
+                                                  ref
+                                                      .read(tcpSendDataNotifier
                                                       .notifier)
-                                                  .sendPacket(
+                                                      .sendPacket(
                                                       testList[i]
                                                           .packet
                                                           .toString(),
                                                       testList[i]
                                                           .taskNo
                                                           .toString());
-                                            }
-                                          });
+                                                }
+                                              });
                                         }
                                       },
                                       error: (e, s) {},
@@ -874,8 +975,9 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                             height: 500,
                                             color: Color(0xFFd9d8d7),
                                             child: ListView.builder(
-                                                controller: ScrollController(),
-                                                //controller: _controller,
+                                              // controller: ScrollController(),
+                                                shrinkWrap: true,
+
 
                                                 itemCount: ind3[k].length,
                                                 itemBuilder: (BuildContext ctxt,
@@ -886,90 +988,203 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                                   Future.delayed(
                                                       const Duration(
                                                           milliseconds: 10),
-                                                      () {
-                                                    onlineTestIds.clear();
-                                                    for (int i = 0; i < ind3[k].length; i++) {
-                                                      switch (ind3[k][i].type.toString()) {
-                                                        case 'FAILACK':
-                                                          onlineTestIds[i] = OnlineTestModel(
-                                                              PacketControl.startPacket + ind3[k][i].pktType!.toString() +
-                                                                  PacketControl.splitChar +
-                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetId!.toString())! +
-                                                                  PacketControl.endPacket,
-                                                              ind3[k][i].testNumber);
-                                                          break;
-                                                        case 'SERIALNO':
-                                                          onlineTestIds[i] = OnlineTestModel(
-                                                              PacketControl.startPacket + ind3[k][i].pktType.toString() +
-                                                                  PacketControl.splitChar +
-                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetId!.toString())! +
-                                                                  PacketControl.endPacket,
-                                                              ind3[k][i].testNumber);
-                                                          break;
-                                                        case 'MAC':
-                                                          Future.delayed(
-                                                              const Duration(
-                                                                  milliseconds:
+                                                          () {
+                                                        onlineTestIds.clear();
+                                                        for (int i = 0; i <
+                                                            ind3[k]
+                                                                .length; i++) {
+                                                          switch (ind3[k][i]
+                                                              .type
+                                                              .toString()) {
+                                                            case 'FAILACK':
+                                                              onlineTestIds[i] =
+                                                                  OnlineTestModel(
+                                                                      PacketControl
+                                                                          .startPacket +
+                                                                          ind3[k][i]
+                                                                              .pktType!
+                                                                              .toString() +
+                                                                          PacketControl
+                                                                              .splitChar +
+                                                                          ApplicationClass()
+                                                                              .formDigits(
+                                                                              3,
+                                                                              ind3[k][i]
+                                                                                  .packetId!
+                                                                                  .toString())! +
+                                                                          PacketControl
+                                                                              .endPacket,
+                                                                      ind3[k][i]
+                                                                          .testNumber);
+                                                              break;
+                                                            case 'SERIALNO':
+                                                              onlineTestIds[i] =
+                                                                  OnlineTestModel(
+                                                                      PacketControl
+                                                                          .startPacket +
+                                                                          ind3[k][i]
+                                                                              .pktType
+                                                                              .toString() +
+                                                                          PacketControl
+                                                                              .splitChar +
+                                                                          ApplicationClass()
+                                                                              .formDigits(
+                                                                              3,
+                                                                              ind3[k][i]
+                                                                                  .packetId!
+                                                                                  .toString())! +
+                                                                          PacketControl
+                                                                              .endPacket,
+                                                                      ind3[k][i]
+                                                                          .testNumber);
+                                                              break;
+                                                            case 'MAC':
+                                                              Future.delayed(
+                                                                  const Duration(
+                                                                      milliseconds:
                                                                       25), () {
-                                                            onlineTestIds[i] = OnlineTestModel(
-                                                                PacketControl.startPacket + ind3[k][i].pktType.toString() +
-                                                                    PacketControl.splitChar +
-                                                                    ApplicationClass().formDigits(3, ind3[k][i].packetId!.toString())! +
-                                                                    PacketControl.endPacket,
-                                                                ind3[k][i].testNumber);
-                                                          });
-                                                          break;
-                                                        case 'UNIT':
-                                                          Future.delayed(
-                                                              const Duration(
-                                                                  milliseconds:
+                                                                onlineTestIds[i] =
+                                                                    OnlineTestModel(
+                                                                        PacketControl
+                                                                            .startPacket +
+                                                                            ind3[k][i]
+                                                                                .pktType
+                                                                                .toString() +
+                                                                            PacketControl
+                                                                                .splitChar +
+                                                                            ApplicationClass()
+                                                                                .formDigits(
+                                                                                3,
+                                                                                ind3[k][i]
+                                                                                    .packetId!
+                                                                                    .toString())! +
+                                                                            PacketControl
+                                                                                .endPacket,
+                                                                        ind3[k][i]
+                                                                            .testNumber);
+                                                              });
+                                                              break;
+                                                            case 'UNIT':
+                                                              Future.delayed(
+                                                                  const Duration(
+                                                                      milliseconds:
                                                                       20), () {
-                                                            onlineTestIds[i] = OnlineTestModel(
-                                                                PacketControl.startPacket + ind3[k][i].pktType.toString() +
-                                                                    PacketControl.splitChar +
-                                                                    ApplicationClass().formDigits(3, ind3[k][i].packetId!.toString())! +
-                                                                    PacketControl.endPacket,
-                                                                ind3[k][i].testNumber);
-                                                          });
-                                                          break;
-                                                        case 'UNITCAL':
-                                                          onlineTestIds[i] = OnlineTestModel(
-                                                              PacketControl.startPacket + PacketControl.readPacket +
-                                                                  PacketControl.splitChar +
-                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetId.toString())! +
-                                                                  PacketControl.endPacket,
-                                                              ind3[k][i].testNumber);
-                                                          break;
-                                                        case 'UNITACK':
-                                                          onlineTestIds[i] = OnlineTestModel(
-                                                              PacketControl.startPacket + ind3[k][i].pktType.toString() +
-                                                                  PacketControl.splitChar +
-                                                                  ApplicationClass().formDigits(3, ind3[k][i].packetId.toString())! +
-                                                                  PacketControl.endPacket,
-                                                              ind3[k][i].testNumber);
-                                                          break;
-                                                          case 'UNITREMARK':
-                                                          if (ind3[k][i].isOnline == "0"? false : true) {
-                                                                onlineTestIds[i] = OnlineTestModel(
-                                                                PacketControl.startPacket + ind3[k][i].pktType.toString() + PacketControl.splitChar +
-                                                                ApplicationClass().formDigits(3, ind3[k][i].packetId.toString())! + PacketControl.endPacket,
-                                                                ind3[k][i].testNumber!);
-                                                                }
-                                                                break;
-                                                          case 'USERACK':
-                                                            onlineTestIds[index] = OnlineTestModel(
-                                                                PacketControl.startPacket + ind3[k][i].pktType.toString() + PacketControl.splitChar +
-                                                                    ApplicationClass().formDigits(3, ind3[k][i].packetId!)! + PacketControl.endPacket,
-                                                                ind3[k][i].testNumber!
-                                                            );
-                                                            break;
+                                                                onlineTestIds[i] =
+                                                                    OnlineTestModel(
+                                                                        PacketControl
+                                                                            .startPacket +
+                                                                            ind3[k][i]
+                                                                                .pktType
+                                                                                .toString() +
+                                                                            PacketControl
+                                                                                .splitChar +
+                                                                            ApplicationClass()
+                                                                                .formDigits(
+                                                                                3,
+                                                                                ind3[k][i]
+                                                                                    .packetId!
+                                                                                    .toString())! +
+                                                                            PacketControl
+                                                                                .endPacket,
+                                                                        ind3[k][i]
+                                                                            .testNumber);
+                                                              });
+                                                              break;
+                                                            case 'UNITCAL':
+                                                              onlineTestIds[i] =
+                                                                  OnlineTestModel(
+                                                                      PacketControl
+                                                                          .startPacket +
+                                                                          PacketControl
+                                                                              .readPacket +
+                                                                          PacketControl
+                                                                              .splitChar +
+                                                                          ApplicationClass()
+                                                                              .formDigits(
+                                                                              3,
+                                                                              ind3[k][i]
+                                                                                  .packetId
+                                                                                  .toString())! +
+                                                                          PacketControl
+                                                                              .endPacket,
+                                                                      ind3[k][i]
+                                                                          .testNumber);
+                                                              break;
+                                                            case 'UNITACK':
+                                                              onlineTestIds[i] =
+                                                                  OnlineTestModel(
+                                                                      PacketControl
+                                                                          .startPacket +
+                                                                          ind3[k][i]
+                                                                              .pktType
+                                                                              .toString() +
+                                                                          PacketControl
+                                                                              .splitChar +
+                                                                          ApplicationClass()
+                                                                              .formDigits(
+                                                                              3,
+                                                                              ind3[k][i]
+                                                                                  .packetId
+                                                                                  .toString())! +
+                                                                          PacketControl
+                                                                              .endPacket,
+                                                                      ind3[k][i]
+                                                                          .testNumber);
+                                                              break;
+                                                            case 'UNITREMARK':
+                                                              if (ind3[k][i]
+                                                                  .isOnline ==
+                                                                  "0"
+                                                                  ? false
+                                                                  : true) {
+                                                                onlineTestIds[i] =
+                                                                    OnlineTestModel(
+                                                                        PacketControl
+                                                                            .startPacket +
+                                                                            ind3[k][i]
+                                                                                .pktType
+                                                                                .toString() +
+                                                                            PacketControl
+                                                                                .splitChar +
+                                                                            ApplicationClass()
+                                                                                .formDigits(
+                                                                                3,
+                                                                                ind3[k][i]
+                                                                                    .packetId
+                                                                                    .toString())! +
+                                                                            PacketControl
+                                                                                .endPacket,
+                                                                        ind3[k][i]
+                                                                            .testNumber!);
+                                                              }
+                                                              break;
+                                                            case 'USERACK':
+                                                              onlineTestIds[index] =
+                                                                  OnlineTestModel(
+                                                                      PacketControl
+                                                                          .startPacket +
+                                                                          ind3[k][i]
+                                                                              .pktType
+                                                                              .toString() +
+                                                                          PacketControl
+                                                                              .splitChar +
+                                                                          ApplicationClass()
+                                                                              .formDigits(
+                                                                              3,
+                                                                              ind3[k][i]
+                                                                                  .packetId!)! +
+                                                                          PacketControl
+                                                                              .endPacket,
+                                                                      ind3[k][i]
+                                                                          .testNumber!
+                                                                  );
+                                                              break;
+                                                          }
+                                                        }
+                                                      });
 
-
-                                                      }
-                                                    }
-                                                  });
-
-                                                  return getAllTest(ind3[k], index);
+                                                  return getAllTest(
+                                                      ind3[k], index);
                                                 })),
                                       ],
                                     ),
@@ -985,124 +1200,191 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                                         style: TextStyle(fontSize: 14)),
                                     style: ButtonStyle(
                                         foregroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.white),
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
                                         backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.black),
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.black),
                                         shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
+                                            RoundedRectangleBorder>(
                                             RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(18.0),
+                                                BorderRadius.circular(18.0),
                                                 side: BorderSide(
                                                     color: Colors.black)))),
                                     onPressed: () {
+                                      if (serialnocontroller.text.isEmpty) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                            content: Text(
+                                                "Please Enter the  Serial No!!! ")));
+                                      } else {
+                                        if (int.parse(serialnocontroller.text) <
+                                            startserialno ||
+                                            int.parse(serialnocontroller.text) >
+                                                endserialno) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  "IN-valid Serial No!!! ")));
+                                        } else {
+                                          if (test.isNotEmpty) {
+                                            print(
+                                                "print test k-----------------> ${test}");
+                                            for (int i = 0; i <
+                                                test[0].length; i++) {
 
-
-                                      if(int.parse(serialnocontroller.text)  < startserialno || int.parse(serialnocontroller.text)  > endserialno ){
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("IN-valid Serial No!!! ")));
-
-                                      }else{
-                                        if (test.isNotEmpty) {
-                                          print("print test k-----------------> ${test}");
-                                          for(int i=0;i<test[0].length; i++){
-                                            ref.read(updateTestNotifier.notifier).updatetTest({
-                                              "test_id": test[0][i].testId,
-                                              "task_id": test[0][i].taskId,
-                                              "test_stage": int.parse(widget.stages.toString()),
-                                              "test_status": test[0][i].testStatus,
-                                              "pass": test[0][i].displayResult == "PASS" ? 1 : 0,//pass
-                                              "fail": test[0][i].displayResult == "FAIL" ? 1 : 0,//fail
-                                              "status": test[0][i].displayResult == "PASS" ? "PASS": "FAIL",//satuts
-                                              "flg": 1,
-                                              "mac_address": null,
-                                              "test_type": test[0][i].testType ,
-                                              "test_date": test[0][i].testDate,
-                                              "hours_taken": totalSeconds,
-                                              "test_number": test[0][i].testNumber,
-                                              "test_Name": test[0][i].testName,
-                                              "isOnline": test[0][i].isOnline,
-                                              "type": test[0][i].type,
-                                              "packetID": test[0][i].packetId,
-                                              "pkt_Type": test[0][i].pktType,
-                                              "user_Entry": test[0][i].userEntry,
-                                              "wifi_Result": test[0][i].wifiResult,
-                                              "pass_Crieteria": test[0][i].passCrieteria,
-                                              "remarks": test[0][i].remarks,
-                                              "serial_no": serialnocontroller.text
-
-                                            });
-                                          }
-
-                                          for(var ele in test[0]){
-
-                                            if(ele.result == null && ele.displayResult == "UNDEFINED" ){
-                                              return showfailedTest();
+                                              /*ref.read(addTestNotifier.notifier).addTest(
+                                                {
+                                                  "test_id": test[0][i].testId,
+                                                  "task_id": test[0][i].taskId,
+                                                  "test_stage": int.parse(widget.stages.toString()),
+                                                  "test_status": test[0][i].testStatus,
+                                                  "pass": test[0][i].displayResult == "PASS" ? 1 : 0,//pass
+                                                  "fail": test[0][i].displayResult == "FAIL" ? 1 : 0,//fail
+                                                  "status": test[0][i].displayResult == "PASS" ? "PASS": "FAIL",//satuts
+                                                  "flg": 1,
+                                                  "mac_address": macaddresscontroller.text,
+                                                  "test_type": test[0][i].testType ,
+                                                  "test_date": test[0][i].testDate,
+                                                  "hours_taken": totalSeconds,
+                                                  "test_number": test[0][i].testNumber,
+                                                  "test_Name": test[0][i].testName,
+                                                  "isOnline": test[0][i].isOnline,
+                                                  "type": test[0][i].type,
+                                                  "packetID": test[0][i].packetId,
+                                                  "pkt_Type": test[0][i].pktType,
+                                                  "user_Entry": test[0][i].userEntry,
+                                                  "wifi_Result": test[0][i].wifiResult,
+                                                  "pass_Crieteria": test[0][i].passCrieteria,
+                                                  "remarks": test[0][i].remarks,
+                                                  "serial_no": serialnocontroller.text
+                                                });*/
+                                              ref.read(
+                                                  updateTestNotifier.notifier)
+                                                  .updatetTest({
+                                                "test_id": test[0][i].testId,
+                                                "task_id": test[0][i].taskId,
+                                                "test_stage": int.parse(
+                                                    widget.stages.toString()),
+                                                "test_status": test[0][i]
+                                                    .testStatus,
+                                                "pass": test[0][i]
+                                                    .displayResult == "PASS"
+                                                    ? 1
+                                                    : 0, //pass
+                                                "fail": test[0][i]
+                                                    .displayResult == "FAIL"
+                                                    ? 1
+                                                    : 0, //fail
+                                                "status": test[0][i]
+                                                    .displayResult == "PASS"
+                                                    ? "PASS"
+                                                    : "FAIL", //satuts
+                                                "flg": 1,
+                                                "mac_address": macaddresscontroller
+                                                    .text,
+                                                "test_type": test[0][i]
+                                                    .testType,
+                                                "test_date": test[0][i]
+                                                    .testDate,
+                                                "hours_taken": totalSeconds,
+                                                "test_number": test[0][i]
+                                                    .testNumber,
+                                                "test_Name": test[0][i]
+                                                    .testName,
+                                                "isOnline": test[0][i].isOnline,
+                                                "type": test[0][i].type,
+                                                "packetID": test[0][i].packetId,
+                                                "pkt_Type": test[0][i].pktType,
+                                                "user_Entry": test[0][i]
+                                                    .userEntry,
+                                                "wifi_Result": test[0][i]
+                                                    .wifiResult,
+                                                "pass_Crieteria": test[0][i]
+                                                    .passCrieteria,
+                                                "remarks": test[0][i].remarks,
+                                                "serial_no": serialnocontroller
+                                                    .text
+                                              });
                                             }
-                                            else if(ele.remarks == null && ele.displayResult == "FAIL"){
-                                              return showRemarks();
-                                            }
 
-
-
-                                          }
-
-                                          for(var element in test[0]){
-                                            element.result = "";
-                                            element.displayResult = "";
-                                          }
-                                          test.clear();
-
-                                        }
-                                        setState(() {
-                                          if ((ind3.length) - 1 > k ) {
-                                            k++;
-                                            {
-                                              print("hello nancyy!!!!!!!!!!!");
-
-                                              if(isNow == true){
-                                                Future.delayed(
-                                                    const Duration(
-                                                        milliseconds: 1000), () {
-                                                  splitExcelOnlineTestData(
-                                                      onlineTestIds);
-                                                });
+                                            for (var ele in test[0]) {
+                                              if (ele.result == null &&
+                                                  ele.displayResult ==
+                                                      "UNDEFINED") {
+                                                return showfailedTest();
+                                              }
+                                              else if (ele.remarks == null &&
+                                                  ele.displayResult == "FAIL") {
+                                                return showRemarks();
                                               }
                                             }
 
-                                          } else {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        TestCompleted(tasks: widget.tsk,)));
-                                            stopWatchTimer.onExecute.add(StopWatchExecute.stop);
-                                            Helper.classes = "TEST";
+                                            for (var element in test[0]) {
+                                              element.result = "";
+                                              element.displayResult = "";
+                                            }
+                                            test.clear();
                                           }
+                                          setState(() {
+                                            if ((ind3.length) - 1 > k) {
+                                              k++;
+                                              {
+                                                print(
+                                                    "hello nancyy!!!!!!!!!!!");
 
-                                          if (test.isEmpty) {
+                                                if (isNow == true) {
+                                                  Future.delayed(
+                                                      const Duration(
+                                                          milliseconds: 1000), () {
+                                                    splitExcelOnlineTestData(
+                                                        onlineTestIds);
+                                                  });
+                                                }
+                                              }
+                                            } else {
+                                              ref.refresh(getTaskNotifier);
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          TestCompleted(
+                                                            tasks: widget
+                                                                .tsk,)));
+                                              stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+                                              Helper.classes = "TEST";
 
-                                            test.add(ind3[k]);
+                                            }
 
-                                          }
-                                          isEast = false;
-                                        });
-
-
-                                        for(int i=0; i< uniquelist.length; i++){
-                                          ref.read(addResultNotifier.notifier).addResult( {
-                                            "test_id": uniquelist[i].testId,
-                                            "spend_time": uniquelist[i].spendTime,
-                                            "status": uniquelist[i].status.toString(),
-                                            "flg": 1
+                                            if (test.isEmpty) {
+                                              test.add(ind3[k]);
+                                            }
+                                            isEast = false;
                                           });
-                                        }
-                                        generalController.clear();
-                                        for(int i=0;i<100;i++){
-                                          generalController.add(TextEditingController(text: ""));
+
+
+                                          for (int i = 0; i <
+                                              uniquelist.length; i++) {
+                                            ref.read(addResultNotifier.notifier)
+                                                .addResult({
+                                              "test_id": uniquelist[i].testId,
+                                              "spend_time": uniquelist[i]
+                                                  .spendTime,
+                                              "status": uniquelist[i].status
+                                                  .toString(),
+                                              "flg": 1
+                                            });
+                                          }
+                                          generalController.clear();
+                                          for (int i = 0; i < 100; i++) {
+                                            generalController.add(
+                                                TextEditingController(
+                                                    text: ""));
+                                          }
                                         }
                                       }
+
 
                                       /* Navigator.push(
                                               context, MaterialPageRoute(builder: (context) => TestScreenPage()));*/
@@ -1116,15 +1398,15 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   ),
                   Center(
                       child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text('@copyright rax-tech International 2022',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 15.0,
-                              color: Colors.black)),
-                    ],
-                  )),
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text('@copyright rax-tech International 2022',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 15.0,
+                                  color: Colors.black)),
+                        ],
+                      )),
                 ],
               ),
             ),
@@ -1135,14 +1417,10 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
   }
 
   getAllTest(List<Testing> radio, int index) {
+    if (radio[index].type.toString() == "FLAG" ||
+        radio[index].type.toString() == "SERIALNO") {
 
-
-
-
-
-    if(radio[index].type.toString() == "FLAG" || radio[index].type.toString() == "SERIALNO" ){
-
-    }else{
+    } else {
       Results tt = Results(
           testId: radio[index].testId,
           status: radio[index].displayResult.toString(),
@@ -1150,20 +1428,15 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           spendTime: totalSeconds
 
       );
-      if(radio[index].displayResult.toString() != "UNDEFINED"){
+      if (radio[index].displayResult.toString() != "UNDEFINED") {
         ted.add(tt);
       }
 
       var seen = Set<String>();
 
-      uniquelist = ted.where((student) => seen.add(student.testId.toString())).toList();
-
+      uniquelist =
+          ted.where((student) => seen.add(student.testId.toString())).toList();
     }
-
-
-
-
-
 
 
 /*
@@ -1179,7 +1452,6 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
       //radio[index].displayResult.toString() == "PASS";
     }
     for (var firstElement in Helper.selectedTest) {
-
       if (firstElement.isNotEmpty) {
         for (var secondElement in firstElement) {
           if (secondElement != null) {
@@ -1212,71 +1484,63 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
               groupValue: radio[index].radiotype,
               onChanged: (value) {
                 setState(() {
-                  print("first---------> ${radio[index].userEntry!.split('/')[0]}");
-                  print("second---------> ${radio[index].userEntry!.split('/')[1]}");
+                  print("first---------> ${radio[index].userEntry!.split(
+                      '/')[0]}");
+                  print("second---------> ${radio[index].userEntry!.split(
+                      '/')[1]}");
 
 
-
-
-                     if(radio[index].userEntry!.split("/")[0].toString() == "YES ")
-                       {
-                         userEntry = "YES";
-                         if(userEntry == radio[index].passCrieteria){
-                           radio[index].setResult("PASS");
-                           radio[index].setDisplayResult('PASS');
-
-                         }
-                         else {
-                           radio[index].setResult("FAIL");
-                           radio[index].setDisplayResult('FAIL');
-                         }
-                       }else if(radio[index].userEntry!.split("/")[0].toString()   == "OK")
-                       {
-                         userEntry = "OK";
-
-                         if(userEntry == radio[index].passCrieteria)
-                         {
-                           radio[index].setResult("PASS");
-                           radio[index].setDisplayResult('PASS');
-                         }  else {
-                           radio[index].setResult("FAIL");
-                           radio[index].setDisplayResult('FAIL');
-                         }
-
-                        }else if(radio[index].userEntry!.split("/")[0].toString()   == "SHORT")
-                     {
-                       userEntry = "SHORT";
-
-                       if(userEntry == radio[index].passCrieteria)
-                       {
-                         radio[index].setResult("PASS");
-                         radio[index].setDisplayResult('PASS');
-                       }  else {
-                         radio[index].setResult("FAIL");
-                         radio[index].setDisplayResult('FAIL');
-                       }
-
-                     }
-                     else if(radio[index].userEntry!.split("/")[0].toString()   == "PASS")
-                     {
-                       userEntry = "PASS";
-
-                       if(userEntry == radio[index].passCrieteria)
-                       {
-                         radio[index].setResult("PASS");
-                         radio[index].setDisplayResult('PASS');
-                       }  else {
-                         radio[index].setResult("FAIL");
-                         radio[index].setDisplayResult('FAIL');
-                       }
-
-                     }else if(radio[index].userEntry!.split("/")[0].toString() == "YES")
-                  {
+                  if (radio[index].userEntry!.split("/")[0].toString() ==
+                      "YES ") {
                     userEntry = "YES";
-                    if(userEntry == radio[index].passCrieteria){
+                    if (userEntry == radio[index].passCrieteria) {
                       radio[index].setResult("PASS");
                       radio[index].setDisplayResult('PASS');
+                    }
+                    else {
+                      radio[index].setResult("FAIL");
+                      radio[index].setDisplayResult('FAIL');
+                    }
+                  } else if (radio[index].userEntry!.split("/")[0].toString() ==
+                      "OK") {
+                    userEntry = "OK";
 
+                    if (userEntry == radio[index].passCrieteria) {
+                      radio[index].setResult("PASS");
+                      radio[index].setDisplayResult('PASS');
+                    } else {
+                      radio[index].setResult("FAIL");
+                      radio[index].setDisplayResult('FAIL');
+                    }
+                  } else if (radio[index].userEntry!.split("/")[0].toString() ==
+                      "SHORT") {
+                    userEntry = "SHORT";
+
+                    if (userEntry == radio[index].passCrieteria) {
+                      radio[index].setResult("PASS");
+                      radio[index].setDisplayResult('PASS');
+                    } else {
+                      radio[index].setResult("FAIL");
+                      radio[index].setDisplayResult('FAIL');
+                    }
+                  }
+                  else if (radio[index].userEntry!.split("/")[0].toString() ==
+                      "PASS") {
+                    userEntry = "PASS";
+
+                    if (userEntry == radio[index].passCrieteria) {
+                      radio[index].setResult("PASS");
+                      radio[index].setDisplayResult('PASS');
+                    } else {
+                      radio[index].setResult("FAIL");
+                      radio[index].setDisplayResult('FAIL');
+                    }
+                  } else if (radio[index].userEntry!.split("/")[0].toString() ==
+                      "YES") {
+                    userEntry = "YES";
+                    if (userEntry == radio[index].passCrieteria) {
+                      radio[index].setResult("PASS");
+                      radio[index].setDisplayResult('PASS');
                     }
                     else {
                       radio[index].setResult("FAIL");
@@ -1300,25 +1564,23 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       spendTime: totalSeconds
 
                   );
-                  if(ted.isEmpty){
-                    if(radio[index].displayResult.toString() != "UNDEFINED"){
+                  if (ted.isEmpty) {
+                    if (radio[index].displayResult.toString() != "UNDEFINED") {
                       ted.add(tt);
                     }
-                  }else{
-                    for(int i=0; i<ted.length; i++){
-                      if(ted[i].testId == radio[index].testId){
+                  } else {
+                    for (int i = 0; i < ted.length; i++) {
+                      if (ted[i].testId == radio[index].testId) {
                         ted.remove(ted[i]);
                       }
                     }
                     ted.add(tt);
-
                   }
 
                   var seen = Set<String>();
 
-                  uniquelist = ted.where((student) => seen.add(student.testId.toString())).toList();
-
-
+                  uniquelist = ted.where((student) =>
+                      seen.add(student.testId.toString())).toList();
 
 
                   radio[index].radiotype = value.toString();
@@ -1338,8 +1600,6 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   debugPrint(choice); //Debug the choice in console
 
                   Helper.classes = "DEMO";
-
-
                 });
               },
             ),
@@ -1356,68 +1616,62 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
               groupValue: radio[index].radiotype,
               onChanged: (value) {
                 setState(() {
-                  print("first---------> ${radio[index].userEntry!.split('/')[0]}");
-                  print("second---------> ${radio[index].userEntry!.split('/')[1]}");
+                  print("first---------> ${radio[index].userEntry!.split(
+                      '/')[0]}");
+                  print("second---------> ${radio[index].userEntry!.split(
+                      '/')[1]}");
 
-                  if(radio[index].userEntry!.split("/")[0].toString() == "YES ")
-                  {
+                  if (radio[index].userEntry!.split("/")[0].toString() ==
+                      "YES ") {
                     userEntry = "NO";
-                    if(userEntry == radio[index].passCrieteria){
+                    if (userEntry == radio[index].passCrieteria) {
                       radio[index].setResult("PASS");
                       radio[index].setDisplayResult('PASS');
-
                     }
                     else {
                       radio[index].setResult("FAIL");
                       radio[index].setDisplayResult('FAIL');
                     }
-                  }else  if(radio[index].userEntry!.split("/")[0].toString() == "OK" )
-                  {
+                  } else if (radio[index].userEntry!.split("/")[0].toString() ==
+                      "OK") {
                     userEntry = "NOK";
 
-                    if(userEntry == radio[index].passCrieteria)
-                    {
+                    if (userEntry == radio[index].passCrieteria) {
                       radio[index].setResult("PASS");
                       radio[index].setDisplayResult('PASS');
-                    }  else {
+                    } else {
                       radio[index].setResult("FAIL");
                       radio[index].setDisplayResult('FAIL');
                     }
-
-                  }else  if(radio[index].userEntry!.split("/")[0].toString() == "SHORT")
-                  {
+                  } else if (radio[index].userEntry!.split("/")[0].toString() ==
+                      "SHORT") {
                     userEntry = "NO SHORT";
 
-                    if(userEntry == radio[index].passCrieteria)
-                    {
+                    if (userEntry == radio[index].passCrieteria) {
                       radio[index].setResult("PASS");
                       radio[index].setDisplayResult('PASS');
-                    }  else {
+                    } else {
                       radio[index].setResult("FAIL");
                       radio[index].setDisplayResult('FAIL');
                     }
-
                   }
-                  else if(radio[index].userEntry!.split("/")[0].toString()   == "PASS")
-                  {
+                  else if (radio[index].userEntry!.split("/")[0].toString() ==
+                      "PASS") {
                     userEntry = "FAIL";
 
-                    if(userEntry == radio[index].passCrieteria)
-                    {
+                    if (userEntry == radio[index].passCrieteria) {
                       radio[index].setResult("PASS");
                       radio[index].setDisplayResult('PASS');
-                    }  else {
+                    } else {
                       radio[index].setResult("FAIL");
                       radio[index].setDisplayResult('FAIL');
                     }
-
-                  }else if(radio[index].userEntry!.split("/")[0].toString() == "YES")
-                  {
+                  } else if (radio[index].userEntry!.split("/")[0].toString() ==
+                      "YES") {
                     userEntry = "NO";
-                    if(userEntry == radio[index].passCrieteria){
+                    if (userEntry == radio[index].passCrieteria) {
                       radio[index].setResult("PASS");
                       radio[index].setDisplayResult('PASS');
-
                     }
                     else {
                       radio[index].setResult("FAIL");
@@ -1425,38 +1679,37 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     }
                   }
 
-                 /* if(uniquelist.isNotEmpty){
+                  /* if(uniquelist.isNotEmpty){
                     for(int i=0; i<uniquelist.length; i++){
                       uniquelist[i].status = radio[index].displayResult.toString();
                     }
                   }*/
 
 
-                  Results tt =  Results(
+                  Results tt = Results(
                       testId: radio[index].testId,
                       status: radio[index].displayResult.toString(),
                       flg: radio[index].flg,
                       spendTime: totalSeconds
 
                   );
-                  if(ted.isEmpty){
-                    if(radio[index].displayResult.toString() != "UNDEFINED"){
+                  if (ted.isEmpty) {
+                    if (radio[index].displayResult.toString() != "UNDEFINED") {
                       ted.add(tt);
                     }
-                  }else{
-                    for(int i=0; i<ted.length; i++){
-                      if(ted[i].testId == radio[index].testId){
+                  } else {
+                    for (int i = 0; i < ted.length; i++) {
+                      if (ted[i].testId == radio[index].testId) {
                         ted.remove(ted[i]);
                       }
                     }
                     ted.add(tt);
-
                   }
 
                   var seen = Set<String>();
 
-                  uniquelist = ted.where((student) => seen.add(student.testId.toString())).toList();
-
+                  uniquelist = ted.where((student) =>
+                      seen.add(student.testId.toString())).toList();
 
 
                   radio[index].radiotype = value.toString();
@@ -1466,7 +1719,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
 
                       isEast = true;
                       break;
-                    case  '02':
+                    case '02':
                       choice = value.toString();
 
                       isEast = true;
@@ -1501,7 +1754,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     FilteringTextInputFormatter.allow(RegExp(r"[0-9.]")),
                   ],
                   keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  const TextInputType.numberWithOptions(decimal: true),
                   style: TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 13.0,
@@ -1517,7 +1770,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       }
                       if (radio[index].passCrieteria!.contains('-')) {
                         List<String> arr =
-                            radio[index].passCrieteria!.split('-'); // 115 < 125
+                        radio[index].passCrieteria!.split('-'); // 115 < 125
                         num value, leftExpValue, rightExpValue;
                         if (radio[index].passCrieteria!.contains('.')) {
                           value = double.parse(val.trim());
@@ -1537,7 +1790,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       }
                       else if (radio[index].passCrieteria!.contains('-')) {
                         List<String> arr =
-                            radio[index].passCrieteria!.split('-'); // 115 > 125
+                        radio[index].passCrieteria!.split('-'); // 115 > 125
 
                         num value, leftExpValue, rightExpValue;
                         if (radio[index].passCrieteria!.contains('.')) {
@@ -1556,9 +1809,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                           radio[index].setDisplayResult('FAIL');
                         }
                       }
-
                     });
-
                   },
                   decoration: const InputDecoration(
                       fillColor: Colors.black12,
@@ -1566,7 +1817,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       counterText: "",
                       focusedBorder: OutlineInputBorder(
                           borderRadius:
-                              BorderRadius.all(Radius.circular(6.0)))),
+                          BorderRadius.all(Radius.circular(6.0)))),
                 ),
               ),
               Row(
@@ -1607,28 +1858,28 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           });
         }
         else {
-          if (ref.read(testStartedProvider.notifier).state) {
-            if (ref.read(lastTestSentProvider.notifier).state ==
+          if (ref
+              .read(testStartedProvider.notifier)
+              .state) {
+            if (ref
+                .read(lastTestSentProvider.notifier)
+                .state ==
                 radio[index].testNumber) {
               boxColor = Colors.yellow;
               statusText = 'TESTING';
               progressVisibility = true;
-
             } else {
               boxColor = Colors.orange;
               statusText = 'IN QUEUE';
               progressVisibility = true;
-
-
             }
           } else {
             boxColor = Colors.yellow;
             statusText = 'Yet Stared';
             progressVisibility = false;
           }
-
         }
-      /*  print("GOOGLE LOOPED");
+        /*  print("GOOGLE LOOPED");
 
         if(radio[index].displayResult != "UNDEFINED"){
           ted.add(radio[index].testId.toString());
@@ -1723,56 +1974,6 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
             padding: const EdgeInsets.all(5.0),
             child: Center(
                 child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                  child: Text(statusText,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w300,
-                          fontSize: 13.0,
-                          color: Colors.black)),
-                ),
-                Visibility(
-                  visible: progressVisibility,
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                    child: SizedBox(
-                        height: 10,
-                        width: 10,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.blue,
-                        )),
-                  ),
-                )
-              ],
-            )),
-          ),
-        );
-        break;
-//************************************************SERIAL NO***********************************************************************
-
-      case 'SERIALNO':
-        // var boxColor = Colors.yellow;
-        // var statusText = 'InQueue';
-        // var progressVisibility = true;
-        switch (radio[index].result) {
-          case 'TimeOut':
-            boxColor = Colors.indigo;
-            statusText = 'Time out';
-            progressVisibility = false;
-            testType = Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black.withOpacity(0.85), blurRadius: 3)
-                  ],
-                  color: boxColor),
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Center(
-                    child: Row(
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 4.0, right: 4.0),
@@ -1797,6 +1998,56 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     )
                   ],
                 )),
+          ),
+        );
+        break;
+//************************************************SERIAL NO***********************************************************************
+
+      case 'SERIALNO':
+      // var boxColor = Colors.yellow;
+      // var statusText = 'InQueue';
+      // var progressVisibility = true;
+        switch (radio[index].result) {
+          case 'TimeOut':
+            boxColor = Colors.indigo;
+            statusText = 'Time out';
+            progressVisibility = false;
+            testType = Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.85), blurRadius: 3)
+                  ],
+                  color: boxColor),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Center(
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
               ),
             );
             break;
@@ -1817,30 +2068,30 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 padding: const EdgeInsets.all(5.0),
                 child: Center(
                     child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                      child: Text(statusText,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black)),
-                    ),
-                    Visibility(
-                      visible: progressVisibility,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                        child: SizedBox(
-                            height: 10,
-                            width: 10,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.blue,
-                            )),
-                      ),
-                    )
-                  ],
-                )),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
               ),
             );
             break;
@@ -1860,30 +2111,30 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 padding: const EdgeInsets.all(5.0),
                 child: Center(
                     child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                      child: Text(statusText,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black)),
-                    ),
-                    Visibility(
-                      visible: progressVisibility,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                        child: SizedBox(
-                            height: 10,
-                            width: 10,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.blue,
-                            )),
-                      ),
-                    )
-                  ],
-                )),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
               ),
             );
             break;
@@ -1893,112 +2144,109 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
             progressVisibility = false;
             changeUi = true;
             testType =
-            Row(
-              children: [
-                Radio(
-                  value: "01",
-                  groupValue: radio[index].radiotype,
-                  onChanged: (value) {
-                    setState(() {
-                      radio[index].setResult("PASS");
-                      radio[index].setDisplayResult('PASS');
+                Row(
+                  children: [
+                    Radio(
+                      value: "01",
+                      groupValue: radio[index].radiotype,
+                      onChanged: (value) {
+                        setState(() {
+                          radio[index].setResult("PASS");
+                          radio[index].setDisplayResult('PASS');
 
 
+                          radio[index].radiotype = value.toString();
+                          switch (value) {
+                            case '01':
+                              choice = value.toString();
+                              isEast = true;
+                              break;
+                            case '02':
+                              choice = value.toString();
+                              isEast = true;
+                              break;
+                            default:
+                              choice = null;
+                          }
+                          debugPrint(choice); //Debug the choice in console
 
-                      radio[index].radiotype = value.toString();
-                      switch (value) {
-                        case '01':
-                          choice = value.toString();
-                          isEast = true;
-                          break;
-                        case '02':
-                          choice = value.toString();
-                          isEast = true;
-                          break;
-                        default:
-                          choice = null;
-                      }
-                      debugPrint(choice); //Debug the choice in console
-
-                      Helper.classes = "DEMO";
-
-                    });
-                  },
-                ),
-                Text(radio[index].userEntry!.split('/')[0],
-                    style: TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black)),
-                SizedBox(
-                  width: 5,
-                ),
-                Radio(
-                  value: "02",
-                  groupValue: radio[index].radiotype,
-                  onChanged: (value) {
-                    setState(() {
-                      radio[index].setResult("FAIL");
-                      radio[index].setDisplayResult('FAIL');
+                          Helper.classes = "DEMO";
+                        });
+                      },
+                    ),
+                    Text(radio[index].userEntry!.split('/')[0],
+                        style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 13.0,
+                            color: Colors.black)),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Radio(
+                      value: "02",
+                      groupValue: radio[index].radiotype,
+                      onChanged: (value) {
+                        setState(() {
+                          radio[index].setResult("FAIL");
+                          radio[index].setDisplayResult('FAIL');
 
 
-                        String pck = "SST*" +
-                            PacketControl.writePacket +
-                            PacketControl.splitChar +
-                            '003' +
-                            PacketControl.splitChar +
-                            ref
-                                .read(
-                                serialNoTestProvider.notifier)
-                                .state +
-                            "*ED";
-                        ref
-                            .read(
-                            lastPacketSentProvider.notifier)
-                            .state = '003';
-                        ref.read(tcpProvider).sendPackets(
-                            pck);
-                        print("pck-----------------> $pck");
+                          String pck = "SST*" +
+                              PacketControl.writePacket +
+                              PacketControl.splitChar +
+                              '003' +
+                              PacketControl.splitChar +
+                              ref
+                                  .read(
+                                  serialNoTestProvider.notifier)
+                                  .state +
+                              "*ED";
+                          ref
+                              .read(
+                              lastPacketSentProvider.notifier)
+                              .state = '003';
+                          ref.read(tcpProvider).sendPackets(
+                              pck);
+                          print("pck-----------------> $pck");
 
 
+                          radio[index].radiotype = value.toString();
+                          switch (value) {
+                            case '01':
+                              choice = value.toString();
 
-                      radio[index].radiotype = value.toString();
-                      switch (value) {
-                        case '01':
-                          choice = value.toString();
+                              isEast = true;
+                              break;
+                            case '02':
+                              choice = value.toString();
 
-                          isEast = true;
-                          break;
-                        case '02':
-                          choice = value.toString();
+                              isEast = true;
+                              break;
+                            default:
+                              choice = null;
+                          }
+                          debugPrint(choice);
+                          Helper.classes = "DEMO";
+                        });
+                      },
+                    ),
+                    Text(radio[index].userEntry!.split('/')[1],
+                        style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 13.0,
+                            color: Colors.black)),
 
-                          isEast = true;
-                          break;
-                        default:
-                          choice = null;
-                      }
-                      debugPrint(choice);
-                      Helper.classes = "DEMO";
-                    });
-                  },
-                ),
-                Text(radio[index].userEntry!.split('/')[1],
-                    style: TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 13.0,
-                        color: Colors.black)),
+                    Text(
+                      "  -${radio[index].userAckValue!.toString()}",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13.0,
+                          color: Colors.black),
+                    )
+                  ],
+                );
 
-                Text(
-                 "  -${radio[index].userAckValue!.toString()}",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13.0,
-                      color: Colors.black),
-                )
-              ],
-            );
-
-               /* Row(
+            /* Row(
               children: [
                 SizedBox(
                     height: 50,
@@ -2080,8 +2328,12 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
             );*/
             break;
           default:
-            if (ref.read(testStartedProvider.notifier).state) {
-              if (ref.read(lastTestSentProvider.notifier).state ==
+            if (ref
+                .read(testStartedProvider.notifier)
+                .state) {
+              if (ref
+                  .read(lastTestSentProvider.notifier)
+                  .state ==
                   radio[index].testNumber) {
                 boxColor = Colors.yellow;
                 statusText = 'TESTING';
@@ -2108,30 +2360,30 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 padding: const EdgeInsets.all(5.0),
                 child: Center(
                     child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                      child: Text(statusText,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black)),
-                    ),
-                    Visibility(
-                      visible: progressVisibility,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                        child: SizedBox(
-                            height: 10,
-                            width: 10,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.blue,
-                            )),
-                      ),
-                    )
-                  ],
-                )),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
               ),
             );
             break;
@@ -2192,7 +2444,6 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       debugPrint(choice); //Debug the choice in console
 
                       Helper.classes = "DEMO";
-
                     });
                   },
                 ),
@@ -2224,7 +2475,6 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       }
                       debugPrint(choice);
                       Helper.classes = "DEMO";
-
                     });
                   },
                 ),
@@ -2238,8 +2488,12 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
             break;
 
           default:
-            if (ref.read(testStartedProvider.notifier).state) {
-              if (ref.read(lastTestSentProvider.notifier).state ==
+            if (ref
+                .read(testStartedProvider.notifier)
+                .state) {
+              if (ref
+                  .read(lastTestSentProvider.notifier)
+                  .state ==
                   radio[index].testNumber) {
                 boxColor = Colors.yellow;
                 statusText = 'TESTING';
@@ -2248,7 +2502,6 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 boxColor = Colors.orange;
                 statusText = 'IN QUEUE';
                 progressVisibility = true;
-
               }
             } else {
               boxColor = Colors.yellow;
@@ -2270,30 +2523,30 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
               padding: const EdgeInsets.all(5.0),
               child: Center(
                   child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                    child: Text(statusText,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w300,
-                            fontSize: 13.0,
-                            color: Colors.black)),
-                  ),
-                  Visibility(
-                    visible: progressVisibility,
-                    child: const Padding(
-                      padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                      child: SizedBox(
-                          height: 10,
-                          width: 10,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.blue,
-                          )),
-                    ),
-                  )
-                ],
-              )),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                        child: Text(statusText,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w300,
+                                fontSize: 13.0,
+                                color: Colors.black)),
+                      ),
+                      Visibility(
+                        visible: progressVisibility,
+                        child: const Padding(
+                          padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                          child: SizedBox(
+                              height: 10,
+                              width: 10,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.blue,
+                              )),
+                        ),
+                      )
+                    ],
+                  )),
             ),
           );
         }
@@ -2322,30 +2575,30 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 padding: const EdgeInsets.all(5.0),
                 child: Center(
                     child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                      child: Text(statusText,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black)),
-                    ),
-                    Visibility(
-                      visible: progressVisibility,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                        child: SizedBox(
-                            height: 10,
-                            width: 10,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.blue,
-                            )),
-                      ),
-                    )
-                  ],
-                )),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
               ),
             );
             break;
@@ -2369,30 +2622,30 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 padding: const EdgeInsets.all(5.0),
                 child: Center(
                     child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                      child: Text(statusText,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black)),
-                    ),
-                    Visibility(
-                      visible: progressVisibility,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                        child: SizedBox(
-                            height: 10,
-                            width: 10,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.blue,
-                            )),
-                      ),
-                    )
-                  ],
-                )),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
               ),
             );
             break;
@@ -2437,7 +2690,9 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                           PacketControl.splitChar +
                           mac.text +
                           "*ED";
-                      ref.read(lastPacketSentProvider.notifier).state = pck;
+                      ref
+                          .read(lastPacketSentProvider.notifier)
+                          .state = pck;
                       ref.read(tcpProvider).sendPackets(pck);
                     } else {
                       final snackBar = SnackBar(
@@ -2462,18 +2717,18 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                         padding: const EdgeInsets.all(5.0),
                         child: Center(
                             child: Row(
-                          children: [
-                            Padding(
-                              padding:
+                              children: [
+                                Padding(
+                                  padding:
                                   const EdgeInsets.only(left: 4.0, right: 4.0),
-                              child: Text('SAVE ',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 13.0,
-                                      color: Colors.black)),
-                            ),
-                          ],
-                        )),
+                                  child: Text('SAVE ',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 13.0,
+                                          color: Colors.black)),
+                                ),
+                              ],
+                            )),
                       ),
                     ),
                   ),
@@ -2499,54 +2754,6 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 padding: const EdgeInsets.all(5.0),
                 child: Center(
                     child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                      child: Text(statusText,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black)),
-                    ),
-                    Visibility(
-                      visible: progressVisibility,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                        child: SizedBox(
-                            height: 10,
-                            width: 10,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.blue,
-                            )),
-                      ),
-                    )
-                  ],
-                )),
-              ),
-            );
-            break;
-
-          default:
-            if (ref.read(testStartedProvider.notifier).state) {
-              if (ref.read(lastTestSentProvider.notifier).state ==
-                  radio[index].testNumber) {
-                boxColor = Colors.yellow;
-                statusText = 'TESTING';
-                progressVisibility = true;
-                testType = Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(0.85),
-                            blurRadius: 3)
-                      ],
-                      color: boxColor),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Center(
-                        child: Row(
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(left: 4.0, right: 4.0),
@@ -2571,6 +2778,59 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                         )
                       ],
                     )),
+              ),
+            );
+            break;
+
+          default:
+            if (ref
+                .read(testStartedProvider.notifier)
+                .state) {
+              if (ref
+                  .read(lastTestSentProvider.notifier)
+                  .state ==
+                  radio[index].testNumber) {
+                boxColor = Colors.yellow;
+                statusText = 'TESTING';
+                progressVisibility = true;
+                testType = Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black.withOpacity(0.85),
+                            blurRadius: 3)
+                      ],
+                      color: boxColor),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Center(
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 4.0, right: 4.0),
+                              child: Text(statusText,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 13.0,
+                                      color: Colors.black)),
+                            ),
+                            Visibility(
+                              visible: progressVisibility,
+                              child: const Padding(
+                                padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                                child: SizedBox(
+                                    height: 10,
+                                    width: 10,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.blue,
+                                    )),
+                              ),
+                            )
+                          ],
+                        )),
                   ),
                 );
               } else {
@@ -2590,30 +2850,31 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                     padding: const EdgeInsets.all(5.0),
                     child: Center(
                         child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                          child: Text(statusText,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
-                        ),
-                        Visibility(
-                          visible: progressVisibility,
-                          child: const Padding(
-                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                            child: SizedBox(
-                                height: 10,
-                                width: 10,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.blue,
-                                )),
-                          ),
-                        )
-                      ],
-                    )),
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 4.0, right: 4.0),
+                              child: Text(statusText,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 13.0,
+                                      color: Colors.black)),
+                            ),
+                            Visibility(
+                              visible: progressVisibility,
+                              child: const Padding(
+                                padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                                child: SizedBox(
+                                    height: 10,
+                                    width: 10,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.blue,
+                                    )),
+                              ),
+                            )
+                          ],
+                        )),
                   ),
                 );
               }
@@ -2633,30 +2894,31 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   padding: const EdgeInsets.all(5.0),
                   child: Center(
                       child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                        child: Text(statusText,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                fontSize: 13.0,
-                                color: Colors.black)),
-                      ),
-                      Visibility(
-                        visible: progressVisibility,
-                        child: const Padding(
-                          padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                          child: SizedBox(
-                              height: 10,
-                              width: 10,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.blue,
-                              )),
-                        ),
-                      )
-                    ],
-                  )),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 4.0, right: 4.0),
+                            child: Text(statusText,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
+                          Visibility(
+                            visible: progressVisibility,
+                            child: const Padding(
+                              padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                              child: SizedBox(
+                                  height: 10,
+                                  width: 10,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.blue,
+                                  )),
+                            ),
+                          )
+                        ],
+                      )),
                 ),
               );
             }
@@ -2688,8 +2950,12 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
             progressVisibility = false;
             break;
           default:
-            if (ref.read(testStartedProvider.notifier).state) {
-              if (ref.read(lastTestSentProvider.notifier).state ==
+            if (ref
+                .read(testStartedProvider.notifier)
+                .state) {
+              if (ref
+                  .read(lastTestSentProvider.notifier)
+                  .state ==
                   radio[index].testNumber) {
                 boxColor = Colors.yellow;
                 statusText = 'TESTING';
@@ -2717,30 +2983,30 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
             padding: const EdgeInsets.all(5.0),
             child: Center(
                 child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                  child: Text(statusText,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w300,
-                          fontSize: 13.0,
-                          color: Colors.black)),
-                ),
-                Visibility(
-                  visible: progressVisibility,
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                    child: SizedBox(
-                        height: 10,
-                        width: 10,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.blue,
-                        )),
-                  ),
-                )
-              ],
-            )),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                      child: Text(statusText,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w300,
+                              fontSize: 13.0,
+                              color: Colors.black)),
+                    ),
+                    Visibility(
+                      visible: progressVisibility,
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                        child: SizedBox(
+                            height: 10,
+                            width: 10,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.blue,
+                            )),
+                      ),
+                    )
+                  ],
+                )),
           ),
         );
         break;
@@ -2777,30 +3043,30 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 padding: const EdgeInsets.all(5.0),
                 child: Center(
                     child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                      child: Text(statusText,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black)),
-                    ),
-                    Visibility(
-                      visible: progressVisibility,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                        child: SizedBox(
-                            height: 10,
-                            width: 10,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.blue,
-                            )),
-                      ),
-                    )
-                  ],
-                )),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
               ),
             );
             break;
@@ -2821,30 +3087,30 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 padding: const EdgeInsets.all(5.0),
                 child: Center(
                     child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                      child: Text(statusText,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black)),
-                    ),
-                    Visibility(
-                      visible: progressVisibility,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                        child: SizedBox(
-                            height: 10,
-                            width: 10,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.blue,
-                            )),
-                      ),
-                    )
-                  ],
-                )),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
               ),
             );
             break;
@@ -2860,19 +3126,17 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   groupValue: radio[index].radiotype,
                   onChanged: (value) {
                     setState(() {
-                      if(radio[index].userEntry!.split("/")[0].toString()   == "PASS")
-                      {
+                      if (radio[index].userEntry!.split("/")[0].toString() ==
+                          "PASS") {
                         userEntry = "PASS";
 
-                        if(userEntry == radio[index].passCrieteria)
-                        {
+                        if (userEntry == radio[index].passCrieteria) {
                           radio[index].setResult("PASS");
                           radio[index].setDisplayResult('PASS');
-                        }  else {
+                        } else {
                           radio[index].setResult("FAIL");
                           radio[index].setDisplayResult('FAIL');
                         }
-
                       }
                       radio[index].radiotype = value.toString();
                       switch (value) {
@@ -2906,19 +3170,17 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   groupValue: radio[index].radiotype,
                   onChanged: (value) {
                     setState(() {
-                      if(radio[index].userEntry!.split("/")[0].toString()   == "PASS")
-                      {
+                      if (radio[index].userEntry!.split("/")[0].toString() ==
+                          "PASS") {
                         userEntry = "FAIL";
 
-                        if(userEntry == radio[index].passCrieteria)
-                        {
+                        if (userEntry == radio[index].passCrieteria) {
                           radio[index].setResult("PASS");
                           radio[index].setDisplayResult('PASS');
-                        }  else {
+                        } else {
                           radio[index].setResult("FAIL");
                           radio[index].setDisplayResult('FAIL');
                         }
-
                       }
                       radio[index].radiotype = value.toString();
                       switch (value) {
@@ -2948,8 +3210,12 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
             break;
 
           default:
-            if (ref.read(testStartedProvider.notifier).state) {
-              if (ref.read(lastTestSentProvider.notifier).state ==
+            if (ref
+                .read(testStartedProvider.notifier)
+                .state) {
+              if (ref
+                  .read(lastTestSentProvider.notifier)
+                  .state ==
                   radio[index].testNumber) {
                 boxColor = Colors.yellow;
                 statusText = 'TESTING';
@@ -2976,30 +3242,30 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                 padding: const EdgeInsets.all(5.0),
                 child: Center(
                     child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                      child: Text(statusText,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 13.0,
-                              color: Colors.black)),
-                    ),
-                    Visibility(
-                      visible: progressVisibility,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 4.0, right: 4.0),
-                        child: SizedBox(
-                            height: 10,
-                            width: 10,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.blue,
-                            )),
-                      ),
-                    )
-                  ],
-                )),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                          child: Text(statusText,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                        Visibility(
+                          visible: progressVisibility,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0),
+                            child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.blue,
+                                )),
+                          ),
+                        )
+                      ],
+                    )),
               ),
             );
             break;
@@ -3168,10 +3434,6 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
           );
         }
         break;
-
-
-
-
     }
     return Column(
       children: [
@@ -3221,47 +3483,48 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                   ),
 
                   Expanded(
-                    child: (){
-                      return  Consumer(
-                        builder: (context, ref, child) {
+                      child: () {
+                        return Consumer(
+                            builder: (context, ref, child) {
+                              indices = index;
 
+                              ref.watch(counterModelProvider);
+                              return Container(
+                                  child: (radio[index].displayResult
+                                      .toString() == "PASS" ||
+                                      radio[index].displayResult.toString() ==
+                                          "UNDEFINED" ||
+                                      radio[index].displayResult.toString() ==
+                                          "") ?
+                                  Text("")
+                                      : TextField(
+                                    controller: generalController[index],
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      hintStyle:
+                                      TextStyle(color: Colors.black),
+                                      hintText: "Remarks",
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide:
+                                        new BorderSide(color: Colors.black),
+                                      ),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide:
+                                        new BorderSide(color: Colors.black),
+                                      ),
+                                    ),
+                                    onChanged: (values) {
+                                      setState(() {
+                                        radio[index].setRemarks(values);
+                                      });
+                                      print("value is ${values}");
+                                    },
 
-                             indices = index;
-
-                          ref.watch(counterModelProvider);
-                          return Container(
-                              child: (radio[index].displayResult.toString() == "PASS" ||
-                                  radio[index].displayResult.toString() == "UNDEFINED" ||
-                                  radio[index].displayResult.toString() == "") ?
-                              Text("")
-                                  : TextField(
-                                controller: generalController[index],
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                  hintStyle:
-                                  TextStyle(color: Colors.black),
-                                  hintText: "Remarks",
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide:
-                                    new BorderSide(color: Colors.black),
-                                  ),
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide:
-                                    new BorderSide(color: Colors.black),
-                                  ),
-                                ),
-                                onChanged: (values) {
-                                  setState(() {
-                                    radio[index].setRemarks(values);
-                                  });
-                                  print("value is ${values}");
-                                },
-
-                              )
-                          );
-                        }
-                      );
-                    }()
+                                  )
+                              );
+                            }
+                        );
+                      }()
 
                   ),
                   Expanded(
@@ -3272,7 +3535,7 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                       child: Center(child:
 
                           () {
-                      /*  if (radio[index].type == "FLAG") {
+                        /*  if (radio[index].type == "FLAG") {
                           if (radio[index].radiotype == "01") {
                             if (radio[index].userentry!.split('/')[0] == "YES ") {
                               radio[index].radiotype = "YES";
@@ -3376,28 +3639,20 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
                             }*/
 
 
-
-
-
-
-
-                           /* ref.read(addResultNotifier.notifier).addResult( {
+                        /* ref.read(addResultNotifier.notifier).addResult( {
                               "test_id": radio[index].testId.toString(),
                               "spend_time": displayTime,
                               "status": radio[index].displayResult.toString(),
                               "flg": 1
                             });*/
-                            return Text(
-                                radio[index].displayResult.toString() == "UNDEFINED"
-                                    ? ""
-                                    : radio[index].displayResult.toString(),
-                                style: TextStyle(
-                                    fontSize: 13.0,
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.black));
-
-
-
+                        return Text(
+                            radio[index].displayResult.toString() == "UNDEFINED"
+                                ? ""
+                                : radio[index].displayResult.toString(),
+                            style: TextStyle(
+                                fontSize: 13.0,
+                                fontWeight: FontWeight.w300,
+                                color: Colors.black));
                       }()),
                     ),
                   ),
@@ -3428,7 +3683,9 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
         ref.read(tcpSendDataNotifier.notifier).sendPacket(
             testList[i].packet.toString(), testList[i].taskNo.toString());
 
-        print("tcp notifer --------> ${ref.read(tcpSendDataNotifier.notifier).state}");
+        print("tcp notifer --------> ${ref
+            .read(tcpSendDataNotifier.notifier)
+            .state}");
       });
     }
   }
@@ -3438,10 +3695,16 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
     prefs.setString('Jig', ip);
   }
 
+  saveSerialAddress(String ip) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('serial', ip);
+  }
+
   showfailedTest() {
     return showDialog(
         context: context,
-        builder: (c) => AlertDialog(
+        builder: (c) =>
+            AlertDialog(
               title: Text("Test incomplete"),
               content: Text(
                   "seems some tests are not completed \n please check it before submit"),
@@ -3458,18 +3721,19 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
   showRemarks() {
     return showDialog(
         context: context,
-        builder: (c) => AlertDialog(
-          title: Text("Remark incomplete"),
-          content: Text(
-              "seems some remarks are not mentioned \n please check it before submit"),
-          actions: [
-            TextButton(
-                child: const Text('Ok'),
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
-          ],
-        ));
+        builder: (c) =>
+            AlertDialog(
+              title: Text("Remark incomplete"),
+              content: Text(
+                  "seems some remarks are not mentioned \n please check it before submit"),
+              actions: [
+                TextButton(
+                    child: const Text('Ok'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
+              ],
+            ));
   }
 }
 

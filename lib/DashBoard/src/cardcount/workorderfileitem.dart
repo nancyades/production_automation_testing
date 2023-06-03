@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 
-class SharedFilesItem extends StatefulWidget {
+class workorderFileItem extends StatefulWidget {
 
-  final String? product;
-  final String? template;
-  final String? createdby;
-  final String? releseddate;
+  final String? workorder;
+  final String? quantity;
+  final String? startserial;
+  final String? endserial;
+  final String? status;
 
-      SharedFilesItem({
+  workorderFileItem({
 
-     this.product,
-     this.template,
-     this.createdby,
-     this.releseddate,
+    this.workorder,
+    this.quantity,
+    this.startserial,
+    this.endserial,
+    this.status
   });
 
 
 
+
   @override
-  State<SharedFilesItem> createState() => _SharedFilesItemState();
+  State<workorderFileItem> createState() => _workorderFileItemState();
 }
 
-class _SharedFilesItemState extends State<SharedFilesItem> {
+class _workorderFileItemState extends State<workorderFileItem> {
   bool hovered = false;
   @override
   Widget build(BuildContext context) {
@@ -42,17 +45,17 @@ class _SharedFilesItemState extends State<SharedFilesItem> {
         padding: EdgeInsets.all(10.0),
 
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10.0),
-          boxShadow: hovered ?
-          [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 13.0,
-              spreadRadius: 0.0
-            )
-          ]
-            :[]),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10.0),
+            boxShadow: hovered ?
+            [
+              BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 13.0,
+                  spreadRadius: 0.0
+              )
+            ]
+                :[]),
         child: Column(
           children: [
             Container(
@@ -70,7 +73,7 @@ class _SharedFilesItemState extends State<SharedFilesItem> {
                         children: [
                           Expanded(
                             child: Center(
-                              child: Text( widget.product!,
+                              child: Text( widget.workorder!,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 11.0,
@@ -79,7 +82,7 @@ class _SharedFilesItemState extends State<SharedFilesItem> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text( widget.template!,
+                              child: Text( widget.quantity!,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 11.0,
@@ -88,7 +91,7 @@ class _SharedFilesItemState extends State<SharedFilesItem> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text( widget.createdby!,
+                              child: Text( widget.startserial!,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 11.0,
@@ -97,16 +100,23 @@ class _SharedFilesItemState extends State<SharedFilesItem> {
                           ),
                           Expanded(
                             child: Center(
-                              child: Text( widget.releseddate!.split("T")[0],
+                              child: Text( widget.endserial!,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 11.0,
                                       color: Colors.black)),
                             ),
                           ),
-                          /* Center(
-                                      child: Icon(Icons.search)
-                                    ),*/
+                          Expanded(
+                            child: Center(
+                              child: Text( widget.status!,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11.0,
+                                      color: Colors.black)),
+                            ),
+                          ),
+
 
                         ],
                       ),

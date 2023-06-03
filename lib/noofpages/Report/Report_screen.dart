@@ -7,14 +7,20 @@ import 'package:flutter_svg/svg.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:production_automation_testing/Model/APIModel/dashboardscreen/workorder_model.dart';
 import 'package:production_automation_testing/Model/APIModel/usermodel.dart';
 import 'package:production_automation_testing/Model/APIModel/workorderbasedreport.dart';
 import 'package:production_automation_testing/Model/APIModel/workordermodel.dart';
 import 'package:production_automation_testing/Model/APIModel/workorderprogressreport.dart';
 import 'package:production_automation_testing/Provider/changenotifier/widget_notifier.dart';
 import 'package:production_automation_testing/Provider/excelprovider.dart';
+import 'package:production_automation_testing/Provider/post_provider/productreleaseexportreport_provider.dart';
 import 'package:production_automation_testing/Provider/post_provider/testerexcel_provider.dart';
+import 'package:production_automation_testing/Provider/post_provider/testerexportexcelreport_provider.dart';
+import 'package:production_automation_testing/Provider/post_provider/workorderbaasedtestexportexcel_provider.dart';
 import 'package:production_automation_testing/Provider/post_provider/workorderbasedexcel_provider.dart';
+import 'package:production_automation_testing/Provider/post_provider/workorderprogressexportexcel.dart';
+import 'package:production_automation_testing/Provider/post_provider/workorderunderproduct.dart';
 import 'package:production_automation_testing/Provider/reportprovider/testerreportprovider.dart';
 import 'package:production_automation_testing/Provider/reportprovider/workorderbasedreportprovider.dart';
 import 'package:production_automation_testing/Provider/reportprovider/workorderprogressreportprovider.dart';
@@ -25,6 +31,8 @@ import '../../Model/APIModel/productreport.dart';
 import '../../Model/APIModel/testerreport.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+
+import '../../Model/APIModel/workorderunderproduct.dart';
 
 class Reportscreen extends ConsumerStatefulWidget {
   const Reportscreen({Key? key}) : super(key: key);
@@ -57,7 +65,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
   bool workorderstanger = false;
 
 
-
+int tapped = 0;
   int? _currentColorIndex;
   int _previousColorIndex = 0;
 
@@ -72,9 +80,11 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
   TextEditingController _textEditing_2Controller = TextEditingController();
   List<TesterReportModel> Tester = [];
 
-  List<WorkorderProgressReportModel> glossarListOnSearch_3 = [];
+  List<WorkorderModel> glossarListOnSearch_3 = [];
   TextEditingController _textEditing_3Controller = TextEditingController();
-  List<WorkorderProgressReportModel> workorderprogress = [];
+  List<WorkorderModel> workorderprogress = [];
+
+  var work_order_id;
 
 
 
@@ -127,6 +137,9 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
   late bool _permissionReady;
 
 
+
+
+
   var gg;
 
 
@@ -169,11 +182,27 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
    String? savePath;
 
 
+  List<Vehicle> vehicles = [
+    Vehicle(
+      'workorder 1',
+      ['Vehicle no. 1', 'Vehicle no. 2', 'Vehicle no. 7', 'Vehicle no. 10'],
+      Icons.motorcycle,
+    ),
+    Vehicle(
+      'workorder 2',
+      ['Vehicle no. 3', 'Vehicle no. 4', 'Vehicle no. 6'],
+      Icons.directions_car,
+    ),
+  ];
 
 
   @override
   Widget build(BuildContext context) {
     _prepareSaveDir();
+
+
+    int _selectedIndex = -1;
+
     print("currntindex-----> $_currentColorIndex");
     return Column(children: [
       Card(
@@ -374,7 +403,9 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                     ),
                                   ),
                                   IconButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        ref.read(getproductreleseexportexcelNotifier.notifier).getproductreleseexport();
+                                      },
                                       icon: Icon(Icons.open_in_new))
                                 ],
                               ),
@@ -477,6 +508,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
               : card2 == true
               ? () {
             return ref.watch(getUserNotifier).when(data: (user) {
+
               return Column(
                 children: [
                   Padding(
@@ -515,7 +547,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                 ),
                               ),
                               IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    ref.read(getworkorderprogressexportexcelNotifier.notifier).getworkorderprogressexportexcel(workorderuserid, start, end);
+
+                                  },
                                   icon: Icon(Icons.open_in_new))
                             ],
                           ),
@@ -538,7 +573,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                             onChanged: (value) {
                               setState(() {
                                 glossarListOnSearch_3 = workorderprogress
-                                    .where((element) => element.workOrder!
+                                    .where((element) => element.workorderCode!
                                     .toLowerCase()
                                     .contains(
                                     value.toLowerCase()))
@@ -755,190 +790,139 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                   Expanded(
                     child: Row(
                       children: [
-                      /*  Expanded(
-                          flex: 1,
-                          child: Consumer(
-                              builder: (context, snapshot, child) {
-                                var testuser = user
-                                    .where((element) =>
-                                element.role == "Test User")
-                                    .toList();
-                                return Container(
-                                    child: ListView.builder(
-                                        itemCount: testuser.length,
-                                        //controller: _controller,
-                                        physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        scrollDirection: Axis.vertical,
-                                        itemBuilder: (context, index) {
-                                          return getWorkorder(
-                                              testuser, index);
-                                        }));
-                              }),
-                        ),*/
-                        Expanded(
-                          flex: 5,
-                          child: Column(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    right: 10.0),
-                                color: Color(0xff333951),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                          child: Text(
-                                            'WorkOrder ',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight:
-                                                FontWeight.bold),
-                                          )),
-                                      Expanded(
-                                          child: Text(
-                                            'Workorder QTY',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight:
-                                                FontWeight.bold),
-                                          )),
-                                      Expanded(
-                                          child: Text(
-                                            'Starting serial no',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight:
-                                                FontWeight.bold),
-                                          )),
-                                      Expanded(
-                                          child: Text(
-                                            'Ending Serial no',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight:
-                                                FontWeight.bold),
-                                          )),
-                                      Expanded(
-                                          child: Text(
-                                            'Total Tested Unit',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight:
-                                                FontWeight.bold),
-                                          )),
-                                      Expanded(
-                                          child: Text(
-                                            'Qty Passed',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight:
-                                                FontWeight.bold),
-                                          )),
-                                      Expanded(
-                                          child: Text(
-                                            'Qty Failed',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight:
-                                                FontWeight.bold),
-                                          )),
-                                      Expanded(
-                                          child: Text(
-                                            'Test Start Date',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight:
-                                                FontWeight.bold),
-                                          )),
-                                      Expanded(
-                                          child: Text(
-                                            'Test End Date',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight:
-                                                FontWeight.bold),
-                                          )),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 10.0),
-                                    child: ref.watch(workorderProgressReportNotifier).id.when(
-                                        data: (workorder) {
-                                          return _textEditing_3Controller
-                                              .text.isNotEmpty &&
-                                              glossarListOnSearch_3.isEmpty
-                                              ? Column(
-                                            children: [
-                                              Align(
-                                                alignment:
-                                                Alignment.center,
-                                                child: Padding(
-                                                  padding:
-                                                  const EdgeInsets
-                                                      .fromLTRB(
-                                                      0, 50, 0, 0),
-                                                  child: Text(
-                                                    'No results',
-                                                    style: TextStyle(
-                                                        fontFamily:
-                                                        'Avenir',
-                                                        fontSize: 22,
-                                                        color: Color(
-                                                            0xff848484)),
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          )
-                                           : ListView.builder(
-                                              itemCount: _textEditing_3Controller
-                                                  .text.isNotEmpty
-                                                  ? glossarListOnSearch_3
-                                                  .length
-                                                  : workorder.length,
 
-                                              // shrinkWrap: true,
-                                              controller:
-                                              ScrollController(),
-                                              itemBuilder: (context, index) {
-                                                return getWorkorderdetails(
-                                                    workorder, index);
-                                              });
-                                        },
-                                        error: (error, s) {},
-                                        loading: () {})),
-                              )
-                            ],
-                          ),
-                        ),
+
+
+                              Expanded(
+                               flex: 5,
+                               child: Column(
+                                 children: [
+                                   Container(
+                                     margin: const EdgeInsets.only(
+                                         right: 10.0),
+                                     color: Color(0xff333951),
+                                     child: Padding(
+                                       padding: const EdgeInsets.all(15.0),
+                                       child: Row(
+                                         children: [
+                                           Expanded(
+                                               child: Text(
+                                                 'Workorder',
+                                                 textAlign: TextAlign.center,
+                                                 style: TextStyle(
+                                                     color: Colors.white,
+                                                     fontSize: 12,
+                                                     fontWeight:
+                                                     FontWeight.bold),
+                                               )),
+                                           Expanded(
+                                               child: Text(
+                                                 'Product Name',
+                                                 textAlign: TextAlign.center,
+                                                 style: TextStyle(
+                                                     color: Colors.white,
+                                                     fontSize: 12,
+                                                     fontWeight:
+                                                     FontWeight.bold),
+                                               )),
+                                           Expanded(
+                                               child: Text(
+                                                 'Start serial',
+                                                 textAlign: TextAlign.center,
+                                                 style: TextStyle(
+                                                     color: Colors.white,
+                                                     fontSize: 12,
+                                                     fontWeight:
+                                                     FontWeight.bold),
+                                               )),
+                                           Expanded(
+                                               child: Text(
+                                                 'end serial',
+                                                 textAlign: TextAlign.center,
+                                                 style: TextStyle(
+                                                     color: Colors.white,
+                                                     fontSize: 12,
+                                                     fontWeight:
+                                                     FontWeight.bold),
+                                               )),
+                                           Expanded(
+                                               child: Text(
+                                                 'Tested Unit',
+                                                 textAlign: TextAlign.center,
+                                                 style: TextStyle(
+                                                     color: Colors.white,
+                                                     fontSize: 12,
+                                                     fontWeight:
+                                                     FontWeight.bold),
+                                               )),
+                                           Expanded(
+                                               child: Text(
+                                                 'Testing Status',
+                                                 textAlign: TextAlign.center,
+                                                 style: TextStyle(
+                                                     color: Colors.white,
+                                                     fontSize: 12,
+                                                     fontWeight:
+                                                     FontWeight.bold),
+                                               )),
+                                         ],
+                                       ),
+                                     ),
+                                   ),
+                                   Consumer(
+                                     builder: (context, ref, child) {
+                                      // return ref.watch(workorderunderproductReportNotifier).id.when(data: (data){
+                                         return Expanded(
+                                           child: Padding(
+                                               padding: const EdgeInsets.only(
+                                                   top: 10.0),
+                                               child:
+                                               ListView.builder(
+                                                 itemCount: vehicles.length,
+                                                 itemBuilder: (context, i) {
+                                                   return ExpansionTile(
+                                                     title: Text(vehicles[i].title, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),),
+                                                     children: <Widget>[
+                                                       Column(
+                                                         children: _buildExpandableContent(vehicles[i]),
+                                                       ),
+                                                     ],
+                                                   );
+                                                 },
+                                               )
+                                              /* ListView.builder(
+                                                   itemCount:  data.length,
+
+                                                   // shrinkWrap: true,
+                                                   controller:
+                                                   ScrollController(),
+                                                   itemBuilder: (context, index) {
+                                                     return getWorkorderunderproduct(
+                                                         data, index);
+                                                   })*/
+
+
+                                           ),
+                                         );
+                                      /* }, error: (e,s){
+                                         return Text(e.toString());
+                                       }, loading: (){
+                                         return Center(child: CircularProgressIndicator());
+                                       });*/
+
+                                     }
+                                   )
+                                 ],
+                               ),
+                             )
+
+
+
+
                       ],
                     ),
                   )
+
                 ],
               );
             }, error: (e, s) {
@@ -988,7 +972,9 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                 ),
                               ),
                               IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    ref.read(gettesterexportexcelNotifier.notifier).gettesterexportexcel(testuserid, start, end);
+                                  },
                                   icon: Icon(Icons.open_in_new))
                             ],
                           ),
@@ -1212,6 +1198,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                     }
 
                                     ref.read(testerReportNotifier.notifier).testerReport(testuserid, start, end);
+
+
+
+
                                     print(
                                         "workorderid----------> ${testuserid}");
                                     print(
@@ -1262,6 +1252,16 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                   padding: const EdgeInsets.all(15.0),
                                   child: Row(
                                     children: [
+                                      Expanded(
+                                          child: Text(
+                                            'workorder ',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight:
+                                                FontWeight.bold),
+                                          )),
                                       Expanded(
                                           child: Text(
                                             'Product ',
@@ -1436,7 +1436,10 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                 ),
                               ),
                               IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    ref.read(getworkorderbasedtestexportexcelexportexcelNotifier.notifier).getworkorderbasedtestexportexcelexportexcel(work_order_id);
+
+                                  },
                                   icon: Icon(Icons.open_in_new))
                             ],
                           ),
@@ -1505,6 +1508,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                               workorderstanger = true;
                               for(int i=0; i<doll.length; i++){
                                 if(selectworkorder == doll[i].workorderCode){
+                                   work_order_id = doll[i].workorderId;
                                   ref.read(workorderbasedReportNotifier.notifier).workorderbasedReport(doll[i].workorderId);
 
                                 }
@@ -1766,7 +1770,9 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                                     ),
                                   ),
                                   IconButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        ref.read(getproductreleseexportexcelNotifier.notifier).getproductreleseexport();
+                                      },
                                       icon:
                                       Icon(Icons.open_in_new))
                                 ],
@@ -2614,7 +2620,75 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
     );
   }
 
-  getWorkorderdetails(List<WorkorderProgressReportModel> mdata, int index) {
+  List<WorkorderModel> generateItems(List<WorkorderModel> mdata,  int count) {
+    return List<WorkorderModel>.generate(count, (int index) {
+      List<WorkorderList> wolst = [];
+      for(int i = 0; i< mdata[index].woList!.length; i++){
+        if(mdata[index].workorderId == mdata[index].woList![i].workorder_id ){
+          WorkorderList wlist = WorkorderList(
+            id: mdata[index].woList![i].id,
+            workorder_id: mdata[index].woList![i].workorder_id,
+            product_id: mdata[index].woList![i].product_id,
+            product_name: mdata[index].woList![i].product_name,
+            quantity:mdata[index].woList![i].quantity,
+            start_serial_no: mdata[index].woList![i].start_serial_no,
+            end_serial_no: mdata[index].woList![i].end_serial_no,
+            status: mdata[index].woList![i].status,
+            testing_status: mdata[index].woList![i].testing_status,
+            start_date: mdata[index].woList![i].start_date,
+            end_date: mdata[index].woList![i].end_date,
+            flg: mdata[index].woList![i].flg,
+          );
+          wolst.add(wlist);
+        }
+      }
+
+
+
+      return WorkorderModel(
+          workorderId: mdata[index].workorderId,
+          workorderCode: mdata[index].workorderCode,
+          quantity: mdata[index].quantity,
+          startSerialNo: mdata[index].startSerialNo,
+          endSerialNo: mdata[index].endSerialNo,
+          status: mdata[index].status,
+          createdBy: mdata[index].createdBy,
+          updatedBy: mdata[index].updatedBy,
+          createdDate: mdata[index].createdDate,
+          updatedDate: mdata[index].updatedDate,
+          flg: mdata[index].flg,
+          remarks: mdata[index].remarks,
+          woList: wolst);
+
+
+
+
+
+
+
+
+
+      /*workprogess(
+        productId: mdata[index].productId,
+        productCode: mdata[index].productCode,
+        productName: mdata[index].productName,
+        productQty: mdata[index].productQty,
+        workorderId: mdata[index].workorderId,
+        workOrder: mdata[index].workOrder.toString(),
+        workOrderQty: mdata[index].workOrderQty,
+        startingSerialNumber: mdata[index].startingSerialNumber.toString(),
+        endingSerialNumber: mdata[index].endingSerialNumber.toString(),
+        totalTestUnit: mdata[index].totalTestUnit,
+        testStartDate: mdata[index].testStartDate.toString(),
+        testEndDate: mdata[index].testEndDate.toString(),
+        qtyPassed: mdata[index].qtyPassed,
+        qtyFailed: mdata[index].qtyFailed,
+        testingStatus: mdata[index].workOrder.toString(),
+
+      );*/
+    });
+  }
+  getWorkorderdetails(List<WorkorderModel> mdata, int index) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -2624,143 +2698,251 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
             children: [
               Expanded(
                 flex: 4,
-                child: Container(
-                  height: 30.0,
-                  width: 10.0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: Text(_textEditing_3Controller.text.isNotEmpty
-                              ? glossarListOnSearch_3[index].workOrder.toString()
-                              :  mdata[index].workOrder.toString(),
+                child: InkWell(
+                  onTap: (){
+                    print("print workorderid------>${mdata[index].workorderId}");
+                    mdata[index].workorderId;
+                    ref.read(workorderunderproductReportNotifier.notifier).workorderunderproductReport(mdata[index].workorderId);
 
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
+                  },
+                  child: Container(
+                    height: 30.0,
+                    width: 10.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(_textEditing_3Controller.text.isNotEmpty
+                            ? glossarListOnSearch_3[index].workorderCode.toString()
+                            :  mdata[index].workorderCode.toString(),
+
+                            style: TextStyle(
+                                fontWeight: FontWeight.w300,
+                                fontSize: 13.0,
+                                color: Colors.black)),
+
+                      /*  Expanded(
+                          child: Center(
+                            child: Text(_textEditing_3Controller.text.isNotEmpty
+                                ? glossarListOnSearch_3[index].workorderId.toString()
+                                :  mdata[index].workorderId.toString(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(_textEditing_3Controller.text.isNotEmpty
-                              ? glossarListOnSearch_3[index].workOrderQty.toString()
-                              :  mdata[index].workOrderQty.toString(),
+                        Expanded(
+                          child: Center(
+                            child: Text(_textEditing_3Controller.text.isNotEmpty
+                                ? glossarListOnSearch_3[index].workOrderQty.toString()
+                                : mdata[index].productQty.toString(),
 
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(_textEditing_3Controller.text.isNotEmpty
-                              ? glossarListOnSearch_3[index].startingSerialNumber.toString()
-                              :  mdata[index].startingSerialNumber.toString(),
+                        Expanded(
+                          child: Center(
+                            child: Text(_textEditing_3Controller.text.isNotEmpty
+                                ? glossarListOnSearch_3[index].startingSerialNumber.toString()
+                                :  mdata[index].startingSerialNumber.toString(),
 
 
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(_textEditing_3Controller.text.isNotEmpty
-                              ? glossarListOnSearch_3[index].endingSerialNumber.toString()
-                              :  mdata[index].endingSerialNumber.toString(),
+                        Expanded(
+                          child: Center(
+                            child: Text(_textEditing_3Controller.text.isNotEmpty
+                                ? glossarListOnSearch_3[index].endingSerialNumber.toString()
+                                :  mdata[index].endingSerialNumber.toString(),
 
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
                         ),
-                      ),
 
-                      Expanded(
-                        child: Center(
-                          child: Text(_textEditing_3Controller.text.isNotEmpty
-                              ? glossarListOnSearch_3[index].totalTestUnit.toString()
-                              :  mdata[index].totalTestUnit.toString(),
+                        Expanded(
+                          child: Center(
+                            child: Text(_textEditing_3Controller.text.isNotEmpty
+                                ? glossarListOnSearch_3[index].totalTestUnit.toString()
+                                :  mdata[index].totalTestUnit.toString(),
 
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(_textEditing_3Controller.text.isNotEmpty
-                              ? glossarListOnSearch_3[index].qtyPassed.toString()
-                              :  mdata[index].qtyPassed.toString(),
+                        Expanded(
+                          child: Center(
+                            child: Text(_textEditing_3Controller.text.isNotEmpty
+                                ? glossarListOnSearch_3[index].qtyPassed.toString()
+                                :  mdata[index].qtyPassed.toString(),
 
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(_textEditing_3Controller.text.isNotEmpty
-                              ? glossarListOnSearch_3[index].qtyFailed.toString()
-                              :  mdata[index].qtyFailed.toString(),
+                        Expanded(
+                          child: Center(
+                            child: Text(_textEditing_3Controller.text.isNotEmpty
+                                ? glossarListOnSearch_3[index].qtyFailed.toString()
+                                :  mdata[index].qtyFailed.toString(),
 
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
+                        ),*/
+
+                       /* Expanded(
+                          child: Center(
+                            child: Text((){
+                              if(_textEditing_3Controller.text.isNotEmpty){
+                               return glossarListOnSearch_3[index].qtyPassed.toString() == "0"
+                                   && glossarListOnSearch_3[index].qtyFailed.toString() == "0" ? ""
+                                   : glossarListOnSearch_3[index].testStartDate.toString().split(" ")[0];
+                              }else{
+                               return  mdata[index].qtyPassed.toString() == "0"
+                                    && mdata[index].qtyFailed.toString() == "0" ? ""
+                                    : mdata[index].testStartDate.toString().split(" ")[0];
+                              }
+
+                            }(),
+
+
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text((){
-                            if(_textEditing_3Controller.text.isNotEmpty){
-                             return glossarListOnSearch_3[index].qtyPassed.toString() == "0"
-                                 && glossarListOnSearch_3[index].qtyFailed.toString() == "0" ? ""
-                                 : glossarListOnSearch_3[index].testStartDate.toString().split(" ")[0];
-                            }else{
-                             return  mdata[index].qtyPassed.toString() == "0"
-                                  && mdata[index].qtyFailed.toString() == "0" ? ""
-                                  : mdata[index].testStartDate.toString().split(" ")[0];
-                            }
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                                    (){
+                                  if(_textEditing_3Controller.text.isNotEmpty){
+                                    return  glossarListOnSearch_3[index].qtyPassed.toString() == "0"
+                                        && glossarListOnSearch_3[index].qtyFailed.toString() == "0" ? ""
+                                        : glossarListOnSearch_3[index].testStartDate.toString().split(" ")[0];
+                                  }else{
+                                    return   mdata[index].qtyPassed.toString() == "0"
+                                        && mdata[index].qtyFailed.toString() == "0" ? ""
+                                        : mdata[index].testStartDate.toString().split(" ")[0];
+                                  }
 
-                          }(),
+                                }(),
+
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
+                        ),*/
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Divider(
+            thickness: 0.5,
+            height: 1,
+            color: Colors.black,
+          )
+        ],
+      ),
+    );
+  }
 
 
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
+
+  getWorkorderunderproduct( List<workorderunderproduct> mdata, int index) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                flex: 4,
+                child: InkWell(
+                  onTap: (){
+                  },
+                  child: Container(
+                    height: 30.0,
+                    width: 10.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: Text( mdata[index].productName.toString(),
+
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                                  (){
-                                if(_textEditing_3Controller.text.isNotEmpty){
-                                  return  glossarListOnSearch_3[index].qtyPassed.toString() == "0"
-                                      && glossarListOnSearch_3[index].qtyFailed.toString() == "0" ? ""
-                                      : glossarListOnSearch_3[index].testStartDate.toString().split(" ")[0];
-                                }else{
-                                  return   mdata[index].qtyPassed.toString() == "0"
-                                      && mdata[index].qtyFailed.toString() == "0" ? ""
-                                      : mdata[index].testStartDate.toString().split(" ")[0];
-                                }
+                        Expanded(
+                          child: Center(
+                            child: Text( mdata[index].startingSerialNumber.toString(),
 
-                              }(),
-
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 13.0,
-                                  color: Colors.black)),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
                         ),
-                      ),
-                    ],
+                        Expanded(
+                          child: Center(
+                            child: Text( mdata[index].endingSerialNumber.toString(),
+
+
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: Text( mdata[index].totalTestUnit.toString(),
+
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
+                        ),
+
+                        Expanded(
+                          child: Center(
+                            child: Text( mdata[index].testingStatus.toString(),
+
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
+                        ),
+
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -2840,6 +3022,19 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       Expanded(
                         child: Center(
                           child: Text( _textEditing_2Controller.text.isNotEmpty
+                              ? glossarListOnSearch_2[index].workOrder.toString()
+                              : tester[index].workOrder.toString(),
+
+
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 13.0,
+                                  color: Colors.black)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text( _textEditing_2Controller.text.isNotEmpty
                               ? glossarListOnSearch_2[index].productName.toString()
                               : tester[index].productName.toString(),
 
@@ -2903,7 +3098,6 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
 
                               openExcelFile(downloadedFilePath!);
 */
-
 
 
 
@@ -3111,5 +3305,104 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
     );
   }
 
+  _buildExpandableContent(Vehicle vehicle) {
+    List<Widget> columnContent = [];
 
+    for (String content in vehicle.contents)
+      columnContent.add(
+        ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                flex: 4,
+                child: InkWell(
+                  onTap: (){
+                  },
+                  child: Container(
+                    height: 30.0,
+                    width: 10.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: Text( "pro name",
+
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: Text( "start serial",
+
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: Text( "end serial",
+
+
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: Text( "tested unit",
+
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
+                        ),
+
+                        Expanded(
+                          child: Center(
+                            child: Text( "testing status",
+
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13.0,
+                                    color: Colors.black)),
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          leading: Text("")
+        ),
+      );
+
+    return columnContent;
+  }
 }
+
+class Vehicle {
+  final String title;
+  List<String> contents = [];
+  final IconData icon;
+
+  Vehicle(this.title, this.contents, this.icon);
+}
+
+
+
+
+
+

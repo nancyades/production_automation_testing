@@ -4,11 +4,13 @@ import 'dart:io';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:production_automation_testing/Helper/helper.dart';
+import 'package:production_automation_testing/Model/APIModel/dashboardscreen/workorder_model.dart';
 import 'package:production_automation_testing/Model/APIModel/productcount.dart';
 import 'package:production_automation_testing/Model/APIModel/templatemodel.dart';
 import 'package:production_automation_testing/Model/APIModel/testerreport.dart';
 import 'package:production_automation_testing/Model/APIModel/workorderbasedreport.dart';
 import 'package:production_automation_testing/Model/APIModel/workorderprogressreport.dart';
+import 'package:production_automation_testing/Model/APIModel/workorderunderproduct.dart';
 import 'package:production_automation_testing/Model/readexcel/readecel.dart';
 import 'package:production_automation_testing/Model/readexcelmodel.dart';
 import 'package:production_automation_testing/Model/resultmodel.dart';
@@ -307,6 +309,7 @@ class ApiProider {
     return finalData;
   }
 
+
   Future<dynamic> getWorkOrders() async {
     List<WorkorderModel> finalData = [];
     final response =
@@ -545,7 +548,6 @@ class ApiProider {
         );
         test.add(testing);
       }
-      ;
     }
     return finalData;
   }
@@ -983,7 +985,7 @@ class ApiProider {
   Future<dynamic> getProductsreport() async {
     List<ProductReportmodel> finalData = [];
     final response = await http
-        .get(Uri.parse("http://192.168.1.55/PAT_API/api/ProductReport"));
+        .get(Uri.parse("http://192.168.1.47/PAT_API/api/ProductReport"));
     dynamic result = jsonDecode(response.body);
     for (int i = 0; i < result.length; i++) {
       ProductReportmodel productReportmodel = ProductReportmodel(
@@ -999,6 +1001,100 @@ class ApiProider {
     return finalData;
   }
 
+  //****************************************All Workorder release report ****************************************************
+
+  Future<dynamic> getAllWorkordersreport() async {
+    List<AllWorkorder> finalData = [];
+    final response = await http
+        .get(Uri.parse("http://192.168.1.47/PAT_API/api/WOReport/WODashboard"));
+    dynamic result = jsonDecode(response.body);
+    for (int i = 0; i < result.length; i++) {
+      AllWorkorder productReportmodel = AllWorkorder(
+        workorderId: result[i]['workorder_id'],
+        workOrder: result[i]['workOrder'],
+        workOrderQty: result[i]['workOrderQty'],
+        startingSerialNumber: result[i]['startingSerialNumber'],
+        endingSerialNumber: result[i]['endingSerialNumber'],
+        totalTestUnit: result[i]['totalTestUnit'],
+        testStartDate: result[i]['testStartDate'],
+        testEndDate: result[i]['testEndDate'],
+        qtyPassed: result[i]['qtyPassed'],
+        qtyFailed: result[i]['qtyFailed'],
+        testingStatus: result[i]['testingStatus'],
+      );
+      finalData.add(productReportmodel);
+    }
+    return finalData;
+  }
+
+  //****************************************All Workorder progress report ****************************************************
+
+  Future<dynamic> getWorkordersprogressreport() async {
+    List<workprogess> finalData = [];
+    final response = await http
+        .get(Uri.parse("http://192.168.1.55/PAT_API/api/WOReport/ProductWODashboard"));
+    dynamic result = jsonDecode(response.body);
+    for (int i = 0; i < result.length; i++) {
+      workprogess productReportmodel = workprogess(
+        productId: result[i]['product_id'],
+        productCode: result[i]['product_code'],
+        productName: result[i]['product_name'],
+        productQty: result[i]['productQty'],
+        workorderId: result[i]['workorder_id'],
+        workOrder: result[i]['workOrder'],
+        workOrderQty: result[i]['workOrderQty'],
+        startingSerialNumber: result[i]['startingSerialNumber'],
+        endingSerialNumber: result[i]['endingSerialNumber'],
+        totalTestUnit: result[i]['totalTestUnit'],
+        testStartDate: result[i]['testStartDate'],
+        testEndDate: result[i]['testEndDate'],
+        qtyPassed: result[i]['qtyPassed'],
+        qtyFailed: result[i]['qtyFailed'],
+        testingStatus: result[i]['testingStatus'],
+
+      );
+      finalData.add(productReportmodel);
+    }
+    return finalData;
+  }
+  //****************************************Single test report ****************************************************
+
+  getSingleTesterreport(var userid) async {
+    List<TesterReportModel> finalData = [];
+    final response = await http.get(Uri.parse(
+        "http://192.168.1.55/PAT_API/api/TestingReport/Userwisereport?UserId=${userid}"));
+    var result = jsonDecode(response.body);
+    if (result == "No Reords Found") {
+      return finalData = [];
+    }
+    else{
+      for (int i = 0; i < result.length; i++) {
+        TesterReportModel testerReportModel = TesterReportModel(
+          workorderId: result[i]['workorder_id'],
+          workOrder: result[i]['workOrder'],
+          productId: result[i]['product_id'],
+          productName: result[i]['product_name'],
+          productCode: result[i]['product_code'],
+          startSerialNo: result[i]['start_serial_no'],
+          endSerialNo: result[i]['end_serial_no'],
+          spendTime: result[i]['spend_time'],
+          hoursTaken: result[i]['hours_taken'],
+          macAddress: result[i]['mac_address'],
+          testType: result[i]['test_type'],
+          testedBy: result[i]['testedBy'],
+          testedDate: result[i]['testedDate'],
+          testname: result[i]['testName'],
+          testResult: result[i]['testResult'],
+          testStage: result[i]['testStage'],
+          serial_no: result[i]['serial_no'],
+        );
+        finalData.add(testerReportModel);
+      }
+    }
+
+
+    return finalData;
+  }
 //****************************************workorder progress report ****************************************************
 
   getworkorderprogressreport(var userid, var startdate, var enddate) async {
@@ -1038,7 +1134,7 @@ class ApiProider {
   getTesterreport(var userid, var startdate, var enddate) async {
     List<TesterReportModel> finalData = [];
     final response = await http.get(Uri.parse(
-      "http://192.168.1.55/PAT_API/api/TestingReport/Taskwisereport?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
+      "http://192.168.1.47/PAT_API/api/TestingReport/Taskwisereport?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
     var result = jsonDecode(response.body);
     if (result == "No Reords Found") {
       return finalData = [];
@@ -1114,7 +1210,7 @@ class ApiProider {
   getNewWorkorderbasedreport(var workorderid) async {
     List<NewWorkorderbasedReport> finalData = [];
     final response = await http.get(Uri.parse(
-      "http://192.168.1.55/PAT_API/api/WOReport/WOReport?Workorderid=${workorderid}"));
+      "http://192.168.1.47/PAT_API/api/WOBReport?Workorderid=${workorderid}"));
     var result = jsonDecode(response.body);
     if (result == "No Reords Found") {
       return finalData = [];
@@ -1148,6 +1244,42 @@ class ApiProider {
     return finalData;
   }
 
+
+  //****************************************workorderbased report *****************************************************************
+
+  getproductunderWorkorderreport(var workorderid) async {
+    List<workorderunderproduct> finalData = [];
+    final response = await http.get(Uri.parse(
+        "http://192.168.1.55/PAT_API/api/WOReport/WO_ProductReport?WorkOrderID=${workorderid}"));
+    var result = jsonDecode(response.body);
+    if (result == "No Reords Found") {
+      return finalData = [];
+    }else{
+      for (int i = 0; i < result.length; i++) {
+        workorderunderproduct testerReportModel = workorderunderproduct(
+          productId: result[i]['product_id'],
+          productCode: result[i]['product_code'],
+          productName: result[i]['product_name'],
+          workorderId: result[i]['workorder_id'],
+          workOrder: result[i]['workOrder'],
+          workOrderQty: result[i]['workOrderQty'],
+          startingSerialNumber: result[i]['startingSerialNumber'],
+          endingSerialNumber: result[i]['endingSerialNumber'],
+          totalTestUnit: result[i]['totalTestUnit'],
+          testStartDate: result[i]['testStartDate'],
+          testEndDate: result[i]['testEndDate'],
+          qtyPassed: result[i]['qtyPassed'],
+          qtyFailed: result[i]['qtyFailed'],
+          testingStatus: result[i]['testingStatus'],
+
+
+        );
+        finalData.add(testerReportModel);
+      }
+    }
+
+    return finalData;
+  }
   //****************************************workorderbased report *****************************************************************
   var gg;
 
@@ -1193,7 +1325,7 @@ class ApiProider {
   }
 
   getWorkorderbasedexcelreport(var workorderid, var productid, var serial_no) async {
-    final response = await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/WOReport/WOReportExcelExport?Workorderid=$workorderid&&Productid=$productid&&serialno=$serial_no"));
+    final response = await http.get(Uri.parse("http://192.168.1.47/PAT_API/api/WOReport/WOReportExcelExport?Workorderid=$workorderid&&Productid=$productid&&serialno=$serial_no"));
     var result = jsonDecode(response.body);
 
     _prepareSaveDir();
@@ -1215,13 +1347,78 @@ class ApiProider {
 
 
   getTesterexcelreport(var productid, var serial_no) async {
-    final response = await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/TestingReport/TestingReportExcelExport?Productid=$productid&serialno=$serial_no"));
+    final response = await http.get(Uri.parse("http://192.168.1.47/PAT_API/api/TestingReport/TestingReportExcelExport?Productid=$productid&serialno=$serial_no"));
     var result = jsonDecode(response.body);
 
     _prepareSaveDir();
 
     var apiLink = result;
     var savePath = gg  + "\\"  "TestingReportExcelExport_252_18-05-2023.xls" ;
+    downloadExcelFile(apiLink!, savePath!);
+
+    final downloadedFilePath = savePath;
+
+    return openExcelFile(downloadedFilePath!);
+
+  }
+
+  getProductReleseexportreport() async {
+    final response = await http.get(Uri.parse("http://192.168.1.47/PAT_API/api/ProductReport/Productreportexcel"));
+    var result = jsonDecode(response.body);
+
+    _prepareSaveDir();
+
+    var apiLink = result;
+    var savePath = gg  + "\\"  "Productreportexcel_24-05-2023.xls" ;
+    downloadExcelFile(apiLink!, savePath!);
+
+    final downloadedFilePath = savePath;
+
+    return openExcelFile(downloadedFilePath!);
+
+  }
+
+
+  getworkorderprogressexportexcelreport(var userid, var startdate, var enddate) async {
+    final response = await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/WOReport/WOReportExcel?UserId=$userid&startdate=$startdate&enddate=$enddate"));
+    var result = jsonDecode(response.body);
+
+    _prepareSaveDir();
+
+    var apiLink = result;
+    var savePath = gg  + "\\"  "WOReportExcel_160_24-05-2023.xls" ;
+    downloadExcelFile(apiLink!, savePath!);
+
+    final downloadedFilePath = savePath;
+
+    return openExcelFile(downloadedFilePath!);
+
+  }
+
+  getTesterexportexcelreport(var userid, var startdate, var enddate) async {
+    final response = await http.get(Uri.parse("http://192.168.1.47/PAT_API/api/TestingReport/Taskwisereportexcel?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
+    var result = jsonDecode(response.body);
+
+    _prepareSaveDir();
+
+    var apiLink = result;
+    var savePath = gg  + "\\"  "Taskwisereportexcel_162_03-06-2023.xls" ;
+    downloadExcelFile(apiLink!, savePath!);
+
+    final downloadedFilePath = savePath;
+
+    return openExcelFile(downloadedFilePath!);
+
+  }
+
+  getworkorderbasedtestexportexcelreport(var workorderid) async {
+    final response = await http.get(Uri.parse("http://192.168.1.47/PAT_API/api/WOReport/WOReportExcelWID?Workorderid=${workorderid}"));
+    var result = jsonDecode(response.body);
+
+    _prepareSaveDir();
+
+    var apiLink = result;
+    var savePath = gg  + "\\"  "WOReportExcelWID_107_24-05-2023.xls" ;
     downloadExcelFile(apiLink!, savePath!);
 
     final downloadedFilePath = savePath;
@@ -1395,9 +1592,11 @@ class ApiProider {
           flg: result[i]["flg"],
           rating: result[i]["rating"],
           workorderid: result[i]["workorder_id"],
+          workorderCode: result[i]["workorder_code"],
           productid: result[i]["product_id"],
           username: result[i]["name"],
           product: pro,
+
           testing: test);
 
 

@@ -17,7 +17,7 @@ class AddTestProvider extends StateNotifier<AddTestState> {
 
   addTest(var Test) async {
     state = _loading();
-    final data = await ref.read(apiProvider). insertTest(Test);
+    final data = await ref.read(apiProvider).insertTest(Test);
 
     if (data != null) {
       state = _dataState(data.toString());

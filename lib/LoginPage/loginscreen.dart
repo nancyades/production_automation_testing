@@ -4,6 +4,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:production_automation_testing/Database/Curd_operation/boxes.dart';
 import 'package:production_automation_testing/Database/Curd_operation/database.dart';
 import 'package:production_automation_testing/Provider/navigation_provider.dart';
+import 'package:production_automation_testing/Provider/post_provider/singletest_provider.dart';
 import '../Database/Curd_operation/HiveModel/usermanagement.dart';
 import '../Helper/AppClass.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -355,6 +356,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                                                       onPressed: () {
                                                                       /*  Navigator.push(
                                                                             context, MaterialPageRoute(builder: (context) => HomeScreenPage()));*/
+                                                                        Helper.usercount = datum.length;
                                                                         if(validateFields()){
                                                                           var uservalidation = datum.where((element) => element.empId == controllerEmpId.text ).toList();
                                                                           if(uservalidation[0].flg == 1){
@@ -376,6 +378,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                                                                 print("helpername---->${ Helper.shareduserid}");
 
                                                                                 ref.refresh(navNotifier);
+
+                                                                                ref.read(singletesterReportNotifier.notifier).singletesterReport(Helper.shareduserid);
 
                                                                                 Navigator.push(
                                                                                     context, MaterialPageRoute(builder: (context) => HomeScreenPage()));

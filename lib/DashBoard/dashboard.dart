@@ -69,10 +69,14 @@ class _DashBoardState extends State<DashBoard> {
                   ],
                 ),
               ),
-              SubHeader(
-                title: 'Shared Files',
+              Row(
+                children: [
+                  SubHeader(
+                    title: 'Shared Files',
+                  ),
+                ],
               ),
-              SharedFilesItem(
+              /*SharedFilesItem(
                   color: Colors.blue,
                   sharedFileName: 'Company Gudidelines',
                   members: '12 members',
@@ -92,7 +96,7 @@ class _DashBoardState extends State<DashBoard> {
                   members: '14 members',
                   et: '08 Oct 2019',
                   fileSize: "1.3 MB"
-              ),
+              ),*/
               SubHeader(
                 title: 'Project Statistics',
               ),

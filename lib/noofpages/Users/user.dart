@@ -113,6 +113,7 @@ class _UserPageState extends ConsumerState<UserPage> {
   @override
   Widget build(BuildContext context) {
     return ref.watch(getUserNotifier).when(data: (datum) {
+
       var activevalue = datum.where((element) => element.flg == 1).toList();
 
       var inactivevalue = datum.where((element) => element.flg == 0).toList();

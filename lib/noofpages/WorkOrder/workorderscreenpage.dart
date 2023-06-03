@@ -1139,7 +1139,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          color: Color(0xff8fcceb),
+                          color:Color(0xff333951),
                           //Colors.blueAccent,
                           elevation: 10,
                           child: Row(
@@ -1160,7 +1160,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 15.0,
-                                                  color: Colors.black)),
+                                                  color: Colors.white)),
                                         ),
                                       ),
                                       Expanded(
@@ -1169,7 +1169,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 15.0,
-                                                  color: Colors.black)),
+                                                  color: Colors.white)),
                                         ),
                                       ),
                                       Expanded(
@@ -1178,7 +1178,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 15.0,
-                                                  color: Colors.black)),
+                                                  color: Colors.white)),
                                         ),
                                       ),
                                       Expanded(
@@ -1187,7 +1187,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 15.0,
-                                                  color: Colors.black)),
+                                                  color: Colors.white)),
                                         ),
                                       ),
                                       Expanded(
@@ -1196,7 +1196,7 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 15.0,
-                                                  color: Colors.black)),
+                                                  color: Colors.white)),
                                         ),
                                       ),
                                       /* Center(

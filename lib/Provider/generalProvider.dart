@@ -33,7 +33,7 @@ final lastPacketSentProvider = StateProvider<String?>((ref) => null);
 final lastPacketReceivedProvider = StateProvider<String?>((ref) => null);
 
 
-final serialNoTestProvider = StateProvider<String>((ref) => '');
+
 
 final serialNoTCPProvider = StateProvider<String>((ref) => '');
 

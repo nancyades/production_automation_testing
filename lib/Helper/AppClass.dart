@@ -9,6 +9,7 @@ String secretValue = 'hasura@1907';
 String psqlDb = 'secret';
 String secretKey = 'x-hasura-admin-secret';
 String jigAddress = '';
+String serialAddress = '';
 
 List<String> roles = [
   'Super Admin',

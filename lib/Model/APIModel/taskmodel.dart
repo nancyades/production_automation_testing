@@ -36,8 +36,8 @@ class TaskModel {
   String? testingStatus;
   dynamic startDate;
   dynamic endDate;
-  int? createdBy;
-  int? updatedBy;
+  dynamic createdBy;
+  dynamic updatedBy;
   dynamic createdDate;
   dynamic updatedDate;
   int? flg;
@@ -60,8 +60,8 @@ class Productvalue {
   int? templateId;
   int? quantity;
   String? status;
-  int? createdBy;
-  int? updatedBy;
+  dynamic createdBy;
+  dynamic updatedBy;
   dynamic createdDate;
   dynamic updatedDate;
   int? flg;
@@ -95,8 +95,8 @@ class TemplateValue {
   int? templateId;
   String? templateName;
   String? filePath;
-  int? createdBy;
-  int? updatedBy;
+  dynamic createdBy;
+  dynamic updatedBy;
   dynamic createdDate;
   dynamic updatedDate;
   int? flg;

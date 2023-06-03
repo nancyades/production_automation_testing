@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:production_automation_testing/Model/APIModel/dashboardscreen/singletestmodel.dart';
 import 'package:production_automation_testing/Model/APIModel/templatemodel.dart';
 import 'package:production_automation_testing/Model/resultmodel.dart';
+import '../Model/APIModel/dashboardscreen/workorder_model.dart';
 import '../Model/APIModel/productcount.dart';
 import '../Model/APIModel/productmodel.dart';
 import '../Model/APIModel/productreport.dart';
@@ -116,6 +118,15 @@ final getProductReportNotifier = FutureProvider<List<ProductReportmodel>>((ref) 
   return await ref.read(apiProvider).getProductsreport();
 });
 
+
+final getAllWorkorderReportNotifier = FutureProvider<List<AllWorkorder>>((ref) async {
+  return await ref.read(apiProvider).getAllWorkordersreport();
+});
+
+
+final getWorkorderProgresReportNotifier = FutureProvider<List<workprogess>>((ref) async {
+  return await ref.read(apiProvider).getWorkordersprogressreport();
+});
 
 
 

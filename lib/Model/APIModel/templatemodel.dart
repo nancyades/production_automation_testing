@@ -18,8 +18,8 @@ class Template {
   int? templateId;
   String? templateName;
   String? filePath;
-  int? createdBy;
-  int? updatedBy;
+  dynamic createdBy;
+  dynamic updatedBy;
   dynamic createdDate;
   dynamic updatedDate;
   int? flg;

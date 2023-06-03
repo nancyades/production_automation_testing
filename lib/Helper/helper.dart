@@ -34,5 +34,9 @@ static bool? updateprofile;
 static List<dynamic> pro = [];
 
 
+static var usercount;
+static var workordercount;
+static var productcount;
+
 
 }

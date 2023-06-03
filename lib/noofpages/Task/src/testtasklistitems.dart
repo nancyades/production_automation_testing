@@ -2,19 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class TestTaskListItems extends StatefulWidget {
-  final String? Productname;
-  final String? productcode;
+  final String? Workorder;
   final String? quantity;
-  final String? assignedby;
+  final String? createdby;
   final String? status;
+  final String? testingstatus;
 
 
   TestTaskListItems({
-    this.Productname,
-    this.productcode,
+    this.Workorder,
     this.quantity,
-    this.assignedby,
-    this.status
+    this.createdby,
+    this.status,
+    this.testingstatus
   });
 
 
@@ -62,18 +62,7 @@ class _TestTaskListItemsState extends State<TestTaskListItems> {
               child: Container(
                 height: 20.0,
                 width: 10.0,
-                child: Center(child: Text(widget.Productname.toString(),
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 10.0,
-                        color: Colors.black))),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 20.0,
-                width: 10.0,
-                child: Center(child: Text(widget.productcode.toString(),
+                child: Center(child: Text(widget.Workorder.toString(),
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 10.0,
@@ -95,7 +84,7 @@ class _TestTaskListItemsState extends State<TestTaskListItems> {
               child: Container(
                 height: 20.0,
                 width: 10.0,
-                child: Center(child: Text(widget.assignedby.toString(),
+                child: Center(child: Text(widget.createdby.toString(),
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 10.0,
@@ -107,6 +96,17 @@ class _TestTaskListItemsState extends State<TestTaskListItems> {
                 height: 20.0,
                 width: 10.0,
                 child: Center(child: Text(widget.status.toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10.0,
+                        color: Colors.black))),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                height: 20.0,
+                width: 10.0,
+                child: Center(child: Text(widget.testingstatus.toString(),
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 10.0,

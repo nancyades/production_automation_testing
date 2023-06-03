@@ -63,7 +63,7 @@ class _TaskListItemsState extends State<TaskListItems> {
           children: [
             Expanded(
               child: Container(
-                height: 20.0,
+                height: 27.0,
                 width: 10.0,
                 child: Center(child: Text(widget.username.toString(),
                     style: TextStyle(

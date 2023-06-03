@@ -28,8 +28,8 @@ class Productmodel {
   int? templateId;
   int? quantity;
   String? status;
-  int? createdBy;
-  int?updatedBy;
+  dynamic createdBy;
+  dynamic updatedBy;
   dynamic createdDate;
   dynamic updatedDate;
   int? flg;
