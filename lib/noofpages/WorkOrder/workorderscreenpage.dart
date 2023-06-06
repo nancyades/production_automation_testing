@@ -1503,10 +1503,12 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                     int.parse(items[index].quantity.toString());
                                 workorder.startSerialNo =
                                     items[index].startSerialNo.toString();
-                                workorder.endSerialNo =
-                                    items[index].endSerialNo.toString();
+                                workorder.endSerialNo = items[index].endSerialNo.toString();
                                 workorder.status = items[index].status.toString();
                                 workorder.remarks = items[index].remarks.toString();
+                                workorder.createdBy = items[index].createdBy;
+                                workorder.updatedBy = items[index].updatedBy;
+
                                 List<WorkorderList> wolst = [];
 
                                 for(int i = 0; i< items[index].woList!.length; i++){
@@ -1558,8 +1560,8 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 "start_serial_no": items[index].startSerialNo.toString(),
                                 "end_serial_no": items[index].endSerialNo.toString(),
                                 "status": items[index].status.toString(),
-                                "created_by": 1,
-                                "updated_by": 1,
+                                "created_by": items[index].createdBy,
+                                "updated_by": items[index].updatedBy,
                                 "created_date": null,
                                 "updated_date": null,
                                 "flg": 0,
@@ -1711,6 +1713,8 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 workorder.status =
                                     createdvalue[index].status.toString();
                                 workorder.remarks = createdvalue[index].remarks.toString();
+                                workorder.createdBy = createdvalue[index].createdBy;
+                                workorder.updatedBy = createdvalue[index].updatedBy;
 
                                 List<WorkorderList> wolst = [];
 
@@ -1894,6 +1898,8 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 workorder.status =
                                     verifiedvalue[index].status.toString();
                                 workorder.remarks = verifiedvalue[index].remarks.toString();
+                                workorder.createdBy = verifiedvalue[index].createdBy;
+                                workorder.updatedBy = verifiedvalue[index].updatedBy;
 
 
                                 List<WorkorderList> wolst = [];
@@ -2078,6 +2084,8 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 workorder.status =
                                     approvedvalue[index].status.toString();
                                 workorder.remarks = approvedvalue[index].remarks.toString();
+                                workorder.createdBy = approvedvalue[index].createdBy;
+                                workorder.updatedBy = approvedvalue[index].updatedBy;
 
                                 List<WorkorderList> wolst = [];
 
@@ -2261,6 +2269,8 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
                                 workorder.status =
                                     rejectedvalue[index].status.toString();
                                 workorder.remarks = rejectedvalue[index].remarks.toString();
+                                workorder.createdBy = rejectedvalue[index].createdBy;
+                                workorder.updatedBy = rejectedvalue[index].updatedBy;
 
                                 List<WorkorderList> wolst = [];
 

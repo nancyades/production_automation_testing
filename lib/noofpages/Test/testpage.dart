@@ -165,18 +165,13 @@ class _TestScreenPageState extends ConsumerState<TestScreenPage> {
         .of(context)
         .size
         .height;
-    List<FirstTest>? alltest = ref
-        .watch(getallestNotifier)
-        .value;
 
 
     if (receivedData == null) {
       receivedData = Helper.tcpResponse;
     }
 
-    if (alltest == null) {
-      return Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
+
 
     List<int> ind = [];
     List<List<Testing>> ind2 = [];

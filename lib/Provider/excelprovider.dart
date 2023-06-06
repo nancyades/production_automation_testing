@@ -124,7 +124,7 @@ final getAllWorkorderReportNotifier = FutureProvider<List<AllWorkorder>>((ref) a
 });
 
 
-final getWorkorderProgresReportNotifier = FutureProvider<List<workprogess>>((ref) async {
+final getWorkorderProgresReportNotifier = FutureProvider<List<Work_order_progress_report>>((ref) async {
   return await ref.read(apiProvider).getWorkordersprogressreport();
 });
 

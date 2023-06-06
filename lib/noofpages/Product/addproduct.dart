@@ -208,6 +208,9 @@ class _AddProductState extends ConsumerState<AddProduct> {
         }else{
           designadminstatusselection = controllerProductStatus.text;
         } if(controllerProductStatus.text == "Verified"){
+          if(Helper.sharedRoleId == "Design Admin"){
+            designadminstatusselection = widget.product.status.toString();
+          }
           widget.product.status = "Approved";
       }else{
           widget.product.status = controllerProductStatus.text;
@@ -558,7 +561,58 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                   ),
                                 ],
                               );
-                            }else{
+                            }
+                            else if(controllerProductStatus.text == "Verified"){
+                              return Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20.0),
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding:
+                                          const EdgeInsets.only(
+                                              right: 15.0),
+                                          child: DropdownButton(
+                                            icon: Padding(
+                                              padding:
+                                              const EdgeInsets.only(
+                                                  left: 25.0),
+                                              child: Icon(Icons
+                                                  .keyboard_arrow_down),
+                                            ),
+                                            items: designadminstatus.map<
+                                                DropdownMenuItem<
+                                                    String>>(
+                                                    (String setlist) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: setlist,
+                                                    child: Text(
+                                                        setlist
+                                                            .toString()),
+                                                  );
+                                                }).toList(),
+                                            value: designadminstatusselection,
+                                            onChanged: (item) {
+                                              ref
+                                                  .read(counterModelProvider.notifier).press();
+                                              designadminstatusselection =
+                                                  item.toString();
+
+                                              controllerProductStatus.text = item.toString();
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+
+                            else{
                               return  Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: Row(
@@ -1341,8 +1395,8 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                   "quantity":
                                   int.parse(controllerProductQuantity.text),
                                   "status": "Created",
-                                  "created_by": Helper.shareduserid,
-                                  "updated_by": 0,
+                                  "created_by": Helper.shareduserid.toString(),
+                                  "updated_by": "0",
                                   "created_date": date.toString().split(' ')[0],
                                   "updated_date": null,
                                   "flg": isSelected ? 1 : 0,
@@ -1365,8 +1419,8 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                   "quantity":
                                   int.parse(controllerProductQuantity.text),
                                   "status": widget.product.status,
-                                  "created_by": Helper.shareduserid,
-                                  "updated_by": 0,
+                                  "created_by": Helper.shareduserid.toString(),
+                                  "updated_by": "0",
                                   "created_date": date.toString().split(' ')[0],
                                   "updated_date": null,
                                   "flg": isSelected ? 1 : 0,
@@ -1741,8 +1795,8 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                                     .text,
                                                                                 "file_path": controllerFilepath
                                                                                     .text,
-                                                                                "created_by": 1,
-                                                                                "updated_by": 1,
+                                                                                "created_by": Helper.shareduserid.toString(),
+                                                                                "updated_by": "0",
                                                                                 "created_date": "2023-04-20",
                                                                                 "updated_date": "2023-04-20",
                                                                                 "flg": 1,
@@ -1785,8 +1839,8 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                                     .text,
                                                                                 "file_path": controllerFilepath
                                                                                     .text,
-                                                                                "created_by": 1,
-                                                                                "updated_by": 1,
+                                                                                "created_by": Helper.shareduserid.toString(),
+                                                                                "updated_by": "0",
                                                                                 "created_date": "2023-04-20",
                                                                                 "updated_date": "2023-04-20",
                                                                                 "flg": 1,
@@ -1802,8 +1856,8 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                               templateId: 0,
                                                                               templateName: controllerTemplate.text,
                                                                               filePath: controllerFilepath.text,
-                                                                              createdBy: 1,
-                                                                              updatedBy: 1,
+                                                                              createdBy: Helper.shareduserid.toString(),
+                                                                              updatedBy: "0",
                                                                               createdDate: "2023-04-20",
                                                                               updatedDate: "2023-04-20",
                                                                               flg: 1,
@@ -2091,7 +2145,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                 "template_id": widget.product.template![0].templateId,
                                 "quantity": int.parse(controllerProductQuantity.text),
                                 "status": "Created",
-                                "updated_by": Helper.shareduserid,
+                                "updated_by": Helper.shareduserid.toString(),
                                 "updated_date": date.toString().split(' ')[0],
                                 "flg": widget.product.flg,
                                 "remarks": controllerRemarks.text,
@@ -2111,7 +2165,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                 "template_id": widget.product.template![0].templateId,
                                 "quantity": int.parse(controllerProductQuantity.text),
                                 "status": designadminstatusselection,
-                                "updated_by": Helper.shareduserid,
+                                "updated_by": Helper.shareduserid.toString(),
                                 "updated_date": date.toString().split(' ')[0],
                                 "flg": widget.product.flg,
                                 "remarks": controllerRemarks.text,
@@ -2129,9 +2183,9 @@ class _AddProductState extends ConsumerState<AddProduct> {
                               "product_code": controllerProductCode.text,
                               "description": controllerProductDescription.text,
                               "template_id": widget.product.template![0].templateId,
-                              "quantity": int.parse(controllerProductQuantity.text),
+                              "quantity": int.parse(controllerProductQuantity.text.toString()),
                               "status": widget.product.status!,
-                              "updated_by": Helper.shareduserid,
+                              "updated_by": Helper.shareduserid.toString(),
                               "updated_date": date.toString().split(' ')[0],
                               "flg": widget.product.flg,
                               "remarks": controllerRemarks.text,
@@ -2426,8 +2480,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                                     .text,
                                                                                 "file_path": controllerFilepath
                                                                                     .text,
-                                                                                "created_by": 1,
-                                                                                "updated_by": 1,
+                                                                                "updated_by": Helper.shareduserid.toString(),
                                                                                 "created_date": "2023-04-20",
                                                                                 "updated_date": "2023-04-20",
                                                                                 "flg": 1,
@@ -2470,8 +2523,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                                     .text,
                                                                                 "file_path": controllerFilepath
                                                                                     .text,
-                                                                                "created_by": 1,
-                                                                                "updated_by": 1,
+                                                                                "updated_by": Helper.shareduserid.toString(),
                                                                                 "created_date": "2023-04-20",
                                                                                 "updated_date": "2023-04-20",
                                                                                 "flg": 1,
@@ -2487,8 +2539,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                               templateId: 0,
                                                                               templateName: controllerTemplate.text,
                                                                               filePath: controllerFilepath.text,
-                                                                              createdBy: 1,
-                                                                              updatedBy: 1,
+                                                                              updatedBy: Helper.shareduserid.toString(),
                                                                               createdDate: "2023-04-20",
                                                                               updatedDate: "2023-04-20",
                                                                               flg: 1,
@@ -2526,8 +2577,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                                 "template_id": template_product_id,
                                                                                 "template_name": controllerTemplate.text,
                                                                                 "file_path": controllerFilepath.text,
-                                                                                "created_by": 1,
-                                                                                "updated_by": 1,
+                                                                                "updated_by": Helper.shareduserid.toString(),
                                                                                 "created_date": "2023-04-20",
                                                                                 "updated_date": "2023-04-20",
                                                                                 "flg": 1,
@@ -2702,8 +2752,8 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                                               "template_id": widget.product.template![index].templateId,
                                                                                               "template_name": widget.product.template![index].templateName.toString(),
                                                                                               "file_path": widget.product.template![index].filePath.toString(),
-                                                                                              "created_by": widget.product.template![index].createdBy,
-                                                                                              "updated_by": widget.product.template![index].updatedBy,
+                                                                                              "created_by": widget.product.template![index].createdBy.toString(),
+                                                                                              "updated_by": widget.product.template![index].updatedBy.toString(),
                                                                                               "created_date": widget.product.template![index].createdDate.toString(),
                                                                                               "updated_date": widget.product.template![index].updatedDate.toString(),
                                                                                               "flg": 0,
@@ -2930,7 +2980,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
       FormData formData = FormData.fromMap(
           {'file': await MultipartFile.fromFile(path, filename: fileName)});
       final response = await dio.post(
-          "http://192.168.1.47/PAT_API/api/Upload/SaveFile",
+          "http://192.168.1.55/PAT_API/api/Upload/SaveFile",
           data: formData, onSendProgress: (int sent, int total) {
         print('$sent $total');
       });

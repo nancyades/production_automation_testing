@@ -86,6 +86,10 @@ int tapped = 0;
 
   var work_order_id;
 
+  List<Work_order_progress_report> vehicles = [];
+
+  List<PproductwiseWoReport> prolist = [];
+
 
 
 
@@ -182,18 +186,7 @@ int tapped = 0;
    String? savePath;
 
 
-  List<Vehicle> vehicles = [
-    Vehicle(
-      'workorder 1',
-      ['Vehicle no. 1', 'Vehicle no. 2', 'Vehicle no. 7', 'Vehicle no. 10'],
-      Icons.motorcycle,
-    ),
-    Vehicle(
-      'workorder 2',
-      ['Vehicle no. 3', 'Vehicle no. 4', 'Vehicle no. 6'],
-      Icons.directions_car,
-    ),
-  ];
+
 
 
   @override
@@ -805,16 +798,15 @@ int tapped = 0;
                                        padding: const EdgeInsets.all(15.0),
                                        child: Row(
                                          children: [
-                                           Expanded(
-                                               child: Text(
-                                                 'Workorder',
-                                                 textAlign: TextAlign.center,
-                                                 style: TextStyle(
-                                                     color: Colors.white,
-                                                     fontSize: 12,
-                                                     fontWeight:
-                                                     FontWeight.bold),
-                                               )),
+                                           Text(
+                                             'Workorder',
+                                             textAlign: TextAlign.center,
+                                             style: TextStyle(
+                                                 color: Colors.white,
+                                                 fontSize: 12,
+                                                 fontWeight:
+                                                 FontWeight.bold),
+                                           ),
                                            Expanded(
                                                child: Text(
                                                  'Product Name',
@@ -871,7 +863,13 @@ int tapped = 0;
                                    ),
                                    Consumer(
                                      builder: (context, ref, child) {
-                                      // return ref.watch(workorderunderproductReportNotifier).id.when(data: (data){
+                                      return ref.watch(getWorkorderProgresReportNotifier).when(data: (data){
+                                       vehicles = data;
+
+
+
+
+
                                          return Expanded(
                                            child: Padding(
                                                padding: const EdgeInsets.only(
@@ -880,11 +878,36 @@ int tapped = 0;
                                                ListView.builder(
                                                  itemCount: vehicles.length,
                                                  itemBuilder: (context, i) {
+
+
+
+                                                   prolist = [];
+
+                                                   for(int j = 0; j< vehicles[i].pproductwiseWoReport!.length; j++){
+                                                     if(vehicles[i].workorderId == vehicles[i].pproductwiseWoReport![j].workorderId){
+                                                       PproductwiseWoReport wlist = PproductwiseWoReport(
+                                                         workorderId: vehicles[i].pproductwiseWoReport![j].workorderId,
+                                                         productId: vehicles[i].pproductwiseWoReport![j].productId,
+                                                         productCode: vehicles[i].pproductwiseWoReport![j].productCode,
+                                                         productName: vehicles[i].pproductwiseWoReport![j].productName,
+                                                         productQty: vehicles[i].pproductwiseWoReport![j].productQty,
+                                                         startingSerialNumber: vehicles[i].pproductwiseWoReport![j].startingSerialNumber,
+                                                         endingSerialNumber: vehicles[i].pproductwiseWoReport![j].endingSerialNumber,
+                                                         totalTestUnit: vehicles[i].pproductwiseWoReport![j].totalTestUnit,
+                                                         testStartDate: vehicles[i].pproductwiseWoReport![j].testStartDate,
+                                                         testEndDate: vehicles[i].pproductwiseWoReport![j].testEndDate,
+                                                         qtyPassed: vehicles[i].pproductwiseWoReport![j].qtyPassed,
+                                                         qtyFailed: vehicles[i].pproductwiseWoReport![j].qtyFailed,
+                                                         testingStatus: vehicles[i].pproductwiseWoReport![j].testingStatus,
+                                                       );
+                                                       prolist.add(wlist);
+                                                     }
+                                                   }
                                                    return ExpansionTile(
-                                                     title: Text(vehicles[i].title, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),),
+                                                     title: Text(vehicles[i].workOrder.toString(), style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),),
                                                      children: <Widget>[
                                                        Column(
-                                                         children: _buildExpandableContent(vehicles[i]),
+                                                         children: _buildExpandableContent(prolist, i),
                                                        ),
                                                      ],
                                                    );
@@ -904,11 +927,11 @@ int tapped = 0;
 
                                            ),
                                          );
-                                      /* }, error: (e,s){
+                                       }, error: (e,s){
                                          return Text(e.toString());
                                        }, loading: (){
                                          return Center(child: CircularProgressIndicator());
-                                       });*/
+                                       });
 
                                      }
                                    )
@@ -3305,89 +3328,94 @@ int tapped = 0;
     );
   }
 
-  _buildExpandableContent(Vehicle vehicle) {
+  _buildExpandableContent(List<PproductwiseWoReport> vehicle, int index) {
     List<Widget> columnContent = [];
 
-    for (String content in vehicle.contents)
-      columnContent.add(
-        ListTile(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                flex: 4,
-                child: InkWell(
-                  onTap: (){
-                  },
-                  child: Container(
-                    height: 30.0,
-                    width: 10.0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: Center(
-                            child: Text( "pro name",
 
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 13.0,
-                                    color: Colors.black)),
+
+
+    for (var content in vehicle)
+
+          columnContent.add(
+            ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: InkWell(
+                        onTap: (){
+                        },
+                        child: Container(
+                          height: 30.0,
+                          width: 10.0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Expanded(
+                                child: Center(
+                                  child: Text(content.productName.toString(),
+
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 13.0,
+                                          color: Colors.black)),
+                                ),
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: Text(content.startingSerialNumber.toString(),
+
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 13.0,
+                                          color: Colors.black)),
+                                ),
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: Text(content.endingSerialNumber.toString(),
+
+
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 13.0,
+                                          color: Colors.black)),
+                                ),
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: Text(content.totalTestUnit.toString(),
+
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 13.0,
+                                          color: Colors.black)),
+                                ),
+                              ),
+
+                              Expanded(
+                                child: Center(
+                                  child: Text(content.testingStatus.toString(),
+
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 13.0,
+                                          color: Colors.black)),
+                                ),
+                              ),
+
+                            ],
                           ),
                         ),
-                        Expanded(
-                          child: Center(
-                            child: Text( "start serial",
-
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 13.0,
-                                    color: Colors.black)),
-                          ),
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Text( "end serial",
-
-
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 13.0,
-                                    color: Colors.black)),
-                          ),
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Text( "tested unit",
-
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 13.0,
-                                    color: Colors.black)),
-                          ),
-                        ),
-
-                        Expanded(
-                          child: Center(
-                            child: Text( "testing status",
-
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 13.0,
-                                    color: Colors.black)),
-                          ),
-                        ),
-
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          leading: Text("")
-        ),
-      );
+                leading: Text("")
+            ),
+          );
+
 
     return columnContent;
   }
