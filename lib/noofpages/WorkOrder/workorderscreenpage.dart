@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:production_automation_testing/Helper/helper.dart';
 import 'package:production_automation_testing/Provider/post_provider/workorder_provider.dart';
 import 'package:production_automation_testing/noofpages/WorkOrder/addworkorder.dart';
@@ -1376,7 +1377,8 @@ class _WorkOrderScreenPageState extends ConsumerState<WorkOrderScreenPage> {
         }, error: (e, s) {
       return Text(e.toString());
     }, loading: () {
-      return Center(child: CircularProgressIndicator());
+      return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
     });
 
 

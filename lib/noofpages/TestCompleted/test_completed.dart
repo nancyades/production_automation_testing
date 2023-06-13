@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:production_automation_testing/Model/resultmodel.dart';
 import 'package:production_automation_testing/Provider/excelprovider.dart';
 import 'package:production_automation_testing/Provider/generalProvider.dart';
@@ -152,7 +153,8 @@ bool valus = true;
     }, error: (e,s){
       return Text(e.toString());
     }, loading: (){
-      return Center(child: CircularProgressIndicator());
+      return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
     });
 
   }

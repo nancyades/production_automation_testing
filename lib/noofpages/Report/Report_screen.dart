@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -495,7 +496,8 @@ int tapped = 0;
                 }, error: (e, s) {
               return Text(e.toString());
             }, loading: () {
-              return Center(child: CircularProgressIndicator());
+              return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
             });
           }()
               : card2 == true
@@ -628,7 +630,8 @@ int tapped = 0;
                             }, error: (e,s){
                               return Text(e.toString());
                             }, loading: (){
-                              return Center(child: CircularProgressIndicator());
+                              return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                             });
 
                           }
@@ -849,7 +852,37 @@ int tapped = 0;
                                                )),
                                            Expanded(
                                                child: Text(
-                                                 'Testing Status',
+                                                 'Qty Passed',
+                                                 textAlign: TextAlign.center,
+                                                 style: TextStyle(
+                                                     color: Colors.white,
+                                                     fontSize: 12,
+                                                     fontWeight:
+                                                     FontWeight.bold),
+                                               )),
+                                           Expanded(
+                                               child: Text(
+                                                 'Qty Failed',
+                                                 textAlign: TextAlign.center,
+                                                 style: TextStyle(
+                                                     color: Colors.white,
+                                                     fontSize: 12,
+                                                     fontWeight:
+                                                     FontWeight.bold),
+                                               )),
+                                           Expanded(
+                                               child: Text(
+                                                 'Test Start Date',
+                                                 textAlign: TextAlign.center,
+                                                 style: TextStyle(
+                                                     color: Colors.white,
+                                                     fontSize: 12,
+                                                     fontWeight:
+                                                     FontWeight.bold),
+                                               )),
+                                           Expanded(
+                                               child: Text(
+                                                 'Test End Date',
                                                  textAlign: TextAlign.center,
                                                  style: TextStyle(
                                                      color: Colors.white,
@@ -930,7 +963,8 @@ int tapped = 0;
                                        }, error: (e,s){
                                          return Text(e.toString());
                                        }, loading: (){
-                                         return Center(child: CircularProgressIndicator());
+                                         return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                        });
 
                                      }
@@ -951,7 +985,8 @@ int tapped = 0;
             }, error: (e, s) {
               return Text(e.toString());
             }, loading: () {
-              return Center(child: CircularProgressIndicator());
+              return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
             });
           }()
               : card3 == true
@@ -1082,7 +1117,8 @@ int tapped = 0;
                             }, error: (e,s){
                               return Text(e.toString());
                             }, loading: (){
-                              return Center(child: CircularProgressIndicator());
+                              return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                             });
 
                           }
@@ -1392,7 +1428,8 @@ int tapped = 0;
                                     }, error: (e,s){
                                       return Text(e.toString());
                                     }, loading: (){
-                                      return Center(child: CircularProgressIndicator());
+                                      return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                     });
 
 
@@ -1408,7 +1445,8 @@ int tapped = 0;
             }, error: (e, s) {
               return Text(e.toString());
             }, loading: () {
-              return Center(child: CircularProgressIndicator());
+              return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
             });
 
           }()
@@ -1548,7 +1586,8 @@ int tapped = 0;
                       }, error: (e,s){
                         return Text(e.toString());
                       }, loading: (){
-                        return Center(child: CircularProgressIndicator());
+                        return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                       }),
                     ],
                   ),
@@ -1722,7 +1761,8 @@ int tapped = 0;
                                 }, error: (e,s){
                                   return Text(e.toString());
                                 }, loading: (){
-                                  return Center(child: CircularProgressIndicator());
+                                  return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                 });
 
                               })
@@ -1737,7 +1777,8 @@ int tapped = 0;
             }, error: (e, s) {
               return Text(e.toString());
             }, loading: () {
-              return Center(child: CircularProgressIndicator());
+              return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
             });
 
 
@@ -3113,7 +3154,7 @@ int tapped = 0;
 
 /*
 
-                              apiLink = "http://192.168.1.55//PAT_API/ReportExport/TestingReportExcelExport_100_16-05-2023.xls";
+                              apiLink = "http://192.168.1.10//PAT_API/ReportExport/TestingReportExcelExport_100_16-05-2023.xls";
                               savePath = gg + "\\" + "TestingReportExcelExport_100_16-05-2023.xls" ;
                               downloadExcelFile(apiLink!, savePath!);
 
@@ -3225,7 +3266,7 @@ int tapped = 0;
                         child: Center(
                           child: Text( _textEditing_1Controller.text.isNotEmpty
                               ? glossarListOnSearch_1[index].serialNo.toString()
-                              : mData[index].serialNo.toString(),
+                              : mData[index].serialNo.toString() == "null" ? "Not Yet Start" : mData[index].serialNo.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 13.0,
@@ -3236,7 +3277,7 @@ int tapped = 0;
                         child: Center(
                           child: Text(_textEditing_1Controller.text.isNotEmpty
                               ? glossarListOnSearch_1[index].testStage.toString()
-                              : mData[index].testStage.toString(),
+                              : mData[index].testStage.toString() == "null" ? "Not Yet Start" : mData[index].testStage.toString(),
 
                               style: TextStyle(
                                   fontWeight: FontWeight.w300,
@@ -3262,7 +3303,7 @@ int tapped = 0;
                                   (){
                                 var str = _textEditing_1Controller.text.isNotEmpty
                                     ? glossarListOnSearch_1[index].testedDate.toString().split('T')[0]
-                                    : mData[index].testedDate.toString().split('T')[0];
+                                    : mData[index].testedDate.toString().split('T')[0] == "null" ? "Not Yet Start" : mData[index].testedDate.toString().split('T')[0];
                                 return str.toString();
                               }(),
 
@@ -3296,7 +3337,7 @@ int tapped = 0;
 
 
 /*
-                              apiLink = "http://192.168.1.55//PAT_API/ReportExport/WOReportExcelExport_100_17-05-2023.xls";
+                              apiLink = "http://192.168.1.10//PAT_API/ReportExport/WOReportExcelExport_100_17-05-2023.xls";
                               savePath = gg + "\\" + "WOReportExcelExport_100_17-05-2023.xls" ;
                               downloadExcelFile(apiLink!, savePath!);
 
@@ -3304,7 +3345,7 @@ int tapped = 0;
 
                               openExcelFile(downloadedFilePath!);*/
                             },
-                            child: Text("https//link_to_open_report",
+                            child: Text( mData[index].serialNo.toString() == "null"?  " " :"https//link_to_open_report",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w300,
                                     fontSize: 13.0,
@@ -3396,7 +3437,37 @@ int tapped = 0;
 
                               Expanded(
                                 child: Center(
-                                  child: Text(content.testingStatus.toString(),
+                                  child: Text(content.qtyPassed.toString(),
+
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 13.0,
+                                          color: Colors.black)),
+                                ),
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: Text(content.qtyFailed.toString(),
+
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 13.0,
+                                          color: Colors.black)),
+                                ),
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: Text(content.testStartDate.toString().split(' ')[0],
+
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 13.0,
+                                          color: Colors.black)),
+                                ),
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: Text(content.testEndDate.toString().split(' ')[0],
 
                                       style: TextStyle(
                                           fontWeight: FontWeight.w300,

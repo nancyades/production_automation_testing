@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:production_automation_testing/Provider/post_provider/tasklist_provider.dart';
 
 import 'package:production_automation_testing/noofpages/Test/testpage.dart';
@@ -588,7 +589,8 @@ class _SecondTaskViewPageState extends ConsumerState<SecondTaskViewPage> {
       return Text(e.toString());
 
     }, loading: (){
-      return Center(child: CircularProgressIndicator());
+      return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
     });
 
 

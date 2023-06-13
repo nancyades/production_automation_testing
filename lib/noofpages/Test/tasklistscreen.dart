@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:production_automation_testing/Helper/helper.dart';
 
 import 'package:production_automation_testing/Provider/post_provider/taskdetails_provider.dart';
@@ -450,6 +451,17 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                               child: Container(
                                                 height: 20.0,
                                                 width: 10.0,
+                                                child: Center(child: Text("Product",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.w900,
+                                                        fontSize: 15.0,
+                                                        color: Colors.black))),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Container(
+                                                height: 20.0,
+                                                width: 10.0,
                                                 child: Center(child: Text("Quantity",
                                                     style: TextStyle(
                                                         fontWeight: FontWeight.bold,
@@ -479,13 +491,22 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                                         color: Colors.black))),
                                               ),
                                             ),
-
-
                                             Expanded(
                                               child: Container(
                                                 height: 20.0,
                                                 width: 10.0,
-                                                child: Center(child: Text("Testing Status",
+                                                child: Center(child: Text("Total Tested unit",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 15.0,
+                                                        color: Colors.black))),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Container(
+                                                height: 20.0,
+                                                width: 10.0,
+                                                child: Center(child: Text("Pending",
                                                     style: TextStyle(
                                                         fontWeight: FontWeight.bold,
                                                         fontSize: 15.0,
@@ -618,9 +639,12 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                                   child: TestTaskListItems(
 
                                                       Workorder: datum[index].workorderCode.toString(),
+                                                      Product: datum[index].product.productName.toString(),
                                                       quantity: datum[index].product.quantity.toString(),
                                                       createdby: datum[index].createdBy.toString(),
                                                       status:  datum[index].status.toString(),
+                                                      totalunit: datum[index].testedunit.toString(),
+                                                      //datum[index].status.toString(),
                                                       testingstatus:  datum[index].testingStatus.toString(),
 
 
@@ -666,7 +690,8 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
       print(e.toString());
       return Text(e.toString());
     }, loading: () {
-      return CircularProgressIndicator();
+      return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
     });
   }
 }

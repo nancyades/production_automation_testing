@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:production_automation_testing/DashBoard/src/ProjectCardOverview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,6 +82,8 @@ class _TaskPageState extends ConsumerState<TaskPage> {
   var ucer_id;
 
   bool isBugged = false;
+
+  TextEditingController controllerassignedquantity = TextEditingController();
 
 
 
@@ -628,7 +631,8 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                               }, error: (e,s){
                                                return Text(e.toString());
                                               }, loading: (){
-                                                return Center(child: CircularProgressIndicator());
+                                                return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                               });
 
                                             }
@@ -670,7 +674,8 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                               }, error: (e,s){
                                                 return Text(e.toString());
                                               }, loading: (){
-                                                return Center(child: CircularProgressIndicator());
+                                                return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                               });
 
                                             }
@@ -709,7 +714,8 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                               }, error: (e,s){
                                                 return Text(e.toString());
                                               }, loading: (){
-                                                return Center(child: CircularProgressIndicator());
+                                                return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                               });
 
 
@@ -903,7 +909,8 @@ class _TaskPageState extends ConsumerState<TaskPage> {
       print("nancy----> ${e.toString()}");
       return Text(e.toString());
         }, loading: (){
-      return Center(child: CircularProgressIndicator());
+      return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
         });
 
   }
@@ -938,13 +945,34 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                           side: BorderSide(color: Colors.red.shade300)))),
                               onPressed: (){
 
+                                ref.read(updateTaskNotifier.notifier).updatetTask({
+                                  "task_id": task[index].taskId,
+                                  "user_id":task[index].userId,
+                                  "assign_id": task[index].assignId,
+                                  "wol_id": task[index].wolId,
+                                  "quantity": (task[index].quantity! - int.parse(controllerassignedquantity.text)),
+                                  "start_serial_no": task[index].startSerialNo,
+                                  "end_serial_no": task[index].endSerialNo,
+                                  "status":task[index].status,
+                                  "testing_status": task[index].testingStatus,
+                                  "start_date": task[index].startDate,
+                                  "end_date": task[index].endDate,
+                                  "created_by": task[index].createdBy,
+                                  "updated_by": task[index].updatedBy,
+                                  "created_date": task[index].createdDate,
+                                  "updated_date": task[index].updatedDate,
+                                  "flg": task[index].flg,
+                                  "rating":task[index].rating,
+                                  "workorder_id": task[index].workorderid,
+                                  "product_id": task[index].productid,
+                                  "name": task[index].username,
 
+                                });
                                 ref.read(addTaskNotifier.notifier).addTask({
-
                                   "user_id": ucer_id,
                                   "assign_id": Helper.shareduserid,
                                   "wol_id": task[index].wolId,
-                                  "quantity": task[index].quantity,
+                                  "quantity": int.parse(controllerassignedquantity.text),
                                   "start_serial_no": task[index].startSerialNo,
                                   "end_serial_no": task[index].endSerialNo,
                                   "status": "open",
@@ -959,6 +987,9 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                   "rating": 2
                                 });
 
+
+
+
                                 getconfirmationpopup(task, index);
                                 Helper.classes = "TEST";
 
@@ -969,24 +1000,38 @@ class _TaskPageState extends ConsumerState<TaskPage> {
 
                         ],
                       ),
-                      TextField(
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.search),
-                            hintText: 'search',
-                            hintStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18.0),
+                            child: Row(
+                              children: [
+                                Text("Assign Quantity",style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11.0,color: Colors.blueAccent )),
+                              ],
                             ),
-                            border: InputBorder.none,
                           ),
-                          style: TextStyle(
-                            color: Colors.black,
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15.0, right: 22.0,),
+                            child: SizedBox(
+                              height: 35,
+                              child: TextField(
+                                controller: controllerassignedquantity,
+                                decoration: InputDecoration(
+                                  /*  border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8.0),
+                                          ),*/
+                                    filled: true,
+                                    hintStyle: TextStyle(color: Colors.grey[800], fontSize: 13),
+                                    //hintText: "Workorder Code",
+                                    fillColor: Colors.white70),
+                                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 13.0,color: Colors.black ),
+                              ),
+                            ),
                           ),
-                          onChanged: (String query) {
 
-                          }
-                        // SearchWorkorders,
+                        ],
                       ),
+
                     ],
                   ),
                   //content: Text("msg"),
@@ -1060,7 +1105,8 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                                 }, error: (e,s){
                                   return Text(e.toString());
                                 }, loading: (){
-                                  return Center(child: CircularProgressIndicator());
+                                  return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                 });
 
                               }
@@ -1630,8 +1676,8 @@ class _TaskPageState extends ConsumerState<TaskPage> {
         ),
         child: TaskListItems(
           username: datum[index].username.toString(),
-          product: datum[index].productid.toString(),
-          workorder: datum[index].workorderid.toString(),
+          product: datum[index].product_name.toString(),
+          workorder: datum[index].workorderCode.toString(),
           quantity: datum[index].quantity.toString(),
           startserial: datum[index].startSerialNo.toString(),
           endserial: datum[index].endSerialNo.toString(),

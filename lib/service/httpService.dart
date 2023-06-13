@@ -8,7 +8,7 @@ class HttpService {
 
   multipart(var file) async {
     var request = http.MultipartRequest(
-        'POST', Uri.parse("http://192.168.1.55/PAT_API/api/Upload/SaveFile"));
+        'POST', Uri.parse("http://192.168.1.10/PAT_API/api/Upload/SaveFile"));
 
 
     request.files.add(await http.MultipartFile.fromPath("fileurl", file));

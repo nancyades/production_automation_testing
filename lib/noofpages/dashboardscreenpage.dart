@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:production_automation_testing/DashBoard/src/cardcount/singletestfileitem.dart';
 import 'package:production_automation_testing/Provider/excelprovider.dart';
 import 'package:production_automation_testing/Provider/post_provider/singletest_provider.dart';
@@ -385,6 +386,394 @@ class _DashboardScreenPageState extends ConsumerState<DashboardScreenPage> {
                       }
                   )
 
+                  : Helper.sharedRoleId == "Design User"
+
+                  ? Consumer(
+                      builder: (context, ref, child) {
+                        return ref.watch(getProductCountNotifier).when(data: (count){
+                          return Container(
+                            margin: EdgeInsets.only(top: 5.0),
+                            height: 218.0,
+                            width: MediaQuery.of(context).size.width,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child:SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child:Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 30,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children:[
+                                              Card(
+                                                elevation:12,
+                                                child: Container(
+                                                  width:200,
+                                                  height:100,
+                                                  decoration: BoxDecoration(
+                                                      boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                      border: Border.all(color: Colors.grey),
+                                                      backgroundBlendMode: BlendMode.darken,
+                                                      color: Colors.white,
+                                                      shape: BoxShape.rectangle
+                                                  ),
+                                                  child: Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                        child: Row(
+                                                          children: [
+                                                            Expanded(
+                                                              flex: 2,
+                                                              child: Column(
+                                                                children: [
+                                                                  Row(
+                                                                    children: [
+                                                                      Text("${count[0].created}%",  style: TextStyle(
+                                                                          fontWeight: FontWeight.bold,
+                                                                          fontSize: 15.0,
+                                                                          color:  Colors.black
+                                                                      ))
+                                                                    ],
+                                                                  ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text("Created", style: TextStyle(
+                                                                          fontWeight: FontWeight.w600,
+                                                                          fontSize: 10.0,
+                                                                          color:  Colors.black
+                                                                      ))
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+
+                                                            ),
+                                                            Expanded(
+                                                              child: Column(
+                                                                children: [
+                                                                  Icon(Icons.incomplete_circle, size: 20,)
+                                                                ],
+                                                              ),
+
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+
+
+                                                      SizedBox(
+                                                        height: 14,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Container(
+                                                            width:198,
+                                                            height:36,
+                                                            decoration: BoxDecoration(
+                                                                color: Colors.green,
+                                                                shape: BoxShape.rectangle
+                                                            ),
+                                                            child:  Padding(
+                                                              padding: const EdgeInsets.all(8.0),
+                                                              child: Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                children: [
+                                                                  Text('% change'),
+                                                                  Icon(Icons.call_made, size: 12,),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              Card(
+                                                elevation:12,
+                                                child: Container(
+                                                  width:200,
+                                                  height:100,
+                                                  decoration: BoxDecoration(
+                                                      boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                      border: Border.all(color: Colors.grey),
+                                                      backgroundBlendMode: BlendMode.darken,
+                                                      color: Colors.white,
+                                                      shape: BoxShape.rectangle
+                                                  ),
+                                                  child: Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                        child: Row(
+                                                          children: [
+                                                            Expanded(
+                                                              flex: 2,
+                                                              child: Column(
+                                                                children: [
+                                                                  Row(
+                                                                    children: [
+                                                                      Text("${count[0].verified}%",  style: TextStyle(
+                                                                          fontWeight: FontWeight.bold,
+                                                                          fontSize: 15.0,
+                                                                          color:  Colors.black
+                                                                      ))
+                                                                    ],
+                                                                  ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text("verified", style: TextStyle(
+                                                                          fontWeight: FontWeight.w600,
+                                                                          fontSize: 9.0,
+                                                                          color:  Colors.black
+                                                                      ))
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+
+                                                            ),
+                                                            Expanded(
+                                                              child: Column(
+                                                                children: [
+                                                                  Icon(Icons.admin_panel_settings_outlined,size: 20,)
+                                                                ],
+                                                              ),
+
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+
+
+                                                      SizedBox(
+                                                        height: 16,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Container(
+                                                            width:198,
+                                                            height:36,
+                                                            decoration: BoxDecoration(
+                                                                color: Colors.amber,
+                                                                shape: BoxShape.rectangle
+                                                            ),
+                                                            child:  Padding(
+                                                              padding: const EdgeInsets.all(8.0),
+                                                              child: Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                children: [
+                                                                  Text('% change'),
+                                                                  Icon(Icons.call_made, size: 12,),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              Card(
+                                                elevation:12,
+                                                child: Container(
+                                                  width:200,
+                                                  height:100,
+                                                  decoration: BoxDecoration(
+                                                      boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                      border: Border.all(color: Colors.grey),
+                                                      backgroundBlendMode: BlendMode.darken,
+                                                      color: Colors.white,
+                                                      shape: BoxShape.rectangle
+                                                  ),
+                                                  child: Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                        child: Row(
+                                                          children: [
+                                                            Expanded(
+                                                              flex: 2,
+                                                              child: Column(
+                                                                children: [
+                                                                  Row(
+                                                                    children: [
+                                                                      Text("${count[0].approved}%",  style: TextStyle(
+                                                                          fontWeight: FontWeight.bold,
+                                                                          fontSize: 15.0,
+                                                                          color:  Colors.black
+                                                                      ))
+                                                                    ],
+                                                                  ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text("Approved", style: TextStyle(
+                                                                          fontWeight: FontWeight.w600,
+                                                                          fontSize: 10.0,
+                                                                          color:  Colors.black
+                                                                      ))
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+
+                                                            ),
+                                                            Expanded(
+                                                              child: Column(
+                                                                children: [
+                                                                  Icon(Icons.task,size: 20,)
+                                                                ],
+                                                              ),
+
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+
+
+                                                      SizedBox(
+                                                        height: 14,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Container(
+                                                            width:198,
+                                                            height:36,
+                                                            decoration: BoxDecoration(
+                                                                color: Colors.blue,
+                                                                shape: BoxShape.rectangle
+                                                            ),
+                                                            child:  Padding(
+                                                              padding: const EdgeInsets.all(8.0),
+                                                              child: Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                children: [
+                                                                  Text('% change'),
+                                                                  Icon(Icons.call_made, size: 12,),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              Card(
+                                                elevation:12,
+                                                child: Container(
+                                                  width:200,
+                                                  height:100,
+                                                  decoration: BoxDecoration(
+                                                      boxShadow: [BoxShadow(color:Colors.white10,spreadRadius: 10,blurRadius: 12)],
+                                                      border: Border.all(color: Colors.grey),
+                                                      backgroundBlendMode: BlendMode.darken,
+                                                      color: Colors.white,
+                                                      shape: BoxShape.rectangle
+                                                  ),
+                                                  child: Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(left: 15.0, top: 10),
+                                                        child: Row(
+                                                          children: [
+                                                            Expanded(
+                                                              flex: 2,
+                                                              child: Column(
+                                                                children: [
+                                                                  Row(
+                                                                    children: [
+                                                                      Text("${count[0].rejected}%",  style: TextStyle(
+                                                                          fontWeight: FontWeight.bold,
+                                                                          fontSize: 15.0,
+                                                                          color:  Colors.black
+                                                                      ))
+                                                                    ],
+                                                                  ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text("Rejected", style: TextStyle(
+                                                                          fontWeight: FontWeight.w600,
+                                                                          fontSize: 10.0,
+                                                                          color:  Colors.black
+                                                                      ))
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+
+                                                            ),
+                                                            Expanded(
+                                                              child: Column(
+                                                                children: [
+                                                                  Icon(Icons.account_circle_outlined,size: 20)
+                                                                ],
+                                                              ),
+
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+
+
+                                                      SizedBox(
+                                                        height: 14,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Container(
+                                                            width:198,
+                                                            height:36,
+                                                            decoration: BoxDecoration(
+                                                                color: Colors.red,
+                                                                shape: BoxShape.rectangle
+                                                            ),
+                                                            child:  Padding(
+                                                              padding: const EdgeInsets.all(8.0),
+                                                              child: Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                children: [
+                                                                  Text('% change'),
+                                                                  Icon(Icons.call_made, size: 12,),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ]),
+
+                                      ],
+                                    ),
+                                  ),
+                                )],
+                            ),
+                          );
+
+                        }, error: (e,s){
+                          return Text(e.toString());
+                        }, loading: (){
+                          return CircularProgressIndicator();
+                        });
+
+                      }
+                  )
                  : Consumer(builder: (context, ref, child) {
                     return ref.watch(getUserCountNotifier).when(data: (count) {
 
@@ -1000,7 +1389,8 @@ class _DashboardScreenPageState extends ConsumerState<DashboardScreenPage> {
                                                 }, error: (e,s){
                                                   return Text(e.toString());
                                                 }, loading: (){
-                                                  return Center(child: CircularProgressIndicator());
+                                                  return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                                 }) ;
 
                                               }
@@ -1144,7 +1534,8 @@ class _DashboardScreenPageState extends ConsumerState<DashboardScreenPage> {
                                                 }, error: (e,s){
                                                   return Text(e.toString());
                                                 }, loading: (){
-                                                  return Center(child: CircularProgressIndicator());
+                                                  return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                                 }) ;
 
                                               }
@@ -1278,7 +1669,8 @@ class _DashboardScreenPageState extends ConsumerState<DashboardScreenPage> {
                                                 }, error: (e,s){
                                                   return Text(e.toString());
                                                 }, loading: (){
-                                                  return Center(child: CircularProgressIndicator());
+                                                  return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                                 }) ;
 
                                               }
@@ -1423,7 +1815,8 @@ class _DashboardScreenPageState extends ConsumerState<DashboardScreenPage> {
                                                 }, error: (e,s){
                                                   return Text(e.toString());
                                                 }, loading: (){
-                                                  return Center(child: CircularProgressIndicator());
+                                                  return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                                 }) ;
 
                                               }

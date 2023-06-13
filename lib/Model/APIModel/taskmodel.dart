@@ -20,9 +20,11 @@ class TaskModel {
      this.updatedDate,
      this.flg,
      this.rating,
+    this.product_name,
     this.product,
     this.workorderCode,
-    this.testing
+    this.testing,
+    this.testedunit
   });
 
   var taskId;
@@ -44,10 +46,13 @@ class TaskModel {
   int? rating;
   int? workorderid;
   int? productid;
+  String? testedunit;
   String? username;
   dynamic workorderCode;
+  String? product_name;
   Productvalue? product;
   List<Testing>? testing;
+
 
 
 }

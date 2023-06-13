@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:production_automation_testing/Database/Curd_operation/HiveModel/productmodel.dart';
 import 'package:production_automation_testing/Database/Curd_operation/HiveModel/usermodel.dart';
@@ -2092,7 +2093,8 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                 }, error: (e, s) {
                                                                   return Text(e.toString());
                                                                 }, loading: () {
-                                                                  return Center(child: CircularProgressIndicator());
+                                                                  return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                                                 });
                                                               }),
                                                             ),
@@ -2779,7 +2781,8 @@ class _AddProductState extends ConsumerState<AddProduct> {
                                                                 }, error: (e, s) {
                                                                   return Text(e.toString());
                                                                 }, loading: () {
-                                                                  return Center(child: CircularProgressIndicator());
+                                                                  return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                                                                 });
                                                               }),
                                                             ),
@@ -2905,7 +2908,8 @@ class _AddProductState extends ConsumerState<AddProduct> {
     }, error: (error, s) {
       return Text(error.toString());
     }, loading: () {
-      return Center(child: CircularProgressIndicator());
+      return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
     });
   }
 
@@ -2980,7 +2984,7 @@ class _AddProductState extends ConsumerState<AddProduct> {
       FormData formData = FormData.fromMap(
           {'file': await MultipartFile.fromFile(path, filename: fileName)});
       final response = await dio.post(
-          "http://192.168.1.55/PAT_API/api/Upload/SaveFile",
+          "http://192.168.1.10/PAT_API/api/Upload/SaveFile",
           data: formData, onSendProgress: (int sent, int total) {
         print('$sent $total');
       });

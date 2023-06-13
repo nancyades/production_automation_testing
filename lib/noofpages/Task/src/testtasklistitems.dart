@@ -3,17 +3,21 @@ import 'package:flutter/material.dart';
 
 class TestTaskListItems extends StatefulWidget {
   final String? Workorder;
+  final String? Product;
   final String? quantity;
   final String? createdby;
   final String? status;
+  final String? totalunit;
   final String? testingstatus;
 
 
   TestTaskListItems({
     this.Workorder,
+    this.Product,
     this.quantity,
     this.createdby,
     this.status,
+    this.totalunit,
     this.testingstatus
   });
 
@@ -73,6 +77,17 @@ class _TestTaskListItemsState extends State<TestTaskListItems> {
               child: Container(
                 height: 20.0,
                 width: 10.0,
+                child: Center(child: Text(widget.Product.toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10.0,
+                        color: Colors.black))),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                height: 20.0,
+                width: 10.0,
                 child: Center(child: Text(widget.quantity.toString(),
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -96,6 +111,17 @@ class _TestTaskListItemsState extends State<TestTaskListItems> {
                 height: 20.0,
                 width: 10.0,
                 child: Center(child: Text(widget.status.toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10.0,
+                        color: Colors.black))),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                height: 20.0,
+                width: 10.0,
+                child: Center(child: Text(widget.totalunit.toString(),
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 10.0,

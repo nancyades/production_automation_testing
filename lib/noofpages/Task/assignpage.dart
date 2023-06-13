@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:production_automation_testing/Model/APIModel/taskmodel.dart';
 import 'package:production_automation_testing/Model/readexcelmodel.dart';
 import 'package:production_automation_testing/Model/taskdetailsmodel.dart';
@@ -980,7 +981,8 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
                        }, error: (r,s){
                          return Text(r.toString());
                        }, loading: (){
-                         return Center(child: CircularProgressIndicator());
+                         return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                        });
                      }
 
@@ -1826,7 +1828,8 @@ class _AssignTaskState extends ConsumerState<AssignTask> {
                           }, error: (e,s){
                             return Text(e.toString());
                           }, loading: (){
-                            return Center(child: CircularProgressIndicator());
+                            return Center(child: LoadingAnimationWidget.inkDrop(color: Color(0xff333951),
+          size: 50,), );
                           });
 
                         }

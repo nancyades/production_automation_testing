@@ -11,6 +11,7 @@ import '../../Provider/excelprovider.dart';
 import '../../Provider/post_provider/product_provider.dart';
 import 'addproduct.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 
 class ProductPage extends ConsumerStatefulWidget {
@@ -1149,12 +1150,19 @@ class _ProductPageState extends ConsumerState<ProductPage> {
               ),
             ],
           );
+
+
         }, error: (e, s) {
           print(e);
       return Text(e.toString());
 
     }, loading: () {
-      return Center(child: CircularProgressIndicator());
+      return Center(
+        child: LoadingAnimationWidget.inkDrop(
+          color: Color(0xff333951),
+          size: 50,
+        ),
+      );
     });
 
     // });

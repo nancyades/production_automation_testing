@@ -42,7 +42,7 @@ class ApiProider {
   ApiProider(this.ref)
       : _dio = Dio(
           BaseOptions(
-            baseUrl: 'http://192.168.1.55/PAT_API/api/',
+            baseUrl: 'http://192.168.1.10/PAT_API/api/',
             connectTimeout: 10000,
             receiveTimeout: 35000,
             responseType: ResponseType.json,
@@ -259,7 +259,7 @@ class ApiProider {
   Future<dynamic> getAllTest() async {
     List<FirstTest> finalData = [];
     final response = await http.get(
-        Uri.parse('http://192.168.1.55/PAT_API/api/ExcelRead'),
+        Uri.parse('http://192.168.1.10/PAT_API/api/ExcelRead'),
         //"https://script.google.com/macros/s/AKfycbxHbkHBtCNWLYUlDSKpeWR20lcuNMVgob7Dh2wefzCSHjLF-t72JXLh-i2oKhzZgBxQ/exec"),
         headers: {'Content-Type': 'application/json', 'Charset': 'utf-8'});
     dynamic result = jsonDecode(response.body);
@@ -285,7 +285,7 @@ class ApiProider {
   Future<dynamic> getUsers() async {
     List<Users> finalData = [];
     final response =
-        await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/User"));
+        await http.get(Uri.parse("http://192.168.1.10/PAT_API/api/User"));
     dynamic result = jsonDecode(response.body);
     for (int i = 0; i < result.length; i++) {
       Users user = Users(
@@ -313,7 +313,7 @@ class ApiProider {
   Future<dynamic> getWorkOrders() async {
     List<WorkorderModel> finalData = [];
     final response =
-        await http.get(Uri.parse('http://192.168.1.55/PAT_API/api/workorder'));
+        await http.get(Uri.parse('http://192.168.1.10/PAT_API/api/workorder'));
     dynamic result = jsonDecode(response.body);
     List<WorkorderList> wo_list = [];
 
@@ -478,7 +478,7 @@ class ApiProider {
   Future<dynamic> getResult() async {
     List<Results> finalData = [];
     final response =
-    await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/Result"));
+    await http.get(Uri.parse("http://192.168.1.10/PAT_API/api/Result"));
     dynamic result = jsonDecode(response.body);
       for (int i = 0; i < result.length; i++) {
         Results template = Results(
@@ -525,6 +525,8 @@ class ApiProider {
           workorderid: result[i]["workorder_id"],
           productid: result[i]["product_id"],
           username: result[i]["name"],
+          workorderCode: result[i]["workorder_code"],
+          product_name: result[i]["product_name"],
           testing: test);
       finalData.add(taskmodel);
 
@@ -565,7 +567,7 @@ class ApiProider {
   Future<dynamic> getNewTask() async {
     List<TaskNewModel> finalData = [];
     final response =
-        await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/TaskView"));
+        await http.get(Uri.parse("http://192.168.1.10/PAT_API/api/TaskView"));
     dynamic result = jsonDecode(response.body);
     if (result == "No Reords Found") {
       TaskNewModel template = TaskNewModel(
@@ -745,7 +747,7 @@ class ApiProider {
     try {
       String json = jsonEncode(user);
       final response = await _dio.post(
-        "http://192.168.1.55/PAT_API/api/User",
+        "http://192.168.1.10/PAT_API/api/User",
         data: jsonEncode(user),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -761,7 +763,7 @@ class ApiProider {
   Future<dynamic> updatetUser(var user) async {
     try {
       final response = await _dio.post(
-        "http://192.168.1.55/PAT_API/api/User/Update",
+        "http://192.168.1.10/PAT_API/api/User/Update",
         data: jsonEncode(user),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -903,7 +905,7 @@ class ApiProider {
     String json = jsonEncode(product);
     try {
       final response = await _dio.post(
-        "http://192.168.1.55/PAT_API/api/Task",
+        "http://192.168.1.10/PAT_API/api/Task",
         data: jsonEncode(product),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -922,7 +924,7 @@ class ApiProider {
     String json = jsonEncode(product);
     try {
       final response = await _dio.post(
-        'http://192.168.1.55/PAT_API/api/Task/Update',
+        'http://192.168.1.10/PAT_API/api/Task/Update',
         data: jsonEncode(product),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -941,7 +943,7 @@ class ApiProider {
     String json = jsonEncode(product);
     try {
       final response = await _dio.post(
-        "http://192.168.1.55/PAT_API/api/testing",
+        "http://192.168.1.10/PAT_API/api/testing",
         data: jsonEncode(product),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -960,7 +962,7 @@ class ApiProider {
     String json = jsonEncode(product);
     try {
       final response = await _dio.post(
-        "http://192.168.1.55/PAT_API/api/testing/Update",
+        "http://192.168.1.10/PAT_API/api/testing/Update",
         data: jsonEncode(product),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -979,7 +981,7 @@ class ApiProider {
     String json = jsonEncode(result);
     try {
       final response = await _dio.post(
-        "http://192.168.1.55/PAT_API/api/Result",
+        "http://192.168.1.10/PAT_API/api/Result",
         data: jsonEncode(result),
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
@@ -996,8 +998,11 @@ class ApiProider {
   Future<dynamic> getProductsreport() async {
     List<ProductReportmodel> finalData = [];
     final response = await http
-        .get(Uri.parse("http://192.168.1.55/PAT_API/api/ProductReport"));
+        .get(Uri.parse("http://192.168.1.10/PAT_API/api/ProductReport"));
     dynamic result = jsonDecode(response.body);
+    if (result == "No Reords Found") {
+      return finalData = [];
+    }
     for (int i = 0; i < result.length; i++) {
       ProductReportmodel productReportmodel = ProductReportmodel(
         productId: result[i]['product_id'],
@@ -1017,7 +1022,7 @@ class ApiProider {
   Future<dynamic> getAllWorkordersreport() async {
     List<AllWorkorder> finalData = [];
     final response = await http
-        .get(Uri.parse("http://192.168.1.55/PAT_API/api/WOReport/WODashboard"));
+        .get(Uri.parse("http://192.168.1.10/PAT_API/api/WOReport/WODashboard"));
     dynamic result = jsonDecode(response.body);
     for (int i = 0; i < result.length; i++) {
       AllWorkorder productReportmodel = AllWorkorder(
@@ -1044,7 +1049,7 @@ class ApiProider {
     List<Work_order_progress_report> finalData = [];
     List<PproductwiseWoReport> pro_list = [];
     final response = await http
-        .get(Uri.parse("http://192.168.1.55/PAT_API/api/WOReport/PWODashboard"));
+        .get(Uri.parse("http://192.168.1.10/PAT_API/api/WOReport/PWODashboard"));
     dynamic result = jsonDecode(response.body);
     for (int i = 0; i < result.length; i++) {
       Work_order_progress_report work_order_progress_report = Work_order_progress_report(
@@ -1084,7 +1089,7 @@ class ApiProider {
   getSingleTesterreport(var userid) async {
     List<TesterReportModel> finalData = [];
     final response = await http.get(Uri.parse(
-        "http://192.168.1.55/PAT_API/api/TestingReport/Userwisereport?UserId=${userid}"));
+        "http://192.168.1.10/PAT_API/api/TestingReport/Userwisereport?UserId=${userid}"));
     var result = jsonDecode(response.body);
     if (result == "No Reords Found") {
       return finalData = [];
@@ -1122,7 +1127,7 @@ class ApiProider {
   getworkorderprogressreport(var userid, var startdate, var enddate) async {
     List<WorkorderProgressReportModel> finalData = [];
     final response = await http.get(Uri.parse(
-        "http://192.168.1.55/PAT_API/api/WOReport?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
+        "http://192.168.1.10/PAT_API/api/WOReport?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
     var result = jsonDecode(response.body);
 
     if (result == "No Reords Found") {
@@ -1156,7 +1161,7 @@ class ApiProider {
   getTesterreport(var userid, var startdate, var enddate) async {
     List<TesterReportModel> finalData = [];
     final response = await http.get(Uri.parse(
-      "http://192.168.1.55/PAT_API/api/TestingReport/Taskwisereport?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
+      "http://192.168.1.10/PAT_API/api/TestingReport/Taskwisereport?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
     var result = jsonDecode(response.body);
     if (result == "No Reords Found") {
       return finalData = [];
@@ -1197,7 +1202,7 @@ class ApiProider {
   getWorkorderbasedreport(var userid) async {
     List<WorkorderbasedReport> finalData = [];
     final response = await http.get(Uri.parse(
-        "http://192.168.1.55/PAT_API/api/WOBReport?Workorderid=${userid}"));
+        "http://192.168.1.10/PAT_API/api/WOBReport?Workorderid=${userid}"));
     var result = jsonDecode(response.body);
     if (result == "No Reords Found") {
       return finalData = [];
@@ -1232,7 +1237,7 @@ class ApiProider {
   getNewWorkorderbasedreport(var workorderid) async {
     List<NewWorkorderbasedReport> finalData = [];
     final response = await http.get(Uri.parse(
-      "http://192.168.1.55/PAT_API/api/WOBReport?Workorderid=${workorderid}"));
+      "http://192.168.1.10/PAT_API/api/WOBReport?Workorderid=${workorderid}"));
     var result = jsonDecode(response.body);
     if (result == "No Reords Found") {
       return finalData = [];
@@ -1272,7 +1277,7 @@ class ApiProider {
   getproductunderWorkorderreport(var workorderid) async {
     List<workorderunderproduct> finalData = [];
     final response = await http.get(Uri.parse(
-        "http://192.168.1.55/PAT_API/api/WOReport/WO_ProductReport?WorkOrderID=${workorderid}"));
+        "http://192.168.1.10/PAT_API/api/WOReport/WO_ProductReport?WorkOrderID=${workorderid}"));
     var result = jsonDecode(response.body);
     if (result == "No Reords Found") {
       return finalData = [];
@@ -1349,7 +1354,7 @@ class ApiProider {
   }
 
   getWorkorderbasedexcelreport(var workorderid, var productid, var serial_no) async {
-    final response = await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/WOReport/WOReportExcelExport?Workorderid=$workorderid&&Productid=$productid&&serialno=$serial_no"));
+    final response = await http.get(Uri.parse("http://192.168.1.10/PAT_API/api/WOReport/WOReportExcelExport?Workorderid=$workorderid&&Productid=$productid&&serialno=$serial_no"));
     var result = jsonDecode(response.body);
 
     _prepareSaveDir();
@@ -1371,7 +1376,7 @@ class ApiProider {
 
 
   getTesterexcelreport(var productid, var serial_no) async {
-    final response = await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/TestingReport/TestingReportExcelExport?Productid=$productid&serialno=$serial_no"));
+    final response = await http.get(Uri.parse("http://192.168.1.10/PAT_API/api/TestingReport/TestingReportExcelExport?Productid=$productid&serialno=$serial_no"));
     var result = jsonDecode(response.body);
 
     _prepareSaveDir();
@@ -1387,7 +1392,7 @@ class ApiProider {
   }
 
   getProductReleseexportreport() async {
-    final response = await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/ProductReport/Productreportexcel"));
+    final response = await http.get(Uri.parse("http://192.168.1.10/PAT_API/api/ProductReport/Productreportexcel"));
     var result = jsonDecode(response.body);
 
     _prepareSaveDir();
@@ -1404,7 +1409,7 @@ class ApiProider {
 
 
   getworkorderprogressexportexcelreport(var userid, var startdate, var enddate) async {
-    final response = await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/WOReport/WOReportExcel?UserId=$userid&startdate=$startdate&enddate=$enddate"));
+    final response = await http.get(Uri.parse("http://192.168.1.10/PAT_API/api/WOReport/WOReportExcel?UserId=$userid&startdate=$startdate&enddate=$enddate"));
     var result = jsonDecode(response.body);
 
     _prepareSaveDir();
@@ -1420,7 +1425,7 @@ class ApiProider {
   }
 
   getTesterexportexcelreport(var userid, var startdate, var enddate) async {
-    final response = await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/TestingReport/Taskwisereportexcel?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
+    final response = await http.get(Uri.parse("http://192.168.1.10/PAT_API/api/TestingReport/Taskwisereportexcel?UserId=${userid}&startdate=${startdate}&enddate=${enddate}"));
     var result = jsonDecode(response.body);
 
     _prepareSaveDir();
@@ -1436,7 +1441,7 @@ class ApiProider {
   }
 
   getworkorderbasedtestexportexcelreport(var workorderid) async {
-    final response = await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/WOReport/WOReportExcelWID?Workorderid=${workorderid}"));
+    final response = await http.get(Uri.parse("http://192.168.1.10/PAT_API/api/WOReport/WOReportExcelWID?Workorderid=${workorderid}"));
     var result = jsonDecode(response.body);
 
     _prepareSaveDir();
@@ -1455,7 +1460,7 @@ class ApiProider {
   getTemplateexcel(var product_id) async {
     List<Productmodel> finalData = [];
     final response = await http.get(Uri.parse(
-        'http://192.168.1.55/PAT_API/api/Product/ByID?id=${product_id}'));
+        'http://192.168.1.10/PAT_API/api/Product/ByID?id=${product_id}'));
     dynamic result = jsonDecode(response.body);
     List<ExcelRead> excel_read = [];
     List<Template> template = [];
@@ -1529,7 +1534,7 @@ class ApiProider {
   gettaskdetails(var workid, var productid) async {
     List<TaskDetails> finalData = [];
     final response = await http.get(Uri.parse(
-        "http://192.168.1.55/PAT_API/api/WO_List/GetWolistbywoid?workorderid=${workid}&productid=${productid}"));
+        "http://192.168.1.10/PAT_API/api/WO_List/GetWolistbywoid?workorderid=${workid}&productid=${productid}"));
     var result = jsonDecode(response.body);
     if (result != "No Reords Found") {
       for (int i = 0; i < result.length; i++) {
@@ -1560,7 +1565,7 @@ class ApiProider {
     List<Testing> test = [];
     List<TemplateValue> temp = [];
     final response =
-    await http.get(Uri.parse("http://192.168.1.55/PAT_API/api/Task/TaskByUser?Userid=${user_id}"));
+    await http.get(Uri.parse("http://192.168.1.10/PAT_API/api/Task/TaskByUser?Userid=${user_id}"));
     dynamic result = jsonDecode(response.body);
 
     for (int i = 0; i < result.length; i++) {
@@ -1619,6 +1624,7 @@ class ApiProider {
           workorderCode: result[i]["workorder_code"],
           productid: result[i]["product_id"],
           username: result[i]["name"],
+          testedunit: result[i]["totalTestedUnit"],
           product: pro,
 
           testing: test);
@@ -1665,7 +1671,7 @@ class ApiProider {
 /*  gettestlist(var workid, var productid) async {
     List<TestList> finalData = [];
     final response = await http.get(Uri.parse(
-        "http://192.168.1.55/PAT_API/api/WO_List/GetWolistbywoid?workorderid=${workid}&productid=${productid}"));
+        "http://192.168.1.10/PAT_API/api/WO_List/GetWolistbywoid?workorderid=${workid}&productid=${productid}"));
     var result = jsonDecode(response.body);
 
       for (int i = 0; i < result.length; i++) {
@@ -1693,7 +1699,7 @@ class ApiProider {
 }
 
 class HttpServices {
-  static String baseUrl = 'http://192.168.1.55/PAT_API/api/';
+  static String baseUrl = 'http://192.168.1.10/PAT_API/api/';
   static String user = 'User';
   static String WorkOrders = 'workorder';
   static String Products = 'Product';
